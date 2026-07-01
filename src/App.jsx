@@ -17,9 +17,10 @@ import {
   ChevronRight,
   BadgeCheck,
   Diamond,
+  XCircle,
 } from "lucide-react";
-// Import social icons from react-icons
 import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
+import images from "../src/assets/image.js";
 
 /* ------------------------------------------------------------------ */
 /*  DATA                                                               */
@@ -35,49 +36,23 @@ const NAV_LINKS = [
 
 const BRANDS = ["Toyota", "Lexus", "Chevrolet", "Maserati", "Range Rover", "Volvo"];
 
+// Use local images for cars
+const CAR_IMAGES = [
+  images.Car1, images.Car2, images.Car3, images.Car4, images.Car5,
+  images.Car6, images.Car7, images.Car8, images.Car9, images.Car10,
+  images.Car11, images.Car12, images.Car13, images.Car14, images.Car15,
+  images.Car16, images.Car17, images.Car18, images.Car19, images.Car20,
+  images.Car21, images.Car22, images.Car23, images.Car24, images.Car25,
+  images.Car26, images.Car27,
+];
+
 const CARS = [
-  {
-    name: "Toyota GR Supra",
-    trim: "3.0 Premium",
-    price: "$52,900",
-    specs: ["Automatic", "Petrol", "2,400 mi"],
-    img: "https://images.pexels.com/photos/31853160/pexels-photo-31853160.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  },
-  {
-    name: "Lexus ES 350h",
-    trim: "F Sport",
-    price: "$46,250",
-    specs: ["Hybrid", "Automatic", "8,100 mi"],
-    img: "https://images.pexels.com/photos/29906018/pexels-photo-29906018.jpeg",
-  },
-  {
-    name: "Chevrolet Camaro SS",
-    trim: "2SS Coupe",
-    price: "$58,700",
-    specs: ["Automatic", "Petrol", "5,600 mi"],
-    img: "https://images.pexels.com/photos/30816058/pexels-photo-30816058.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  },
-  {
-    name: "Maserati Ghibli",
-    trim: "Modena Q4",
-    price: "$71,300",
-    specs: ["Automatic", "Petrol", "3,950 mi"],
-    img: "https://images.pexels.com/photos/10836789/pexels-photo-10836789.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  },
-  {
-    name: "Range Rover Sport",
-    trim: "HSE Dynamic",
-    price: "$84,600",
-    specs: ["Automatic", "Diesel", "12,300 mi"],
-    img: "https://images.pexels.com/photos/5288744/pexels-photo-5288744.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  },
-  {
-    name: "Volvo XC90",
-    trim: "Recharge Inscription",
-    price: "$61,150",
-    specs: ["Automatic", "Hybrid", "9,800 mi"],
-    img: "https://images.pexels.com/photos/14776590/pexels-photo-14776590.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  },
+  { name: "Toyota GR Supra", trim: "3.0 Premium", price: "$52,900", specs: ["Automatic", "Petrol", "2,400 mi"], img: CAR_IMAGES[0] },
+  { name: "Lexus ES 350h", trim: "F Sport", price: "$46,250", specs: ["Hybrid", "Automatic", "8,100 mi"], img: CAR_IMAGES[1] },
+  { name: "Chevrolet Camaro SS", trim: "2SS Coupe", price: "$58,700", specs: ["Automatic", "Petrol", "5,600 mi"], img: CAR_IMAGES[2] },
+  { name: "Maserati Ghibli", trim: "Modena Q4", price: "$71,300", specs: ["Automatic", "Petrol", "3,950 mi"], img: CAR_IMAGES[3] },
+  { name: "Range Rover Sport", trim: "HSE Dynamic", price: "$84,600", specs: ["Automatic", "Diesel", "12,300 mi"], img: CAR_IMAGES[4] },
+  { name: "Volvo XC90", trim: "Recharge Inscription", price: "$61,150", specs: ["Automatic", "Hybrid", "9,800 mi"], img: CAR_IMAGES[5] },
 ];
 
 const TRUST_CARDS = [
@@ -364,7 +339,6 @@ function NavBar() {
 
 function Hero() {
   const y = useScrollY();
-  const [query, setQuery] = useState("");
 
   return (
     <section className="relative overflow-hidden" style={{ paddingTop: 76 }}>
@@ -400,7 +374,6 @@ function Hero() {
             Browse a curated, fully inspected inventory with transparent pricing and financing built around you.
           </p>
         </Reveal>
-
       </div>
 
       <Reveal delay={120} className="relative max-w-6xl mx-auto px-4 md:px-8">
@@ -454,10 +427,10 @@ function BrandStrip() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  CAR GALLERY — signature tilt cards                                  */
+/*  CAR GALLERY — with click to open lightbox                          */
 /* ------------------------------------------------------------------ */
 
-function CarCard({ car, index }) {
+function CarCard({ car, index, onOpen }) {
   const ref = useRef(null);
   const [tilt, setTilt] = useState({ rx: 0, ry: 0, sx: 50, sy: 50, active: false });
   const [revealRef, visible] = useReveal();
@@ -491,7 +464,8 @@ function CarCard({ car, index }) {
         ref={ref}
         onMouseMove={onMove}
         onMouseLeave={onLeave}
-        className="car-card"
+        className="car-card cursor-pointer"
+        onClick={() => onOpen(car)}
         style={{
           transform: `perspective(1000px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg) ${
             tilt.active ? "scale3d(1.015,1.015,1.015)" : "scale3d(1,1,1)"
@@ -536,7 +510,146 @@ function CarCard({ car, index }) {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  LIGHTBOX / MODAL                                                   */
+/* ------------------------------------------------------------------ */
+
+function CarLightbox({ car, onClose }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  if (!car) return null;
+
+  // Get all car images for the gallery
+  const allImages = CAR_IMAGES;
+  const carIndex = CARS.findIndex(c => c.name === car.name);
+
+  const handlePrev = (e) => {
+    e.stopPropagation();
+    setCurrentIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
+  };
+
+  const handleNext = (e) => {
+    e.stopPropagation();
+    setCurrentIndex((prev) => (prev + 1) % allImages.length);
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center"
+      onClick={onClose}
+      style={{
+        background: "rgba(0,0,0,0.85)",
+        backdropFilter: "blur(12px)",
+        animation: "fadeIn 0.3s ease",
+      }}
+    >
+      <div
+        className="relative bg-white rounded-2xl max-w-5xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          animation: "slideUp 0.4s cubic-bezier(0.22, 0.61, 0.36, 1)",
+        }}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-10 p-2 bg-white/90 rounded-full shadow-lg hover:bg-white transition-colors"
+          style={{ color: "var(--text)" }}
+        >
+          <XCircle size={28} />
+        </button>
+
+        <div className="p-6">
+          <h2 className="font-display text-2xl font-bold mb-2" style={{ color: "var(--text)" }}>
+            {car.name}
+          </h2>
+          <p className="font-mono text-sm" style={{ color: "var(--muted)" }}>{car.trim}</p>
+
+          {/* Gallery */}
+          <div className="relative mt-4">
+            <div className="relative overflow-hidden rounded-xl" style={{ background: "var(--bg)", height: 400 }}>
+              <img
+                src={allImages[currentIndex] || car.img}
+                alt={`${car.name} view ${currentIndex + 1}`}
+                className="w-full h-full object-contain"
+              />
+            </div>
+
+            {/* Navigation */}
+            <button
+              onClick={handlePrev}
+              className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 rounded-full shadow-lg hover:bg-white transition-colors"
+              style={{ color: "var(--text)" }}
+            >
+              <ChevronRight className="rotate-180" size={24} />
+            </button>
+            <button
+              onClick={handleNext}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 rounded-full shadow-lg hover:bg-white transition-colors"
+              style={{ color: "var(--text)" }}
+            >
+              <ChevronRight size={24} />
+            </button>
+
+            {/* Thumbnails */}
+            <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
+              {allImages.slice(0, 8).map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentIndex(i)}
+                  className={`w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all ${
+                    i === currentIndex ? "border-[var(--accent)]" : "border-transparent"
+                  }`}
+                >
+                  <img src={img} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Specs */}
+          <div className="grid grid-cols-3 gap-3 mt-4">
+            <div className="p-3 rounded-lg" style={{ background: "var(--bg)" }}>
+              <p className="text-xs font-mono" style={{ color: "var(--muted)" }}>Transmission</p>
+              <p className="font-medium" style={{ color: "var(--text)" }}>{car.specs[0]}</p>
+            </div>
+            <div className="p-3 rounded-lg" style={{ background: "var(--bg)" }}>
+              <p className="text-xs font-mono" style={{ color: "var(--muted)" }}>Fuel</p>
+              <p className="font-medium" style={{ color: "var(--text)" }}>{car.specs[1]}</p>
+            </div>
+            <div className="p-3 rounded-lg" style={{ background: "var(--bg)" }}>
+              <p className="text-xs font-mono" style={{ color: "var(--muted)" }}>Mileage</p>
+              <p className="font-medium" style={{ color: "var(--text)" }}>{car.specs[2]}</p>
+            </div>
+          </div>
+
+          <button className="w-full mt-4 btn-primary justify-center">
+            Book a Test Drive
+          </button>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from { opacity: 0; transform: scale(0.95) translateY(20px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 function Gallery() {
+  const [selectedCar, setSelectedCar] = useState(null);
+
   return (
     <section id="inventory" className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 110 }}>
       <Reveal className="text-center">
@@ -550,9 +663,13 @@ function Gallery() {
       </Reveal>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {CARS.map((car, i) => (
-          <CarCard car={car} index={i} key={car.name} />
+          <CarCard car={car} index={i} key={car.name} onOpen={setSelectedCar} />
         ))}
       </div>
+
+      {selectedCar && (
+        <CarLightbox car={selectedCar} onClose={() => setSelectedCar(null)} />
+      )}
     </section>
   );
 }
@@ -688,7 +805,7 @@ function Articles() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  VISIT / CONTACT                                                     */
+/*  VISIT / CONTACT — Nigeria map                                      */
 /* ------------------------------------------------------------------ */
 
 function Visit() {
@@ -696,14 +813,14 @@ function Visit() {
     <section id="visit" className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 120 }}>
       <Reveal className="text-center">
         <h2 className="font-display section-title">Comfort and performance await you</h2>
-        <p className="section-sub">Visit the showroom or arrange a private viewing</p>
+        <p className="section-sub">Visit our showroom in Lagos, Nigeria</p>
       </Reveal>
 
       <Reveal delay={100}>
         <div className="map-frame" style={{ marginTop: 46 }}>
           <iframe
-            title="Nova Motors showroom location"
-            src="https://www.google.com/maps?q=Karl-Marx-Allee%2045%2C%2010178%20Berlin%2C%20Germany&output=embed"
+            title="Nova Motors showroom location - Lagos, Nigeria"
+            src="https://www.google.com/maps?q=Lagos%2C%20Nigeria&output=embed"
             width="100%"
             height="100%"
             style={{ border: 0, filter: "grayscale(1) invert(0.92) contrast(0.9)" }}
@@ -719,9 +836,9 @@ function Visit() {
             <div>
               <p style={{ fontSize: 13.5, color: "var(--text)", fontWeight: 500 }}>Showroom</p>
               <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 2, lineHeight: 1.5 }}>
-                Karl-Marx-Allee 45
+                Victoria Island
                 <br />
-                10178 Berlin, Germany
+                Lagos, Nigeria
               </p>
             </div>
           </div>
@@ -730,7 +847,7 @@ function Visit() {
           <div className="contact-card">
             <Phone size={17} color="var(--accent)" />
             <div style={{ width: "100%" }}>
-              <p style={{ fontSize: 13.5, color: "var(--text)", fontWeight: 500 }}>+1 (415) 555-0132</p>
+              <p style={{ fontSize: 13.5, color: "var(--text)", fontWeight: 500 }}>+234 800 555 0132</p>
               <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 2 }}>Call the sales floor</p>
               <div style={{ height: 1, background: "var(--line)", margin: "12px 0" }} />
               <div className="flex items-center gap-2.5">
@@ -774,7 +891,7 @@ function Footer() {
       <div className="max-w-7xl mx-auto px-6 md:px-10 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
         <Logo size={26} />
         <p style={{ fontSize: 12.5, color: "var(--muted)" }} className="text-center">
-          Karl-Marx-Allee 45, 10178 Berlin, Germany
+          Victoria Island, Lagos, Nigeria
         </p>
         <div className="flex items-center gap-4">
           <FaFacebook size={16} color="var(--muted)" className="hover:text-[#1877f2] transition-colors cursor-pointer" />
