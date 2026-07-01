@@ -251,7 +251,7 @@ function Logo({ size = 30 }) {
         <Diamond size={size * 0.52} color="#ffffff" strokeWidth={2.5} />
       </span>
       <span className="font-display" style={{ fontSize: 19, fontWeight: 700, letterSpacing: "-0.01em", color: "var(--text)" }}>
-        NOVA<span style={{ color: "var(--accent)" }}>MOTORS</span>
+        Lord Group<span style={{ color: "var(--accent)" }}> AUTOS</span>
       </span>
     </div>
   );
@@ -682,7 +682,7 @@ function TrustSection() {
   return (
     <section id="trust" className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 120 }}>
       <Reveal className="text-center">
-        <h2 className="font-display section-title">Why buyers trust Nova Motors</h2>
+        <h2 className="font-display section-title">Why buyers trust Lord Group Motors</h2>
         <p className="section-sub">From first search to signed paperwork, nothing is left vague</p>
       </Reveal>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6" style={{ marginTop: 46 }}>
@@ -819,7 +819,7 @@ function Visit() {
       <Reveal delay={100}>
         <div className="map-frame" style={{ marginTop: 46 }}>
           <iframe
-            title="Nova Motors showroom location - Lagos, Nigeria"
+            title="Lord Group Motors showroom location - Lagos, Nigeria"
             src="https://www.google.com/maps?q=Lagos%2C%20Nigeria&output=embed"
             width="100%"
             height="100%"
@@ -852,7 +852,7 @@ function Visit() {
               <div style={{ height: 1, background: "var(--line)", margin: "12px 0" }} />
               <div className="flex items-center gap-2.5">
                 <Mail size={16} color="var(--accent)" />
-                <p style={{ fontSize: 13.5, color: "var(--text)" }}>sales@novamotors.com</p>
+                <p style={{ fontSize: 13.5, color: "var(--text)" }}>sales@Lord Groupmotors.com</p>
               </div>
             </div>
           </div>
@@ -902,7 +902,7 @@ function Footer() {
       </div>
       <div style={{ borderTop: "1px solid var(--line)" }}>
         <div className="max-w-7xl mx-auto px-6 md:px-10 py-5 flex items-center justify-center">
-          <p style={{ fontSize: 11.5, color: "var(--muted)" }}>&copy; 2026 Nova Motors. All rights reserved.</p>
+          <p style={{ fontSize: 11.5, color: "var(--muted)" }}>&copy; 2026 Lord Group Motors. All rights reserved.</p>
         </div>
       </div>
     </footer>
