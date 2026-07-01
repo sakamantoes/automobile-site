@@ -48,7 +48,7 @@ const CARS = [
     trim: "F Sport",
     price: "$46,250",
     specs: ["Hybrid", "Automatic", "8,100 mi"],
-    img: "https://images.pexels.com/photos/8737951/pexels-photo-8737951.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    img: "https://images.pexels.com/photos/29906018/pexels-photo-29906018.jpeg",
   },
   {
     name: "Chevrolet Camaro SS",
