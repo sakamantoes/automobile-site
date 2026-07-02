@@ -34,7 +34,7 @@ import {
   Fan,
 } from "lucide-react";
 import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
-import images from "../src/assets/image.js";
+import images from "../assets/image.js";
 
 /* ------------------------------------------------------------------ */
 /*  DATA                                                               */
