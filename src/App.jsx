@@ -23,6 +23,15 @@ import {
   Award,
   Car,
   Users,
+  Send,
+  Clock,
+  Calendar,
+  Wrench,
+  GaugeCircle,
+  Cog,
+  Filter,
+  Battery,
+  Fan,
 } from "lucide-react";
 import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
 import images from "../src/assets/image.js";
@@ -33,6 +42,7 @@ import images from "../src/assets/image.js";
 
 const NAV_LINKS = [
   { label: "Inventory", href: "#inventory" },
+  { label: "Spare Parts", href: "#spare-parts" },
   { label: "Financing", href: "#trust" },
   { label: "Reviews", href: "#reviews" },
   { label: "Journal", href: "#journal" },
@@ -50,6 +60,22 @@ const CAR_IMAGES = [
   images.Car16, images.Car17, images.Car18, images.Car19, images.Car20,
   images.Car21, images.Car22, images.Car23, images.Car24, images.Car25,
   images.Car26, images.Car27,
+];
+
+// Spare parts images from provided links
+const SPARE_PARTS_IMAGES = [
+  "https://images.pexels.com/photos/36817294/pexels-photo-36817294.jpeg", // Engine parts
+  "https://images.pexels.com/photos/7565165/pexels-photo-7565165.jpeg", // Brake pads
+  "https://images.pexels.com/photos/8986102/pexels-photo-8986102.jpeg", // Air filter
+  "https://images.pexels.com/photos/34133278/pexels-photo-34133278.jpeg", // Spark plugs
+  "https://images.pexels.com/photos/35714380/pexels-photo-35714380.jpeg", // Battery
+  "https://images.pexels.com/photos/35503911/pexels-photo-35503911.jpeg", // Radiator fan
+  "https://images.pexels.com/photos/36817294/pexels-photo-36817294.jpeg", // Timing belt (reusing first image)
+  "https://images.pexels.com/photos/7565165/pexels-photo-7565165.jpeg", // Shock absorber (reusing second image)
+  "https://images.pexels.com/photos/8986102/pexels-photo-8986102.jpeg", // Fuel pump (reusing third image)
+  "https://images.pexels.com/photos/34133278/pexels-photo-34133278.jpeg", // Alternator (reusing fourth image)
+  "https://images.pexels.com/photos/35714380/pexels-photo-35714380.jpeg", // Wiper blades (reusing fifth image)
+  "https://images.pexels.com/photos/35503911/pexels-photo-35503911.jpeg", // Oil pan gasket (reusing sixth image)
 ];
 
 // Define image ranges for each car
@@ -78,6 +104,22 @@ const CARS = [
   { name: "Toyota Highlander", trim: "XLE SUV", specs: ["Automatic", "Petrol", "52,000 mi"], img: CAR_IMAGES[23], imageRange: "Toyota Highlander" },
   // Lexus RX 2018 RX350 - cover: Car27 (index 26), range: Car25-Car27
   { name: "Lexus RX 2018", trim: "RX 350", specs: ["Automatic", "Petrol", "18,000 mi"], img: CAR_IMAGES[26], imageRange: "Lexus RX 2018" },
+];
+
+// Spare Parts Data with provided images (no prices)
+const SPARE_PARTS = [
+  { name: "Engine Oil Filter", category: "Filters", img: SPARE_PARTS_IMAGES[0] },
+  { name: "Brake Pads Set", category: "Brakes", img: SPARE_PARTS_IMAGES[1] },
+  { name: "Air Filter", category: "Filters", img: SPARE_PARTS_IMAGES[2] },
+  { name: "Spark Plugs (Set of 4)", category: "Ignition", img: SPARE_PARTS_IMAGES[3] },
+  { name: "Battery 12V", category: "Electrical", img: SPARE_PARTS_IMAGES[4] },
+  { name: "Radiator Fan", category: "Cooling", img: SPARE_PARTS_IMAGES[5] },
+  { name: "Timing Belt", category: "Engine", img: SPARE_PARTS_IMAGES[6] },
+  { name: "Shock Absorber", category: "Suspension", img: SPARE_PARTS_IMAGES[7] },
+  { name: "Fuel Pump", category: "Fuel System", img: SPARE_PARTS_IMAGES[8] },
+  { name: "Alternator", category: "Electrical", img: SPARE_PARTS_IMAGES[9] },
+  { name: "Wiper Blades (Set)", category: "Exterior", img: SPARE_PARTS_IMAGES[10] },
+  { name: "Oil Pan Gasket", category: "Engine", img: SPARE_PARTS_IMAGES[11] },
 ];
 
 const TRUST_CARDS = [
@@ -109,42 +151,42 @@ const REVIEWS = [
     title: "Bought a Toyota Camry",
     rating: "4.9",
     text: "Test drive to keys in one afternoon. Paperwork was refreshingly simple and honest.",
-    name: "Obi Uche ",
+    name: "nnamdi Alexander",
     time: "1 week ago",
   },
   {
     title: "Bought a Mercedes G 63",
     rating: "5.0",
     text: "The inspection report matched the car exactly — zero surprises at pickup.",
-    name: "Obilor Amarka",
+    name: "totti mba",
     time: "2 weeks ago",
   },
   {
     title: "Bought a Lexus RX 350",
     rating: "4.8",
     text: "Financing was sorted before I even arrived at the showroom floor.",
-    name: "Jacob Emeka",
+    name: "Jacob Adeleke",
     time: "1 week ago",
   },
   {
     title: "Bought a Mercedes ML 350",
     rating: "4.9",
     text: "Best buying experience I've had — the team knew every detail of the car.",
-    name: "Guy pablo",
+    name: " Musa Bello",
     time: "7 days ago",
   },
   {
     title: "Bought a Toyota Highlander",
     rating: "4.9",
     text: "Trade-in valuation was fair and the whole process took under an hour.",
-    name: "Robert Adanne",
+    name: "Robert Chika",
     time: "5 days ago",
   },
   {
     title: "Bought a Lexus ES 350",
     rating: "5.0",
     text: "A genuinely curated inventory — every car felt inspected and honest.",
-    name: "Esther Amarachi",
+    name: "Esther benjamin",
     time: "3 days ago",
   },
 ];
@@ -260,23 +302,44 @@ function PrimaryButton({ children, icon: Icon = ArrowRight, onClick, style = {} 
 /*  NAV                                                                 */
 /* ------------------------------------------------------------------ */
 
-function Logo({ size = 30 }) {
+function Logo({ size = 40 }) {
   return (
-    <div className="flex items-center gap-2.5">
+    <div className="flex items-center gap-3">
       <span
         className="flex items-center justify-center"
         style={{
           width: size,
           height: size,
-          borderRadius: 9,
+          borderRadius: 10,
           background: "linear-gradient(135deg, var(--accent), var(--accent-deep))",
           boxShadow: "0 4px 16px rgba(0,102,204,0.35)",
+          overflow: "hidden",
+          flexShrink: 0,
         }}
       >
-        <Diamond size={size * 0.52} color="#ffffff" strokeWidth={2.5} />
+        <img 
+          src={images.Logo2} 
+          alt="Lord Group Autos" 
+          style={{ 
+            width: "100%", 
+            height: "100%", 
+            objectFit: "cover",
+            display: "block",
+          }} 
+        />
       </span>
-      <span className="font-display" style={{ fontSize: 19, fontWeight: 700, letterSpacing: "-0.01em", color: "var(--text)" }}>
-        Lord Group<span style={{ color: "var(--accent)" }}> AUTOS</span>
+      <span 
+        className="font-display" 
+        style={{ 
+          fontSize: 20, 
+          fontWeight: 700, 
+          letterSpacing: "-0.02em", 
+          color: "var(--text)",
+          lineHeight: 1.2,
+        }}
+      >
+        Lord Group
+        <span style={{ color: "var(--accent)" }}> AUTOS</span>
       </span>
     </div>
   );
@@ -712,6 +775,56 @@ function Gallery() {
 }
 
 /* ------------------------------------------------------------------ */
+/*  SPARE PARTS SECTION                                               */
+/* ------------------------------------------------------------------ */
+
+function SpareParts() {
+  return (
+    <section id="spare-parts" className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 110 }}>
+      <Reveal className="text-center">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <Wrench size={28} color="var(--accent)" />
+          <h2 className="font-display section-title">Genuine Spare Parts</h2>
+          <Wrench size={28} color="var(--accent)" />
+        </div>
+        <p className="section-sub">Quality parts for every vehicle — from filters to full engine components</p>
+      </Reveal>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" style={{ marginTop: 46 }}>
+        {SPARE_PARTS.map((part, index) => (
+          <Reveal delay={(index % 4) * 80} key={index}>
+            <div className="spare-part-card">
+              <div className="spare-part-image">
+                <img src={part.img} alt={part.name} />
+                <span className="spare-part-category">{part.category}</span>
+              </div>
+              <div className="spare-part-body">
+                <h3 className="font-display" style={{ fontSize: 15, fontWeight: 600, color: "var(--text)" }}>
+                  {part.name}
+                </h3>
+                <div className="flex items-center justify-between" style={{ marginTop: 10 }}>
+                  <button className="spare-part-btn">
+                    <span>Order</span>
+                    <ArrowRight size={14} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        ))}
+      </div>
+
+      <Reveal delay={100} className="text-center" style={{ marginTop: 40 }}>
+        <a href="#visit" className="btn-outline">
+          <Cog size={16} />
+          Request Custom Parts
+        </a>
+      </Reveal>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  TRUST BENTO                                                         */
 /* ------------------------------------------------------------------ */
 
@@ -988,13 +1101,31 @@ function Visit() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  CTA + FOOTER                                                        */
+/*  CONTACT / CTA SECTION                                              */
 /* ------------------------------------------------------------------ */
 
 function CTA() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+    interest: "car-sales",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert("Thank you for reaching out! We'll get back to you within 24 hours.");
+    setFormData({ name: "", email: "", phone: "", message: "", interest: "car-sales" });
+  };
+
   return (
-    <section className="max-w-5xl mx-auto px-6 text-center" style={{ paddingTop: 130, paddingBottom: 40 }}>
-      <Reveal>
+    <section className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 130, paddingBottom: 40 }}>
+      <Reveal className="text-center">
         <h2
           className="font-display"
           style={{ fontSize: "clamp(1.9rem, 4vw, 3rem)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.12, color: "var(--text)" }}
@@ -1002,13 +1133,175 @@ function CTA() {
           Ready to own your
           <br /> next car?
         </h2>
+        <p className="section-sub" style={{ marginTop: 12 }}>
+          Reach out and let's get you behind the wheel
+        </p>
       </Reveal>
-      <Reveal delay={100} style={{ marginTop: 30 }}>
-        <PrimaryButton>Book a test drive</PrimaryButton>
-      </Reveal>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10" style={{ marginTop: 50 }}>
+        {/* Contact Form */}
+        <Reveal delay={100}>
+          <div className="contact-form-wrapper">
+            <form onSubmit={handleSubmit} className="contact-form">
+              <div className="form-group">
+                <label className="form-label">Full Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="John Doe"
+                  className="form-input"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Email Address</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="john@example.com"
+                  className="form-input"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Phone Number</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="+234 800 000 0000"
+                  className="form-input"
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">I'm interested in</label>
+                <select
+                  name="interest"
+                  value={formData.interest}
+                  onChange={handleChange}
+                  className="form-select"
+                >
+                  <option value="car-sales">Car Sales</option>
+                  <option value="car-hire">Car Hire / Rental</option>
+                  <option value="test-drive">Book a Test Drive</option>
+                  <option value="financing">Financing Options</option>
+                  <option value="spare-parts">Spare Parts</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Message</label>
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder="Tell us what you're looking for..."
+                  className="form-textarea"
+                  rows="4"
+                  required
+                />
+              </div>
+
+              <button type="submit" className="contact-submit-btn">
+                <Send size={18} />
+                <span>Send Message</span>
+              </button>
+            </form>
+          </div>
+        </Reveal>
+
+        {/* Contact Info & Quick Links */}
+        <Reveal delay={200}>
+          <div className="contact-info-wrapper">
+            <div className="contact-info-header">
+              <h3 className="font-display" style={{ fontSize: 22, fontWeight: 600, color: "var(--text)" }}>
+                Get in Touch
+              </h3>
+              <p style={{ fontSize: 14, color: "var(--muted)", marginTop: 6 }}>
+                We're here to help you find the perfect vehicle or rental solution.
+              </p>
+            </div>
+
+            <div className="contact-info-grid">
+              <div className="contact-info-item">
+                <div className="contact-info-icon">
+                  <Phone size={18} color="var(--accent)" />
+                </div>
+                <div>
+                  <p style={{ fontSize: 12, color: "var(--muted)", fontWeight: 500 }}>Call Us</p>
+                  <p style={{ fontSize: 15, color: "var(--text)", fontWeight: 500 }}>+234 706 172 2513</p>
+                  <p style={{ fontSize: 12, color: "var(--muted)" }}>Mon-Sat, 8am - 6pm</p>
+                </div>
+              </div>
+
+              <div className="contact-info-item">
+                <div className="contact-info-icon">
+                  <Mail size={18} color="var(--accent)" />
+                </div>
+                <div>
+                  <p style={{ fontSize: 12, color: "var(--muted)", fontWeight: 500 }}>Email Us</p>
+                  <p style={{ fontSize: 14, color: "var(--text)", fontWeight: 500 }}>lordgroup.limited@gmail.com</p>
+                  <p style={{ fontSize: 12, color: "var(--muted)" }}>We reply within 24hrs</p>
+                </div>
+              </div>
+
+              <div className="contact-info-item">
+                <div className="contact-info-icon">
+                  <MapPin size={18} color="var(--accent)" />
+                </div>
+                <div>
+                  <p style={{ fontSize: 12, color: "var(--muted)", fontWeight: 500 }}>Visit Us</p>
+                  <p style={{ fontSize: 14, color: "var(--text)", fontWeight: 500 }}>Victoria Island</p>
+                  <p style={{ fontSize: 12, color: "var(--muted)" }}>Lagos, Nigeria</p>
+                </div>
+              </div>
+
+              <div className="contact-info-item">
+                <div className="contact-info-icon">
+                  <Clock size={18} color="var(--accent)" />
+                </div>
+                <div>
+                  <p style={{ fontSize: 12, color: "var(--muted)", fontWeight: 500 }}>Working Hours</p>
+                  <p style={{ fontSize: 14, color: "var(--text)", fontWeight: 500 }}>Mon - Sat: 8am - 6pm</p>
+                  <p style={{ fontSize: 12, color: "var(--muted)" }}>Sunday: By Appointment</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="contact-social">
+              <p style={{ fontSize: 13, color: "var(--muted)", fontWeight: 500 }}>Connect with us</p>
+              <div className="contact-social-icons">
+                <a href="#" className="social-link"><FaFacebook size={18} color="var(--muted)" /></a>
+                <a href="#" className="social-link"><FaTwitter size={18} color="var(--muted)" /></a>
+                <a href="#" className="social-link"><FaInstagram size={18} color="var(--muted)" /></a>
+                <a href="#" className="social-link"><FaLinkedin size={18} color="var(--muted)" /></a>
+              </div>
+            </div>
+
+            <div className="contact-cta-box">
+              <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.6 }}>
+                <span style={{ color: "var(--accent)", fontWeight: 600 }}>✨ Quick Tip:</span> Book a test drive online and get a free vehicle inspection report.
+              </p>
+            </div>
+          </div>
+        </Reveal>
+      </div>
     </section>
   );
 }
+
+/* ------------------------------------------------------------------ */
+/*  FOOTER                                                             */
+/* ------------------------------------------------------------------ */
 
 function Footer() {
   return (
@@ -1160,6 +1453,72 @@ function GlobalStyle() {
       .car-specs { display: flex; gap: 14px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
       .car-specs span { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
 
+      /* Spare Parts Styles */
+      .spare-part-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        overflow: hidden;
+        transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .spare-part-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+      }
+      .spare-part-image {
+        position: relative;
+        height: 160px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      .spare-part-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+      }
+      .spare-part-card:hover .spare-part-image img {
+        transform: scale(1.05);
+      }
+      .spare-part-category {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(0,0,0,0.8);
+        backdrop-filter: blur(6px);
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--text);
+        border: 1px solid var(--line);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .spare-part-body {
+        padding: 14px 16px 16px;
+      }
+      .spare-part-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        background: rgba(0,102,204,0.12);
+        border: 1px solid transparent;
+        border-radius: 999px;
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+      }
+      .spare-part-btn:hover {
+        background: rgba(0,102,204,0.2);
+        border-color: var(--accent);
+        transform: translateX(2px);
+      }
+
       .trust-card { position: relative; border-radius: 20px; overflow: hidden; height: 340px; border: 1px solid var(--line); }
       .trust-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
       .trust-card:hover img { transform: scale(1.06); }
@@ -1254,6 +1613,167 @@ function GlobalStyle() {
         justify-content: center;
         flex-shrink: 0;
       }
+
+      /* Contact Form Styles */
+      .contact-form-wrapper {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 32px;
+      }
+      .contact-form {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .form-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text);
+        letter-spacing: 0.02em;
+      }
+      .form-input,
+      .form-select,
+      .form-textarea {
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 12px 16px;
+        color: var(--text);
+        font-size: 14px;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        font-family: 'Inter', sans-serif;
+        width: 100%;
+      }
+      .form-input:focus,
+      .form-select:focus,
+      .form-textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(0,102,204,0.15);
+      }
+      .form-input::placeholder,
+      .form-textarea::placeholder {
+        color: var(--muted);
+      }
+      .form-select {
+        appearance: none;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999999' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+      }
+      .form-textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+      .contact-submit-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 14px 28px;
+        background: var(--accent);
+        color: #ffffff;
+        border: none;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 15px;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 8px 24px rgba(0,102,204,0.25);
+        margin-top: 6px;
+      }
+      .contact-submit-btn:hover {
+        background: #0080ff;
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px rgba(0,102,204,0.35);
+      }
+
+      .contact-info-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        padding: 32px 0;
+      }
+      .contact-info-header h3 {
+        margin-bottom: 4px;
+      }
+      .contact-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .contact-info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 16px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        transition: border-color 0.3s ease, transform 0.3s ease;
+      }
+      .contact-info-item:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .contact-info-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: rgba(0,102,204,0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .contact-social {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .contact-social-icons {
+        display: flex;
+        gap: 12px;
+      }
+      .social-link {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s ease;
+      }
+      .social-link:hover {
+        border-color: var(--accent);
+        background: rgba(0,102,204,0.08);
+        transform: translateY(-2px);
+      }
+      .contact-cta-box {
+        padding: 16px 20px;
+        background: rgba(0,102,204,0.06);
+        border: 1px solid rgba(0,102,204,0.15);
+        border-radius: 12px;
+      }
+
+      @media (max-width: 768px) {
+        .contact-info-grid {
+          grid-template-columns: 1fr;
+        }
+        .contact-form-wrapper {
+          padding: 20px;
+        }
+      }
     `}</style>
   );
 }
@@ -1270,6 +1790,7 @@ export default function App() {
       <Hero />
       <BrandStrip />
       <Gallery />
+      <SpareParts />
       <TrustSection />
       <AboutSection />
       <Reviews />
