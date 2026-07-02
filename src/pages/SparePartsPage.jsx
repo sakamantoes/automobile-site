@@ -153,7 +153,7 @@ const ALL_SPARE_PARTS = [
     name: "Fuel Pump", 
     category: "Fuel System", 
     subcategory: "Fuel Pumps",
-    img: images.fuelPump,
+    img: images.FuelPump,
     rating: 4.8,
     inStock: true,
     brand: "Genuine",
