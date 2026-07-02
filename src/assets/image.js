@@ -28,6 +28,18 @@ import car27 from '../assets/car27.jpg'
 import logo1 from '../assets/logo1.png'
 import logo2 from '../assets/logo2.jpg'
 import ceo from '../assets/ceo.jpg'
+import AirFilter from '../assets/AirFilter.jpg'
+import brakePadSet from '../assets/brakePadSet.jpg'
+import alternator from '../assets/alternator.jpg'
+import BatteryV12 from '../assets/BatteryV12.jpg'
+import engineOilFilter from '../assets/engineOilFilter.jpg'
+import fuelPump from '../assets/fuelPump.jpg'
+import OilPanGasket from '../assets/OilPanGasket.jpg'
+import RadiatorFan from '../assets/RadiatorFan.jpg'
+import ShockAbsorber from '../assets/ShockAbsorber.jpg'
+import SparkPlug from '../assets/SparkPlug.jpg'
+import TimingBelt from '../assets/TimingBelt.jpg'
+import WiperBlades from '../assets/WiperBlades.jpg'
 
 const images = {
     Car1: car1,
@@ -57,9 +69,21 @@ const images = {
     Car25: car25,
     Car26: car26,
     Car27: car27,
-    Logo1 : logo1,
-  Logo2 : logo2,
-  Ceo : ceo
+    Logo1: logo1,
+    Logo2: logo2,
+    Ceo: ceo,
+    AirFilter: AirFilter,
+    BrakePadSet: brakePadSet,
+    Alternator: alternator,
+    BatteryV12: BatteryV12,
+    EngineOilFilter: engineOilFilter,
+    FuelPump: fuelPump,
+    OilPanGasket: OilPanGasket,
+    RadiatorFan: RadiatorFan,
+    ShockAbsorber: ShockAbsorber,
+    SparkPlug: SparkPlug,
+    TimingBelt: TimingBelt,
+    WiperBlades: WiperBlades
 }
 
 export default images
