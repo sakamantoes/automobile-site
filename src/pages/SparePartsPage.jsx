@@ -26,11 +26,12 @@ import {
   CreditCard,
   Award,
   Menu,
+  MessageCircle,
 } from 'lucide-react';
 import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from 'react-icons/fa';
 import images from '../assets/image.js';
 
-// Spare parts data with local images
+// Spare parts data with local images - NO PRICES
 const ALL_SPARE_PARTS = [
   // Engine Parts
   { 
@@ -39,7 +40,6 @@ const ALL_SPARE_PARTS = [
     category: "Engine", 
     subcategory: "Filters",
     img: images.engineOilFilter || images.AirFilter,
-    price: "$24.99",
     rating: 4.8,
     inStock: true,
     brand: "Genuine",
@@ -52,7 +52,6 @@ const ALL_SPARE_PARTS = [
     category: "Engine", 
     subcategory: "Filters",
     img: images.AirFilter,
-    price: "$19.99",
     rating: 4.7,
     inStock: true,
     brand: "Genuine",
@@ -65,7 +64,6 @@ const ALL_SPARE_PARTS = [
     category: "Engine", 
     subcategory: "Belts & Chains",
     img: images.TimingBelt,
-    price: "$89.99",
     rating: 4.9,
     inStock: true,
     brand: "Genuine",
@@ -78,7 +76,6 @@ const ALL_SPARE_PARTS = [
     category: "Engine", 
     subcategory: "Gaskets",
     img: images.OilPanGasket,
-    price: "$34.99",
     rating: 4.6,
     inStock: true,
     brand: "Genuine",
@@ -91,7 +88,6 @@ const ALL_SPARE_PARTS = [
     category: "Engine", 
     subcategory: "Ignition",
     img: images.SparkPlug,
-    price: "$12.99",
     rating: 4.7,
     inStock: true,
     brand: "NGK",
@@ -106,7 +102,6 @@ const ALL_SPARE_PARTS = [
     category: "Electrical", 
     subcategory: "Batteries",
     img: images.BatteryV12,
-    price: "$149.99",
     rating: 4.8,
     inStock: true,
     brand: "Genuine",
@@ -119,7 +114,6 @@ const ALL_SPARE_PARTS = [
     category: "Electrical", 
     subcategory: "Charging",
     img: images.alternator,
-    price: "$199.99",
     rating: 4.9,
     inStock: true,
     brand: "Genuine",
@@ -134,7 +128,6 @@ const ALL_SPARE_PARTS = [
     category: "Brakes", 
     subcategory: "Brake Pads",
     img: images.brakePadSet,
-    price: "$79.99",
     rating: 4.9,
     inStock: true,
     brand: "Genuine",
@@ -147,7 +140,6 @@ const ALL_SPARE_PARTS = [
     category: "Suspension", 
     subcategory: "Shocks",
     img: images.ShockAbsorber,
-    price: "$129.99",
     rating: 4.7,
     inStock: true,
     brand: "Genuine",
@@ -162,7 +154,6 @@ const ALL_SPARE_PARTS = [
     category: "Fuel System", 
     subcategory: "Fuel Pumps",
     img: images.fuelPump,
-    price: "$159.99",
     rating: 4.8,
     inStock: true,
     brand: "Genuine",
@@ -177,7 +168,6 @@ const ALL_SPARE_PARTS = [
     category: "Cooling", 
     subcategory: "Cooling Fans",
     img: images.RadiatorFan,
-    price: "$89.99",
     rating: 4.6,
     inStock: true,
     brand: "Genuine",
@@ -192,7 +182,6 @@ const ALL_SPARE_PARTS = [
     category: "Exterior", 
     subcategory: "Wipers",
     img: images.WiperBlades,
-    price: "$29.99",
     rating: 4.5,
     inStock: true,
     brand: "Genuine",
@@ -200,14 +189,13 @@ const ALL_SPARE_PARTS = [
     description: "Premium wiper blades for clear visibility in all weather conditions."
   },
 
-  // Additional Parts (using available images)
+  // Additional Parts
   { 
     id: 13, 
     name: "Engine Oil 5W-30", 
     category: "Engine", 
     subcategory: "Lubricants",
     img: images.engineOilFilter || images.AirFilter,
-    price: "$44.99",
     rating: 4.8,
     inStock: true,
     brand: "Genuine",
@@ -220,7 +208,6 @@ const ALL_SPARE_PARTS = [
     category: "Brakes", 
     subcategory: "Fluids",
     img: images.brakePadSet || images.AirFilter,
-    price: "$19.99",
     rating: 4.7,
     inStock: true,
     brand: "Genuine",
@@ -233,23 +220,12 @@ const ALL_SPARE_PARTS = [
     category: "Cooling", 
     subcategory: "Fluids",
     img: images.RadiatorFan || images.AirFilter,
-    price: "$29.99",
     rating: 4.6,
     inStock: true,
     brand: "Genuine",
     compatibility: "Universal fit for most vehicles",
     description: "Premium coolant for optimal engine temperature regulation."
   },
-];
-
-// Additional Pexels images for parts
-const PEXELS_PART_IMAGES = [
-  "https://images.pexels.com/photos/36817294/pexels-photo-36817294.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/7565165/pexels-photo-7565165.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/8986102/pexels-photo-8986102.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/34133278/pexels-photo-34133278.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/35714380/pexels-photo-35714380.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/35503911/pexels-photo-35503911.jpeg?auto=compress&cs=tinysrgb&w=1200",
 ];
 
 // Categories for filtering
@@ -437,8 +413,8 @@ function Footer() {
   );
 }
 
-// Spare Part Card Component
-function PartCard({ part, onOrder }) {
+// Spare Part Card Component - NO PRICE
+function PartCard({ part, onRequestQuote }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -455,13 +431,7 @@ function PartCard({ part, onOrder }) {
           </span>
         )}
         <div className="part-card-overlay" style={{ opacity: isHovered ? 1 : 0 }}>
-          <button 
-            className="part-quick-view"
-            onClick={() => onOrder(part)}
-          >
-            <ShoppingCart size={18} />
-            <span>Order Now</span>
-          </button>
+         
         </div>
       </div>
       <div className="part-card-body">
@@ -477,288 +447,13 @@ function PartCard({ part, onOrder }) {
         </div>
         <p className="part-card-description">{part.description}</p>
         <div className="part-card-footer">
-          <span className="part-card-price">{part.price}</span>
-          <button 
-            className="part-card-btn"
-            onClick={() => onOrder(part)}
-          >
-            Order Now
-            <ArrowUpRight size={14} />
-          </button>
+          <span className="part-card-availability">✓ Available</span>
         </div>
       </div>
     </div>
   );
 }
 
-// Order Modal Component
-function OrderModal({ part, onClose, onSubmit }) {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    quantity: 1,
-    message: '',
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [status, setStatus] = useState(null);
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    try {
-      const formDataObj = new FormData();
-      formDataObj.append('name', formData.name);
-      formDataObj.append('email', formData.email);
-      formDataObj.append('phone', formData.phone);
-      formDataObj.append('part', part.name);
-      formDataObj.append('quantity', formData.quantity);
-      formDataObj.append('message', formData.message);
-      formDataObj.append('_captcha', 'false');
-      formDataObj.append('_subject', `Spare Part Order: ${part.name}`);
-
-      const response = await fetch('https://formsubmit.co/lordgroup.limited@gmail.com', {
-        method: 'POST',
-        body: formDataObj,
-      });
-
-      if (response.ok) {
-        setStatus('success');
-        setTimeout(() => {
-          onSubmit();
-          onClose();
-        }, 2000);
-      } else {
-        setStatus('error');
-      }
-    } catch (error) {
-      setStatus('error');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center"
-      onClick={onClose}
-      style={{
-        background: "rgba(0,0,0,0.92)",
-        backdropFilter: "blur(20px)",
-        animation: "fadeIn 0.3s ease",
-      }}
-    >
-      <div
-        className="relative bg-[#1a1a1a] rounded-2xl max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          animation: "slideUp 0.4s cubic-bezier(0.22, 0.61, 0.36, 1)",
-        }}
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 bg-black/50 rounded-full shadow-lg hover:bg-black/70 transition-colors"
-          style={{ color: "#ffffff" }}
-        >
-          <X size={24} />
-        </button>
-
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div
-              className="flex items-center justify-center"
-              style={{
-                width: 48,
-                height: 48,
-                borderRadius: 12,
-                background: "rgba(0,102,204,0.12)",
-              }}
-            >
-              <Wrench size={24} color="var(--accent)" />
-            </div>
-            <div>
-              <h2 className="font-display text-xl font-bold" style={{ color: "#ffffff" }}>
-                Order {part.name}
-              </h2>
-              <p style={{ fontSize: 13, color: "var(--muted)" }}>{part.price} · {part.brand}</p>
-            </div>
-          </div>
-
-          {status === 'success' ? (
-            <div className="form-success">
-              <div className="form-success-content">
-                <div className="form-success-icon">✅</div>
-                <div>
-                  <h4 className="form-success-title">Order Placed Successfully!</h4>
-                  <p className="form-success-text">
-                    We'll contact you within 24 hours to confirm your order.
-                  </p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="order-form">
-              <div className="form-group">
-                <label className="form-label">Full Name *</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="John Doe"
-                  className="form-input"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Email Address *</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="john@example.com"
-                  className="form-input"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Phone Number</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="+234 800 000 0000"
-                  className="form-input"
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Quantity</label>
-                <input
-                  type="number"
-                  name="quantity"
-                  value={formData.quantity}
-                  onChange={handleChange}
-                  min="1"
-                  max="10"
-                  className="form-input"
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Additional Message</label>
-                <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  placeholder="Any special requirements or questions..."
-                  className="form-textarea"
-                  rows="3"
-                />
-              </div>
-
-              {status === 'error' && (
-                <div className="form-error">
-                  ❌ Something went wrong. Please try again.
-                </div>
-              )}
-
-              <button 
-                type="submit" 
-                className="order-submit-btn"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <span className="spinner"></span>
-                    <span>Submitting...</span>
-                  </>
-                ) : (
-                  <>
-                    <ShoppingCart size={18} />
-                    <span>Place Order</span>
-                  </>
-                )}
-              </button>
-            </form>
-          )}
-        </div>
-      </div>
-
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes slideUp {
-          from { opacity: 0; transform: scale(0.95) translateY(20px); }
-          to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        .spinner {
-          display: inline-block;
-          width: 18px;
-          height: 18px;
-          border: 2px solid rgba(255,255,255,0.3);
-          border-radius: 50%;
-          border-top-color: #ffffff;
-          animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-        .form-success {
-          padding: 20px;
-          background: rgba(34, 197, 94, 0.08);
-          border: 1px solid #22c55e;
-          border-radius: 12px;
-          animation: slideDown 0.4s ease;
-        }
-        .form-success-content {
-          display: flex;
-          gap: 14px;
-          align-items: flex-start;
-        }
-        .form-success-icon {
-          font-size: 24px;
-          flex-shrink: 0;
-        }
-        .form-success-title {
-          color: #22c55e;
-          font-size: 16px;
-          font-weight: 600;
-          margin: 0 0 4px 0;
-        }
-        .form-success-text {
-          color: #86efac;
-          font-size: 14px;
-          margin: 0;
-        }
-        .form-error {
-          padding: 12px 16px;
-          background: rgba(239, 68, 68, 0.08);
-          border: 1px solid #ef4444;
-          border-radius: 10px;
-          color: #ef4444;
-          font-size: 14px;
-          animation: slideDown 0.4s ease;
-        }
-        @keyframes slideDown {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
-    </div>
-  );
-}
 
 // Main Spare Parts Page
 const SparePartsPage = () => {
@@ -781,19 +476,16 @@ const SparePartsPage = () => {
     })
     .sort((a, b) => {
       if (sortBy === "name") return a.name.localeCompare(b.name);
-      if (sortBy === "price-low") return parseFloat(a.price.replace('$', '')) - parseFloat(b.price.replace('$', ''));
-      if (sortBy === "price-high") return parseFloat(b.price.replace('$', '')) - parseFloat(a.price.replace('$', ''));
       if (sortBy === "rating") return parseFloat(b.rating) - parseFloat(a.rating);
       return 0;
     });
 
-  const handleOrder = (part) => {
+  const handleRequestQuote = (part) => {
     setSelectedPart(part);
     setShowModal(true);
   };
 
-  const handleOrderSubmit = () => {
-    // Order submitted successfully
+  const handleQuoteSubmit = () => {
     setShowModal(false);
   };
 
@@ -831,7 +523,7 @@ const SparePartsPage = () => {
             <Wrench size={32} color="var(--accent)" />
           </div>
           <p style={{ color: "var(--muted)", fontSize: 17, marginTop: 16, maxWidth: 520, marginInline: "auto" }}>
-            Quality parts for every vehicle — from filters to full engine components
+            Quality parts for every vehicle — request a quote and we'll get back to you
           </p>
 
           {/* Search Bar */}
@@ -889,8 +581,6 @@ const SparePartsPage = () => {
                 onChange={(e) => setSortBy(e.target.value)}
               >
                 <option value="name">Name</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
                 <option value="rating">Rating</option>
               </select>
             </div>
@@ -942,7 +632,7 @@ const SparePartsPage = () => {
         ) : (
           <div className="parts-grid">
             {filteredParts.map(part => (
-              <PartCard key={part.id} part={part} onOrder={handleOrder} />
+              <PartCard key={part.id} part={part} onRequestQuote={handleRequestQuote} />
             ))}
           </div>
         )}
@@ -980,22 +670,22 @@ const SparePartsPage = () => {
           </div>
           <div className="stat-card">
             <div className="stat-icon">
-              <CreditCard size={24} color="var(--accent)" />
+              <MessageCircle size={24} color="var(--accent)" />
             </div>
             <div>
-              <h3 className="stat-number">Secure</h3>
-              <p className="stat-label">Payment Options</p>
+              <h3 className="stat-number">Get Quote</h3>
+              <p className="stat-label">Request Pricing</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Order Modal */}
+      {/* Quote Modal */}
       {showModal && selectedPart && (
-        <OrderModal 
+        <QuoteModal 
           part={selectedPart} 
           onClose={() => setShowModal(false)}
-          onSubmit={handleOrderSubmit}
+          onSubmit={handleQuoteSubmit}
         />
       )}
 
@@ -1078,28 +768,6 @@ function GlobalStyle() {
         border-color: var(--accent);
         background: rgba(0,102,204,0.15);
         transform: translateY(-1px);
-      }
-
-      .btn-primary {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 14px 26px;
-        border-radius: 999px;
-        border: none;
-        cursor: pointer;
-        background: var(--accent);
-        color: #ffffff;
-        font-weight: 600;
-        font-size: 14.5px;
-        box-shadow: 0 10px 30px rgba(0,102,204,0.28);
-        transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-        text-decoration: none;
-      }
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 16px 36px rgba(0,102,204,0.4);
-        background: #0080ff;
       }
 
       .search-bar {
@@ -1296,10 +964,10 @@ function GlobalStyle() {
         padding-top: 14px;
         border-top: 1px solid var(--line);
       }
-      .part-card-price {
-        font-size: 18px;
-        font-weight: 700;
-        color: var(--accent);
+      .part-card-availability {
+        font-size: 13px;
+        color: #22c55e;
+        font-weight: 600;
       }
       .part-card-btn {
         display: flex;

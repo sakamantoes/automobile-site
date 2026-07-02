@@ -23,8 +23,10 @@ import {
   Wrench,
   Cog,
   Menu,
+  MessageCircle,
 } from 'lucide-react';
 import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import images from '../assets/image.js';
 
 // Use local images for cars
@@ -39,36 +41,36 @@ const LOCAL_CAR_IMAGES = [
 
 // Pexels car images for additional vehicles
 const PEXELS_CAR_IMAGES = [
-  "https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=1200", // Sports car
-  "https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg?auto=compress&cs=tinysrgb&w=1200", // Luxury car
-  "https://images.pexels.com/photos/919073/pexels-photo-919073.jpeg?auto=compress&cs=tinysrgb&w=1200", // SUV
-  "https://images.pexels.com/photos/1149831/pexels-photo-1149831.jpeg?auto=compress&cs=tinysrgb&w=1200", // Mercedes
-  "https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1200", // BMW
-  "https://images.pexels.com/photos/358070/pexels-photo-358070.jpeg?auto=compress&cs=tinysrgb&w=1200", // Audi
-  "https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg?auto=compress&cs=tinysrgb&w=1200", // Porsche
-  "https://images.pexels.com/photos/119435/pexels-photo-119435.jpeg?auto=compress&cs=tinysrgb&w=1200", // Ferrari
-  "https://images.pexels.com/photos/103510/pexels-photo-103510.jpeg?auto=compress&cs=tinysrgb&w=1200", // Lamborghini
-  "https://images.pexels.com/photos/1394661/pexels-photo-1394661.jpeg?auto=compress&cs=tinysrgb&w=1200", // Tesla
-  "https://images.pexels.com/photos/1317990/pexels-photo-1317990.jpeg?auto=compress&cs=tinysrgb&w=1200", // Range Rover
-  "https://images.pexels.com/photos/1255675/pexels-photo-1255675.jpeg?auto=compress&cs=tinysrgb&w=1200", // Lexus
-  "https://images.pexels.com/photos/169878/pexels-photo-169878.jpeg?auto=compress&cs=tinysrgb&w=1200", // Toyota
-  "https://images.pexels.com/photos/170809/pexels-photo-170809.jpeg?auto=compress&cs=tinysrgb&w=1200", // Honda
-  "https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg?auto=compress&cs=tinysrgb&w=1200", // Nissan
-  "https://images.pexels.com/photos/919073/pexels-photo-919073.jpeg?auto=compress&cs=tinysrgb&w=1200", // Hyundai
-  "https://images.pexels.com/photos/1149831/pexels-photo-1149831.jpeg?auto=compress&cs=tinysrgb&w=1200", // Kia
-  "https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1200", // Mazda
-  "https://images.pexels.com/photos/358070/pexels-photo-358070.jpeg?auto=compress&cs=tinysrgb&w=1200", // Subaru
-  "https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg?auto=compress&cs=tinysrgb&w=1200", // Volvo
-  "https://images.pexels.com/photos/119435/pexels-photo-119435.jpeg?auto=compress&cs=tinysrgb&w=1200", // Jaguar
-  "https://images.pexels.com/photos/103510/pexels-photo-103510.jpeg?auto=compress&cs=tinysrgb&w=1200", // Bentley
-  "https://images.pexels.com/photos/1394661/pexels-photo-1394661.jpeg?auto=compress&cs=tinysrgb&w=1200", // Aston Martin
-  "https://images.pexels.com/photos/1317990/pexels-photo-1317990.jpeg?auto=compress&cs=tinysrgb&w=1200", // Maserati
-  "https://images.pexels.com/photos/1255675/pexels-photo-1255675.jpeg?auto=compress&cs=tinysrgb&w=1200", // Alfa Romeo
-  "https://images.pexels.com/photos/169878/pexels-photo-169878.jpeg?auto=compress&cs=tinysrgb&w=1200", // Dodge
-  "https://images.pexels.com/photos/170809/pexels-photo-170809.jpeg?auto=compress&cs=tinysrgb&w=1200", // Chevrolet
-  "https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg?auto=compress&cs=tinysrgb&w=1200", // Ford
-  "https://images.pexels.com/photos/919073/pexels-photo-919073.jpeg?auto=compress&cs=tinysrgb&w=1200", // Jeep
-  "https://images.pexels.com/photos/1149831/pexels-photo-1149831.jpeg?auto=compress&cs=tinysrgb&w=1200", // Land Rover
+  "https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/919073/pexels-photo-919073.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/1149831/pexels-photo-1149831.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/358070/pexels-photo-358070.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/119435/pexels-photo-119435.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/103510/pexels-photo-103510.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/1394661/pexels-photo-1394661.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/1317990/pexels-photo-1317990.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/1255675/pexels-photo-1255675.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/169878/pexels-photo-169878.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/170809/pexels-photo-170809.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/919073/pexels-photo-919073.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/1149831/pexels-photo-1149831.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/358070/pexels-photo-358070.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/119435/pexels-photo-119435.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/103510/pexels-photo-103510.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/1394661/pexels-photo-1394661.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/1317990/pexels-photo-1317990.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/1255675/pexels-photo-1255675.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/169878/pexels-photo-169878.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/170809/pexels-photo-170809.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/919073/pexels-photo-919073.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/1149831/pexels-photo-1149831.jpeg?auto=compress&cs=tinysrgb&w=1200",
 ];
 
 // Combine local and Pexels images
@@ -96,10 +98,10 @@ const transmissions = ["Automatic", "Manual", "CVT"];
 
 const fuelTypes = ["Petrol", "Diesel", "Hybrid", "Electric"];
 
-// Generate a large list of cars
+// Generate a large list of cars - NO PRICES
 const generateCars = () => {
   const cars = [];
-  const totalCars = 60; // Generate 60 cars
+  const totalCars = 60;
   
   for (let i = 0; i < totalCars; i++) {
     const make = carMakes[i % carMakes.length];
@@ -109,9 +111,7 @@ const generateCars = () => {
     const transmission = transmissions[i % transmissions.length];
     const fuel = fuelTypes[i % fuelTypes.length];
     const mileage = Math.floor(Math.random() * 50000) + 5000;
-    const price = Math.floor(Math.random() * 80000) + 15000;
     
-    // Randomly decide if we use local or pexels image
     const imgIndex = i % ALL_CAR_IMAGES.length;
     const image = ALL_CAR_IMAGES[imgIndex];
     
@@ -125,8 +125,6 @@ const generateCars = () => {
       transmission: transmission,
       fuel: fuel,
       mileage: mileage.toLocaleString(),
-      price: `$${price.toLocaleString()}`,
-      priceNum: price,
       img: image,
       specs: [transmission, fuel, `${mileage.toLocaleString()} mi`],
       rating: (4 + Math.random() * 0.9).toFixed(1),
@@ -141,7 +139,7 @@ const generateCars = () => {
 
 const allCars = generateCars();
 
-// Filter options
+// Filter options - removed price range
 const filterOptions = {
   makes: [...new Set(allCars.map(car => car.make))].sort(),
   years: [...new Set(allCars.map(car => car.year))].sort().reverse(),
@@ -150,8 +148,9 @@ const filterOptions = {
   fuelTypes: [...new Set(allCars.map(car => car.fuel))].sort(),
 };
 
-// Lightbox Component
-function CarLightbox({ car, onClose, allImages }) {
+// Lightbox Component - NO PRICE
+function CarLightbox({ car, onClose }) {
+  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lightboxImages, setLightboxImages] = useState([]);
 
@@ -161,7 +160,6 @@ function CarLightbox({ car, onClose, allImages }) {
   }, []);
 
   useEffect(() => {
-    // Get a selection of images for the lightbox
     const carImages = [];
     const startIdx = allCars.indexOf(car);
     for (let i = 0; i < Math.min(5, allCars.length); i++) {
@@ -181,6 +179,16 @@ function CarLightbox({ car, onClose, allImages }) {
   const handleNext = (e) => {
     e.stopPropagation();
     setCurrentIndex((prev) => (prev + 1) % lightboxImages.length);
+  };
+
+  const handleRequestQuote = () => {
+    onClose();
+    navigate('/#contact');
+  };
+
+  const handleTestDrive = () => {
+    onClose();
+    navigate('/#contact');
   };
 
   return (
@@ -218,8 +226,9 @@ function CarLightbox({ car, onClose, allImages }) {
                 {car.year} · {car.color}
               </p>
             </div>
-            <span className="font-display text-2xl font-bold" style={{ color: "var(--accent)" }}>
-              {car.price}
+            <span className="flex items-center gap-2 px-4 py-2 rounded-full" style={{ background: "rgba(0,102,204,0.12)", color: "var(--accent)", fontSize: 14, fontWeight: 600 }}>
+              <MessageCircle size={16} />
+              Request Quote
             </span>
           </div>
 
@@ -289,13 +298,13 @@ function CarLightbox({ car, onClose, allImages }) {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 mt-4">
-            <button className="flex-1 btn-primary justify-center">
+            <button className="flex-1 btn-primary justify-center" onClick={handleTestDrive}>
               <Calendar size={18} />
               Book a Test Drive
             </button>
-            <button className="flex-1 btn-outline justify-center">
-              <Phone size={18} />
-              Contact Dealer
+            <button className="flex-1 btn-outline justify-center" onClick={handleRequestQuote}>
+              <MessageCircle size={18} />
+              Request Quote
             </button>
           </div>
         </div>
@@ -315,8 +324,8 @@ function CarLightbox({ car, onClose, allImages }) {
   );
 }
 
-// Car Card Component
-function CarCard({ car, onOpen }) {
+// Car Card Component - NO PRICE
+function CarCard({ car, onOpen, onRequestQuote }) {
   const ref = useRef(null);
   const [tilt, setTilt] = useState({ rx: 0, ry: 0, sx: 50, sy: 50, active: false });
 
@@ -339,13 +348,21 @@ function CarCard({ car, onOpen }) {
     setTilt((t) => ({ ...t, rx: 0, ry: 0, active: false }));
   }, []);
 
+  const handleCardClick = (e) => {
+    // Check if the click was on the request quote button
+    if (e.target.closest('.request-quote-btn')) {
+      return;
+    }
+    onOpen(car);
+  };
+
   return (
     <article
       ref={ref}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
       className="car-card cursor-pointer"
-      onClick={() => onOpen(car)}
+      onClick={handleCardClick}
       style={{
         transform: `perspective(1000px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg) ${
           tilt.active ? "scale3d(1.015,1.015,1.015)" : "scale3d(1,1,1)"
@@ -396,9 +413,38 @@ function CarCard({ car, onOpen }) {
           </span>
         </div>
         <div className="flex items-center justify-between" style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid var(--line)" }}>
-          <span className="font-display" style={{ fontSize: 18, fontWeight: 700, color: "var(--accent)" }}>
-            {car.price}
-          </span>
+          <button 
+            className="request-quote-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              onRequestQuote(car);
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 14px',
+              borderRadius: '999px',
+              border: 'none',
+              background: 'rgba(0,102,204,0.12)',
+              color: 'var(--accent)',
+              fontSize: '13px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'background 0.3s ease, transform 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(0,102,204,0.2)';
+              e.currentTarget.style.transform = 'translateX(2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(0,102,204,0.12)';
+              e.currentTarget.style.transform = 'translateX(0)';
+            }}
+          >
+            <MessageCircle size={14} />
+            Request Quote
+          </button>
           <span className="flex items-center gap-1" style={{ fontSize: 12, color: "var(--muted)" }}>
             View Details <ArrowUpRight size={14} />
           </span>
@@ -591,6 +637,7 @@ function Footer() {
 
 // Main Gallery Page Component
 const GalleryPage = () => {
+  const navigate = useNavigate();
   const [selectedCar, setSelectedCar] = useState(null);
   const [filteredCars, setFilteredCars] = useState(allCars);
   const [filters, setFilters] = useState({
@@ -599,14 +646,13 @@ const GalleryPage = () => {
     color: '',
     transmission: '',
     fuel: '',
-    priceRange: '',
     search: '',
   });
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const carsPerPage = 12;
 
-  // Apply filters
+  // Apply filters - removed price filter
   useEffect(() => {
     let result = [...allCars];
 
@@ -639,11 +685,6 @@ const GalleryPage = () => {
       result = result.filter(car => car.fuel === filters.fuel);
     }
 
-    if (filters.priceRange) {
-      const [min, max] = filters.priceRange.split('-').map(Number);
-      result = result.filter(car => car.priceNum >= min && car.priceNum <= max);
-    }
-
     setFilteredCars(result);
     setCurrentPage(1);
   }, [filters]);
@@ -659,9 +700,13 @@ const GalleryPage = () => {
       color: '',
       transmission: '',
       fuel: '',
-      priceRange: '',
       search: '',
     });
+  };
+
+  const handleRequestQuote = (car) => {
+    // Navigate to contact page with car info in URL params
+    navigate(`/#contact?car=${encodeURIComponent(car.name)}&make=${encodeURIComponent(car.make)}&model=${encodeURIComponent(car.model)}&year=${car.year}`);
   };
 
   // Pagination
@@ -738,7 +783,7 @@ const GalleryPage = () => {
         </div>
       </section>
 
-      {/* Filters Panel */}
+      {/* Filters Panel - removed price range */}
       {showFilters && (
         <div className="max-w-7xl mx-auto px-6 md:px-10" style={{ marginTop: 20 }}>
           <div className="filters-panel">
@@ -812,22 +857,6 @@ const GalleryPage = () => {
                   ))}
                 </select>
               </div>
-
-              <div className="filter-group">
-                <label className="filter-label">Price Range</label>
-                <select
-                  className="filter-select"
-                  value={filters.priceRange}
-                  onChange={(e) => handleFilterChange('priceRange', e.target.value)}
-                >
-                  <option value="">Any Price</option>
-                  <option value="15000-25000">$15,000 - $25,000</option>
-                  <option value="25000-40000">$25,000 - $40,000</option>
-                  <option value="40000-60000">$40,000 - $60,000</option>
-                  <option value="60000-80000">$60,000 - $80,000</option>
-                  <option value="80000-100000">$80,000+</option>
-                </select>
-              </div>
             </div>
 
             <div className="filters-actions">
@@ -845,8 +874,13 @@ const GalleryPage = () => {
       {/* Car Grid */}
       <section className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 50 }}>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {currentCars.map((car, index) => (
-            <CarCard key={car.id} car={car} onOpen={setSelectedCar} />
+          {currentCars.map((car) => (
+            <CarCard 
+              key={car.id} 
+              car={car} 
+              onOpen={setSelectedCar}
+              onRequestQuote={handleRequestQuote}
+            />
           ))}
         </div>
 
@@ -913,7 +947,7 @@ const GalleryPage = () => {
 
       {/* Lightbox */}
       {selectedCar && (
-        <CarLightbox car={selectedCar} onClose={() => setSelectedCar(null)} allImages={allCars} />
+        <CarLightbox car={selectedCar} onClose={() => setSelectedCar(null)} />
       )}
 
       <Footer />
@@ -1202,6 +1236,25 @@ function GlobalStyle() {
       .pagination-btn:disabled {
         opacity: 0.3;
         cursor: not-allowed;
+      }
+
+      .request-quote-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 999px;
+        border: none;
+        background: rgba(0,102,204,0.12);
+        color: var(--accent);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.3s ease;
+      }
+      .request-quote-btn:hover {
+        background: rgba(0,102,204,0.2);
+        transform: translateX(2px);
       }
 
       @media (max-width: 768px) {
