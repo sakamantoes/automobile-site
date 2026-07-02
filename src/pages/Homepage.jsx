@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
 import images from "../assets/image.js";
+import { Link } from "react-router-dom";
 
 /* ------------------------------------------------------------------ */
 /*  DATA                                                               */
@@ -757,9 +758,9 @@ function Gallery() {
         <p className="section-sub">Every vehicle photographed, inspected, and priced upfront</p>
       </Reveal>
       <Reveal delay={80} className="text-center" style={{ marginTop: 22, marginBottom: 46 }}>
-        <a href="#visit" className="btn-outline">
-          View full inventory
-        </a>
+      <Link to="/gallery" className="btn-primary">
+        View All Vehicles
+      </Link>
       </Reveal>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {CARS.map((car, i) => (
@@ -813,10 +814,10 @@ function SpareParts() {
       </div>
 
       <Reveal delay={100} className="text-center" style={{ marginTop: 40 }}>
-        <a href="#visit" className="btn-outline">
+        <Link to="/spare-parts" className="btn-primary">
           <Cog size={16} />
           Request Custom Parts
-        </a>
+        </Link>
       </Reveal>
     </section>
   );
@@ -1111,14 +1112,52 @@ function CTA() {
     interest: "car-sales",
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Thank you for reaching out! We'll get back to you within 24 hours.");
-    setFormData({ name: "", email: "", phone: "", message: "", interest: "car-sales" });
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    try {
+      const form = e.target;
+      const formDataObj = new FormData(form);
+      
+      formDataObj.append('_captcha', 'false');
+      formDataObj.append('_subject', 'New Contact Form Submission - Lord Group Autos');
+
+      const response = await fetch('https://formsubmit.co/chinwekeleuchenn@gmail.com', {
+        method: 'POST',
+        body: formDataObj,
+      });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({ name: "", email: "", phone: "", message: "", interest: "car-sales" });
+        // Auto-hide success message after 6 seconds
+        setTimeout(() => {
+          setSubmitStatus(null);
+        }, 6000);
+      } else {
+        setSubmitStatus('error');
+        setTimeout(() => {
+          setSubmitStatus(null);
+        }, 6000);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setSubmitStatus('error');
+      setTimeout(() => {
+        setSubmitStatus(null);
+      }, 6000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -1209,10 +1248,53 @@ function CTA() {
                 />
               </div>
 
-              <button type="submit" className="contact-submit-btn">
-                <Send size={18} />
-                <span>Send Message</span>
+              <button 
+                type="submit" 
+                className="contact-submit-btn"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <span className="spinner"></span>
+                    <span>Sending...</span>
+                  </>
+                ) : (
+                  <>
+                    <Send size={18} />
+                    <span>Send Message</span>
+                  </>
+                )}
               </button>
+
+              {/* Success Message */}
+              {submitStatus === 'success' && (
+                <div className="form-success">
+                  <div className="form-success-content">
+                    <div className="form-success-icon">✅</div>
+                    <div>
+                      <h4 className="form-success-title">Message Sent Successfully!</h4>
+                      <p className="form-success-text">
+                        Thank you for reaching out to Lord Group Autos. We've received your message and will get back to you within 24 hours.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Error Message */}
+              {submitStatus === 'error' && (
+                <div className="form-error">
+                  <div className="form-error-content">
+                    <div className="form-error-icon">❌</div>
+                    <div>
+                      <h4 className="form-error-title">Something Went Wrong</h4>
+                      <p className="form-error-text">
+                        We couldn't send your message. Please try again or contact us directly at <strong>+234 706 172 2513</strong>.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </form>
           </div>
         </Reveal>
@@ -1293,6 +1375,114 @@ function CTA() {
           </div>
         </Reveal>
       </div>
+
+      <style>{`
+        .spinner {
+          display: inline-block;
+          width: 18px;
+          height: 18px;
+          border: 2px solid rgba(255,255,255,0.3);
+          border-radius: 50%;
+          border-top-color: #ffffff;
+          animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+
+        .form-success {
+          padding: 16px 20px;
+          background: rgba(34, 197, 94, 0.08);
+          border: 1px solid #22c55e;
+          border-radius: 12px;
+          margin-top: 4px;
+          animation: slideDown 0.4s ease;
+        }
+
+        .form-success-content {
+          display: flex;
+          gap: 14px;
+          align-items: flex-start;
+        }
+
+        .form-success-icon {
+          font-size: 24px;
+          flex-shrink: 0;
+          margin-top: 2px;
+        }
+
+        .form-success-title {
+          color: #22c55e;
+          font-size: 16px;
+          font-weight: 600;
+          margin: 0 0 4px 0;
+          font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .form-success-text {
+          color: #86efac;
+          font-size: 14px;
+          line-height: 1.5;
+          margin: 0;
+        }
+
+        .form-error {
+          padding: 16px 20px;
+          background: rgba(239, 68, 68, 0.08);
+          border: 1px solid #ef4444;
+          border-radius: 12px;
+          margin-top: 4px;
+          animation: slideDown 0.4s ease;
+        }
+
+        .form-error-content {
+          display: flex;
+          gap: 14px;
+          align-items: flex-start;
+        }
+
+        .form-error-icon {
+          font-size: 24px;
+          flex-shrink: 0;
+          margin-top: 2px;
+        }
+
+        .form-error-title {
+          color: #ef4444;
+          font-size: 16px;
+          font-weight: 600;
+          margin: 0 0 4px 0;
+          font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .form-error-text {
+          color: #fca5a5;
+          font-size: 14px;
+          line-height: 1.5;
+          margin: 0;
+        }
+
+        .form-error-text strong {
+          color: #ffffff;
+        }
+
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-10px) scale(0.98);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        .contact-submit-btn:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+      `}</style>
     </section>
   );
 }
