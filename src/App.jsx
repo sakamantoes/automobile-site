@@ -877,7 +877,7 @@ function AboutSection() {
         <Reveal delay={100}>
           <div className="founder-image-wrapper">
             <img
-              src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=800"
+              src={images.Ceo}
               alt="Obinna Ezichi Fidelis - Founder, Lord Group Autos"
               className="founder-image"
             />

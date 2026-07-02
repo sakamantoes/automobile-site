@@ -27,6 +27,7 @@ import car26 from '../assets/car26.jpg'
 import car27 from '../assets/car27.jpg'
 import logo1 from '../assets/logo1.png'
 import logo2 from '../assets/logo2.jpg'
+import ceo from '../assets/ceo.jpg'
 
 const images = {
     Car1: car1,
@@ -58,6 +59,7 @@ const images = {
     Car27: car27,
     Logo1 : logo1,
   Logo2 : logo2,
+  Ceo : ceo
 }
 
 export default images
