@@ -62,20 +62,20 @@ const CAR_IMAGES = [
   images.Car26, images.Car27,
 ];
 
-// Spare parts images from provided links
+// Spare parts images from local imports
 const SPARE_PARTS_IMAGES = [
-  "https://images.pexels.com/photos/36817294/pexels-photo-36817294.jpeg", // Engine parts
-  "https://images.pexels.com/photos/7565165/pexels-photo-7565165.jpeg", // Brake pads
-  "https://images.pexels.com/photos/8986102/pexels-photo-8986102.jpeg", // Air filter
-  "https://images.pexels.com/photos/34133278/pexels-photo-34133278.jpeg", // Spark plugs
-  "https://images.pexels.com/photos/35714380/pexels-photo-35714380.jpeg", // Battery
-  "https://images.pexels.com/photos/35503911/pexels-photo-35503911.jpeg", // Radiator fan
-  "https://images.pexels.com/photos/36817294/pexels-photo-36817294.jpeg", // Timing belt (reusing first image)
-  "https://images.pexels.com/photos/7565165/pexels-photo-7565165.jpeg", // Shock absorber (reusing second image)
-  "https://images.pexels.com/photos/8986102/pexels-photo-8986102.jpeg", // Fuel pump (reusing third image)
-  "https://images.pexels.com/photos/34133278/pexels-photo-34133278.jpeg", // Alternator (reusing fourth image)
-  "https://images.pexels.com/photos/35714380/pexels-photo-35714380.jpeg", // Wiper blades (reusing fifth image)
-  "https://images.pexels.com/photos/35503911/pexels-photo-35503911.jpeg", // Oil pan gasket (reusing sixth image)
+  images.AirFilter,
+  images.brakePadSet,
+  images.alternator,
+  images.BatteryV12,
+  images.engineOilFilter,
+  images.fuelPump,
+  images.OilPanGasket,
+  images.RadiatorFan,
+  images.ShockAbsorber,
+  images.SparkPlug,
+  images.TimingBelt,
+  images.WiperBlades,
 ];
 
 // Define image ranges for each car
@@ -106,20 +106,20 @@ const CARS = [
   { name: "Lexus RX 2018", trim: "RX 350", specs: ["Automatic", "Petrol", "18,000 mi"], img: CAR_IMAGES[26], imageRange: "Lexus RX 2018" },
 ];
 
-// Spare Parts Data with provided images (no prices)
+// Spare Parts Data with local images
 const SPARE_PARTS = [
-  { name: "Engine Oil Filter", category: "Filters", img: SPARE_PARTS_IMAGES[0] },
-  { name: "Brake Pads Set", category: "Brakes", img: SPARE_PARTS_IMAGES[1] },
-  { name: "Air Filter", category: "Filters", img: SPARE_PARTS_IMAGES[2] },
-  { name: "Spark Plugs (Set of 4)", category: "Ignition", img: SPARE_PARTS_IMAGES[3] },
-  { name: "Battery 12V", category: "Electrical", img: SPARE_PARTS_IMAGES[4] },
-  { name: "Radiator Fan", category: "Cooling", img: SPARE_PARTS_IMAGES[5] },
-  { name: "Timing Belt", category: "Engine", img: SPARE_PARTS_IMAGES[6] },
-  { name: "Shock Absorber", category: "Suspension", img: SPARE_PARTS_IMAGES[7] },
-  { name: "Fuel Pump", category: "Fuel System", img: SPARE_PARTS_IMAGES[8] },
-  { name: "Alternator", category: "Electrical", img: SPARE_PARTS_IMAGES[9] },
-  { name: "Wiper Blades (Set)", category: "Exterior", img: SPARE_PARTS_IMAGES[10] },
-  { name: "Oil Pan Gasket", category: "Engine", img: SPARE_PARTS_IMAGES[11] },
+  { name: "Air Filter", category: "Filters", img: images.AirFilter },
+  { name: "Brake Pad Set", category: "Brakes", img: images.BrakePadSet },
+  { name: "Alternator", category: "Electrical", img: images.Alternator },
+  { name: "Battery 12V", category: "Electrical", img: images.BatteryV12 },
+  { name: "Engine Oil Filter", category: "Filters", img: images.EngineOilFilter },
+  { name: "Fuel Pump", category: "Fuel System", img: images.FuelPump },
+  { name: "Oil Pan Gasket", category: "Engine", img: images.OilPanGasket },
+  { name: "Radiator Fan", category: "Cooling", img: images.RadiatorFan },
+  { name: "Shock Absorber", category: "Suspension", img: images.ShockAbsorber },
+  { name: "Spark Plug", category: "Ignition", img: images.SparkPlug },
+  { name: "Timing Belt", category: "Engine", img: images.TimingBelt },
+  { name: "Wiper Blades", category: "Exterior", img: images.WiperBlades },
 ];
 
 const TRUST_CARDS = [
@@ -803,10 +803,8 @@ function SpareParts() {
                   {part.name}
                 </h3>
                 <div className="flex items-center justify-between" style={{ marginTop: 10 }}>
-                  <button className="spare-part-btn">
-                    <span>Order</span>
-                    <ArrowRight size={14} />
-                  </button>
+                  <span style={{ fontSize: 12, color: "var(--muted)" }}>In Stock</span>
+                  <span className="spare-part-availability">✓ Available</span>
                 </div>
               </div>
             </div>
@@ -1499,24 +1497,10 @@ function GlobalStyle() {
       .spare-part-body {
         padding: 14px 16px 16px;
       }
-      .spare-part-btn {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 14px;
-        background: rgba(0,102,204,0.12);
-        border: 1px solid transparent;
-        border-radius: 999px;
-        color: var(--accent);
+      .spare-part-availability {
         font-size: 12px;
+        color: #22c55e;
         font-weight: 600;
-        cursor: pointer;
-        transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
-      }
-      .spare-part-btn:hover {
-        background: rgba(0,102,204,0.2);
-        border-color: var(--accent);
-        transform: translateX(2px);
       }
 
       .trust-card { position: relative; border-radius: 20px; overflow: hidden; height: 340px; border: 1px solid var(--line); }
