@@ -18,6 +18,11 @@ import {
   BadgeCheck,
   Diamond,
   XCircle,
+  User,
+  Briefcase,
+  Award,
+  Car,
+  Users,
 } from "lucide-react";
 import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
 import images from "../src/assets/image.js";
@@ -31,10 +36,11 @@ const NAV_LINKS = [
   { label: "Financing", href: "#trust" },
   { label: "Reviews", href: "#reviews" },
   { label: "Journal", href: "#journal" },
+  { label: "About", href: "#about" },
   { label: "Visit Us", href: "#visit" },
 ];
 
-const BRANDS = ["Toyota", "Lexus", "Chevrolet", "Maserati", "Range Rover", "Volvo"];
+const BRANDS = ["Toyota", "Lexus", "Mercedes-Benz", "Maserati", "Range Rover", "Volvo"];
 
 // Use local images for cars
 const CAR_IMAGES = [
@@ -46,13 +52,32 @@ const CAR_IMAGES = [
   images.Car26, images.Car27,
 ];
 
+// Define image ranges for each car
+const CAR_IMAGE_RANGES = {
+  "Toyota Camry": { start: 0, end: 4 }, // Car1 to Car5
+  "Mercedes-AMG": { start: 5, end: 7 }, // Car6 to Car8
+  "Lexus": { start: 9, end: 13 }, // Car10 to Car14 (for 2013 ES 350)
+  "Mercedes-Benz": { start: 14, end: 17 }, // Car15 to Car18
+  "Lexus RX 2012": { start: 19, end: 20 }, // Car20 to Car21
+  "Toyota Highlander": { start: 22, end: 23 }, // Car22 to Car24
+  "Lexus RX 2018": { start: 25, end: 26 }, // Car25 to Car27
+};
+
 const CARS = [
-  { name: "Toyota GR Supra", trim: "3.0 Premium", price: "$52,900", specs: ["Automatic", "Petrol", "2,400 mi"], img: CAR_IMAGES[0] },
-  { name: "Lexus ES 350h", trim: "F Sport", price: "$46,250", specs: ["Hybrid", "Automatic", "8,100 mi"], img: CAR_IMAGES[1] },
-  { name: "Chevrolet Camaro SS", trim: "2SS Coupe", price: "$58,700", specs: ["Automatic", "Petrol", "5,600 mi"], img: CAR_IMAGES[2] },
-  { name: "Maserati Ghibli", trim: "Modena Q4", price: "$71,300", specs: ["Automatic", "Petrol", "3,950 mi"], img: CAR_IMAGES[3] },
-  { name: "Range Rover Sport", trim: "HSE Dynamic", price: "$84,600", specs: ["Automatic", "Diesel", "12,300 mi"], img: CAR_IMAGES[4] },
-  { name: "Volvo XC90", trim: "Recharge Inscription", price: "$61,150", specs: ["Automatic", "Hybrid", "9,800 mi"], img: CAR_IMAGES[5] },
+  // Toyota Camry 2010 SE - cover: Car2 (index 1), range: Car1-Car5
+  { name: "Toyota Camry", trim: "2010 SE", specs: ["Automatic", "Petrol", "45,000 mi"], img: CAR_IMAGES[1], imageRange: "Toyota Camry" },
+  // Mercedes AMG G 63 - cover: Car6 (index 5), range: Car6-Car8
+  { name: "Mercedes-AMG", trim: "G 63", specs: ["Automatic", "Petrol", "32,000 mi"], img: CAR_IMAGES[5], imageRange: "Mercedes-AMG" },
+  // Lexus 2013 ES 350 - cover: Car10 (index 9), range: Car10-Car14
+  { name: "Lexus", trim: "2013 ES 350", specs: ["Automatic", "Petrol", "28,000 mi"], img: CAR_IMAGES[9], imageRange: "Lexus" },
+  // Mercedes Benz ML 350 4MATIC - cover: Car15 (index 14), range: Car15-Car18
+  { name: "Mercedes-Benz", trim: "ML 350 4MATIC", specs: ["Automatic", "Diesel", "41,000 mi"], img: CAR_IMAGES[14], imageRange: "Mercedes-Benz" },
+  // Lexus RX 2012 RX350 - cover: Car20 (index 19), range: Car20-Car21
+  { name: "Lexus RX 2012", trim: "RX 350", specs: ["Automatic", "Petrol", "38,000 mi"], img: CAR_IMAGES[19], imageRange: "Lexus RX 2012" },
+  // Toyota Highlander XLE SUV - cover: Car24 (index 23), range: Car22-Car24
+  { name: "Toyota Highlander", trim: "XLE SUV", specs: ["Automatic", "Petrol", "52,000 mi"], img: CAR_IMAGES[23], imageRange: "Toyota Highlander" },
+  // Lexus RX 2018 RX350 - cover: Car27 (index 26), range: Car25-Car27
+  { name: "Lexus RX 2018", trim: "RX 350", specs: ["Automatic", "Petrol", "18,000 mi"], img: CAR_IMAGES[26], imageRange: "Lexus RX 2018" },
 ];
 
 const TRUST_CARDS = [
@@ -81,45 +106,45 @@ const TRUST_CARDS = [
 
 const REVIEWS = [
   {
-    title: "Bought a Toyota GR Supra",
+    title: "Bought a Toyota Camry",
     rating: "4.9",
     text: "Test drive to keys in one afternoon. Paperwork was refreshingly simple and honest.",
-    name: "Leslie Alexander",
+    name: "Obi Uche ",
     time: "1 week ago",
   },
   {
-    title: "Bought a Chevrolet Camaro SS",
+    title: "Bought a Mercedes G 63",
     rating: "5.0",
     text: "The inspection report matched the car exactly — zero surprises at pickup.",
-    name: "Darrell Steward",
+    name: "Obilor Amarka",
     time: "2 weeks ago",
   },
   {
-    title: "Bought a Range Rover Sport",
+    title: "Bought a Lexus RX 350",
     rating: "4.8",
     text: "Financing was sorted before I even arrived at the showroom floor.",
-    name: "Jacob Jones",
+    name: "Jacob Emeka",
     time: "1 week ago",
   },
   {
-    title: "Bought a Maserati Ghibli",
+    title: "Bought a Mercedes ML 350",
     rating: "4.9",
     text: "Best buying experience I've had — the team knew every detail of the car.",
-    name: "Guy Hawkins",
+    name: "Guy pablo",
     time: "7 days ago",
   },
   {
-    title: "Bought a Volvo XC90",
+    title: "Bought a Toyota Highlander",
     rating: "4.9",
     text: "Trade-in valuation was fair and the whole process took under an hour.",
-    name: "Robert Fox",
+    name: "Robert Adanne",
     time: "5 days ago",
   },
   {
-    title: "Bought a Lexus ES 350h",
+    title: "Bought a Lexus ES 350",
     rating: "5.0",
     text: "A genuinely curated inventory — every car felt inspected and honest.",
-    name: "Esther Howard",
+    name: "Esther Amarachi",
     time: "3 days ago",
   },
 ];
@@ -364,14 +389,14 @@ function Hero() {
               color: "var(--text)",
             }}
           >
-            The smarter way
+            Reliable Cars.
             <br />
-            to own your next car
+            <span style={{ color: "var(--accent)" }}>Trusted Hire.</span>
           </h1>
         </Reveal>
         <Reveal delay={160}>
           <p style={{ color: "var(--muted)", fontSize: 17, marginTop: 20, maxWidth: 460, marginInline: "auto" }}>
-            Browse a curated, fully inspected inventory with transparent pricing and financing built around you.
+            Driven by Integrity — Browse a curated, fully inspected inventory with transparent pricing and financing built around you.
           </p>
         </Reveal>
       </div>
@@ -481,7 +506,6 @@ function CarCard({ car, index, onOpen }) {
               background: `radial-gradient(circle at ${tilt.sx}% ${tilt.sy}%, rgba(255,255,255,0.08), transparent 45%)`,
             }}
           />
-          <span className="car-card-price">{car.price}</span>
         </div>
         <div className="car-card-body">
           <div className="flex items-baseline justify-between">
@@ -524,18 +548,31 @@ function CarLightbox({ car, onClose }) {
 
   if (!car) return null;
 
-  // Get all car images for the gallery
-  const allImages = CAR_IMAGES;
-  const carIndex = CARS.findIndex(c => c.name === car.name);
+  // Get the image range for this car
+  const range = CAR_IMAGE_RANGES[car.imageRange];
+  let carImages = [];
+  
+  if (range) {
+    for (let i = range.start; i <= range.end; i++) {
+      if (i < CAR_IMAGES.length) {
+        carImages.push(CAR_IMAGES[i]);
+      }
+    }
+  }
+  
+  // Fallback to all images if no range found
+  if (carImages.length === 0) {
+    carImages = CAR_IMAGES;
+  }
 
   const handlePrev = (e) => {
     e.stopPropagation();
-    setCurrentIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
+    setCurrentIndex((prev) => (prev - 1 + carImages.length) % carImages.length);
   };
 
   const handleNext = (e) => {
     e.stopPropagation();
-    setCurrentIndex((prev) => (prev + 1) % allImages.length);
+    setCurrentIndex((prev) => (prev + 1) % carImages.length);
   };
 
   return (
@@ -573,7 +610,7 @@ function CarLightbox({ car, onClose }) {
           <div className="relative mt-4">
             <div className="relative overflow-hidden rounded-xl" style={{ background: "#0a0a0a", height: 400 }}>
               <img
-                src={allImages[currentIndex] || car.img}
+                src={carImages[currentIndex] || car.img}
                 alt={`${car.name} view ${currentIndex + 1}`}
                 className="w-full h-full object-contain"
               />
@@ -597,7 +634,7 @@ function CarLightbox({ car, onClose }) {
 
             {/* Thumbnails */}
             <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
-              {allImages.slice(0, 8).map((img, i) => (
+              {carImages.map((img, i) => (
                 <button
                   key={i}
                   onClick={() => setCurrentIndex(i)}
@@ -663,7 +700,7 @@ function Gallery() {
       </Reveal>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {CARS.map((car, i) => (
-          <CarCard car={car} index={i} key={car.name} onOpen={setSelectedCar} />
+          <CarCard car={car} index={i} key={`${car.name}-${car.trim}`} onOpen={setSelectedCar} />
         ))}
       </div>
 
@@ -682,7 +719,7 @@ function TrustSection() {
   return (
     <section id="trust" className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 120 }}>
       <Reveal className="text-center">
-        <h2 className="font-display section-title">Why buyers trust Lord Group Motors</h2>
+        <h2 className="font-display section-title">Why buyers trust Lord Group Autos</h2>
         <p className="section-sub">From first search to signed paperwork, nothing is left vague</p>
       </Reveal>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6" style={{ marginTop: 46 }}>
@@ -706,6 +743,94 @@ function TrustSection() {
             </Reveal>
           );
         })}
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  ABOUT / FOUNDER SECTION                                            */
+/* ------------------------------------------------------------------ */
+
+function AboutSection() {
+  return (
+    <section id="about" className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 120 }}>
+      <Reveal className="text-center">
+        <h2 className="font-display section-title">Meet the Founder</h2>
+        <p className="section-sub">Driven by integrity, built on trust</p>
+      </Reveal>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12" style={{ marginTop: 46 }}>
+        <Reveal delay={100}>
+          <div className="founder-image-wrapper">
+            <img
+              src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=800"
+              alt="Obinna Ezichi Fidelis - Founder, Lord Group Autos"
+              className="founder-image"
+            />
+            <div className="founder-image-overlay">
+              <span className="founder-tag">Founder</span>
+            </div>
+          </div>
+        </Reveal>
+
+        <Reveal delay={200}>
+          <div className="founder-content">
+            <h3 className="font-display" style={{ fontSize: 28, fontWeight: 700, color: "var(--text)", letterSpacing: "-0.02em" }}>
+              Obinna Ezichi Fidelis
+            </h3>
+            <p className="font-mono" style={{ fontSize: 14, color: "var(--accent)", marginTop: 4 }}>
+              Founder, Lord Group Autos
+            </p>
+
+            <div style={{ height: 2, width: 60, background: "var(--accent)", marginTop: 20, marginBottom: 20 }} />
+
+            <p style={{ fontSize: 15, color: "var(--muted)", lineHeight: 1.7 }}>
+              Obinna Ezichi Fidelis is an entrepreneur based in Abia State, with roots in Ugwunagbo LGA. 
+              He's a graduate of Urban and Regional Planning from Abia State University, and since 2023 
+              he's been building a reputation in the auto industry.
+            </p>
+
+            <p style={{ fontSize: 15, color: "var(--muted)", lineHeight: 1.7, marginTop: 14 }}>
+              With a planner's mindset and a service-first attitude, Obinna Ezichi leads a mobility business 
+              focused on two things: <strong style={{ color: "var(--text)" }}>helping people own reliable cars</strong> and 
+              <strong style={{ color: "var(--text)" }}> providing dependable car hire solutions</strong>.
+            </p>
+
+            <p style={{ fontSize: 15, color: "var(--text)", lineHeight: 1.7, marginTop: 20, fontWeight: 500 }}>
+              Driven by integrity and customer satisfaction, Obinna Ezichi believes trust is more valuable than a quick sale.
+            </p>
+
+            <div style={{ marginTop: 24 }}>
+              <div className="founder-services">
+                <div className="founder-service-item">
+                  <div className="founder-service-icon">
+                    <Car size={16} color="var(--accent)" />
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>Car Sales</h4>
+                    <p style={{ fontSize: 12.5, color: "var(--muted)" }}>Sourcing verified, well-maintained vehicles</p>
+                  </div>
+                </div>
+                <div className="founder-service-item">
+                  <div className="founder-service-icon">
+                    <Users size={16} color="var(--accent)" />
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>Car Hire / Rental</h4>
+                    <p style={{ fontSize: 12.5, color: "var(--muted)" }}>Flexible rental for airport, business, events</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 24, padding: 16, borderRadius: 12, background: "var(--surface)", border: "1px solid var(--line)" }}>
+              <p style={{ fontSize: 13, color: "var(--muted)", fontStyle: "italic" }}>
+                <span style={{ color: "var(--accent)", fontWeight: 600 }}>Tagline:</span> Reliable Cars. Trusted Hire. Driven by Integrity.
+              </p>
+            </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -1030,11 +1155,7 @@ function GlobalStyle() {
       .car-card-media img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
       .car-card:hover .car-card-media img { transform: scale(1.06); }
       .car-card-spot { position: absolute; inset: 0; transition: opacity 0.2s ease; pointer-events: none; }
-      .car-card-price {
-        position: absolute; top: 14px; right: 14px; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
-        border: 1px solid var(--line-strong); color: var(--text); font-family: 'IBM Plex Mono', monospace;
-        font-size: 13px; padding: 6px 12px; border-radius: 999px;
-      }
+
       .car-card-body { padding: 18px 20px 20px; }
       .car-specs { display: flex; gap: 14px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
       .car-specs span { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
@@ -1071,6 +1192,68 @@ function GlobalStyle() {
 
       .map-frame { height: 360px; border-radius: 22px; overflow: hidden; border: 1px solid var(--line); }
       .contact-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; display: flex; gap: 14px; align-items: flex-start; }
+
+      /* Founder / About Section Styles */
+      .founder-image-wrapper {
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: var(--surface);
+      }
+      .founder-image {
+        width: 100%;
+        height: 500px;
+        object-fit: cover;
+        display: block;
+      }
+      .founder-image-overlay {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+      }
+      .founder-tag {
+        display: inline-block;
+        padding: 6px 16px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+      }
+      .founder-content {
+        display: flex;
+        flex-direction: column;
+      }
+      .founder-services {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .founder-service-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        transition: border-color 0.3s ease;
+      }
+      .founder-service-item:hover {
+        border-color: var(--accent);
+      }
+      .founder-service-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        background: rgba(0,102,204,0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
     `}</style>
   );
 }
@@ -1088,6 +1271,7 @@ export default function App() {
       <BrandStrip />
       <Gallery />
       <TrustSection />
+      <AboutSection />
       <Reviews />
       <Articles />
       <Visit />
