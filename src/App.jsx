@@ -245,7 +245,7 @@ function Logo({ size = 30 }) {
           height: size,
           borderRadius: 9,
           background: "linear-gradient(135deg, var(--accent), var(--accent-deep))",
-          boxShadow: "0 4px 16px rgba(255,90,31,0.35)",
+          boxShadow: "0 4px 16px rgba(0,102,204,0.35)",
         }}
       >
         <Diamond size={size * 0.52} color="#ffffff" strokeWidth={2.5} />
@@ -269,7 +269,7 @@ function NavBar() {
         style={{
           zIndex: 60,
           transition: "background 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s ease",
-          background: scrolled ? "rgba(255,255,255,0.92)" : "transparent",
+          background: scrolled ? "rgba(0,0,0,0.92)" : "transparent",
           backdropFilter: scrolled ? "blur(14px)" : "none",
           borderBottom: `1px solid ${scrolled ? "var(--line)" : "transparent"}`,
         }}
@@ -298,7 +298,7 @@ function NavBar() {
           pointerEvents: open ? "auto" : "none",
           opacity: open ? 1 : 0,
           transition: "opacity 0.35s ease",
-          background: "rgba(255,255,255,0.98)",
+          background: "rgba(0,0,0,0.98)",
         }}
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between" style={{ height: 76 }}>
@@ -346,7 +346,7 @@ function Hero() {
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(60% 50% at 50% 0%, rgba(255,90,31,0.08), transparent 60%), var(--bg)",
+            "radial-gradient(60% 50% at 50% 0%, rgba(0,102,204,0.15), transparent 60%), var(--bg)",
         }}
       />
       <div className="relative max-w-4xl mx-auto text-center px-6 pt-20 pb-10">
@@ -478,7 +478,7 @@ function CarCard({ car, index, onOpen }) {
             className="car-card-spot"
             style={{
               opacity: tilt.active ? 1 : 0,
-              background: `radial-gradient(circle at ${tilt.sx}% ${tilt.sy}%, rgba(255,255,255,0.22), transparent 45%)`,
+              background: `radial-gradient(circle at ${tilt.sx}% ${tilt.sy}%, rgba(255,255,255,0.08), transparent 45%)`,
             }}
           />
           <span className="car-card-price">{car.price}</span>
@@ -543,13 +543,13 @@ function CarLightbox({ car, onClose }) {
       className="fixed inset-0 z-[100] flex items-center justify-center"
       onClick={onClose}
       style={{
-        background: "rgba(0,0,0,0.85)",
+        background: "rgba(0,0,0,0.92)",
         backdropFilter: "blur(12px)",
         animation: "fadeIn 0.3s ease",
       }}
     >
       <div
-        className="relative bg-white rounded-2xl max-w-5xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+        className="relative bg-[#1a1a1a] rounded-2xl max-w-5xl w-full mx-4 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
         style={{
           animation: "slideUp 0.4s cubic-bezier(0.22, 0.61, 0.36, 1)",
@@ -557,21 +557,21 @@ function CarLightbox({ car, onClose }) {
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 bg-white/90 rounded-full shadow-lg hover:bg-white transition-colors"
-          style={{ color: "var(--text)" }}
+          className="absolute top-4 right-4 z-10 p-2 bg-black/50 rounded-full shadow-lg hover:bg-black/70 transition-colors"
+          style={{ color: "#ffffff" }}
         >
           <XCircle size={28} />
         </button>
 
         <div className="p-6">
-          <h2 className="font-display text-2xl font-bold mb-2" style={{ color: "var(--text)" }}>
+          <h2 className="font-display text-2xl font-bold mb-2" style={{ color: "#ffffff" }}>
             {car.name}
           </h2>
-          <p className="font-mono text-sm" style={{ color: "var(--muted)" }}>{car.trim}</p>
+          <p className="font-mono text-sm" style={{ color: "#999" }}>{car.trim}</p>
 
           {/* Gallery */}
           <div className="relative mt-4">
-            <div className="relative overflow-hidden rounded-xl" style={{ background: "var(--bg)", height: 400 }}>
+            <div className="relative overflow-hidden rounded-xl" style={{ background: "#0a0a0a", height: 400 }}>
               <img
                 src={allImages[currentIndex] || car.img}
                 alt={`${car.name} view ${currentIndex + 1}`}
@@ -582,15 +582,15 @@ function CarLightbox({ car, onClose }) {
             {/* Navigation */}
             <button
               onClick={handlePrev}
-              className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 rounded-full shadow-lg hover:bg-white transition-colors"
-              style={{ color: "var(--text)" }}
+              className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 rounded-full shadow-lg hover:bg-black/70 transition-colors"
+              style={{ color: "#ffffff" }}
             >
               <ChevronRight className="rotate-180" size={24} />
             </button>
             <button
               onClick={handleNext}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 rounded-full shadow-lg hover:bg-white transition-colors"
-              style={{ color: "var(--text)" }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 rounded-full shadow-lg hover:bg-black/70 transition-colors"
+              style={{ color: "#ffffff" }}
             >
               <ChevronRight size={24} />
             </button>
@@ -613,17 +613,17 @@ function CarLightbox({ car, onClose }) {
 
           {/* Specs */}
           <div className="grid grid-cols-3 gap-3 mt-4">
-            <div className="p-3 rounded-lg" style={{ background: "var(--bg)" }}>
-              <p className="text-xs font-mono" style={{ color: "var(--muted)" }}>Transmission</p>
-              <p className="font-medium" style={{ color: "var(--text)" }}>{car.specs[0]}</p>
+            <div className="p-3 rounded-lg" style={{ background: "#0a0a0a" }}>
+              <p className="text-xs font-mono" style={{ color: "#666" }}>Transmission</p>
+              <p className="font-medium" style={{ color: "#ffffff" }}>{car.specs[0]}</p>
             </div>
-            <div className="p-3 rounded-lg" style={{ background: "var(--bg)" }}>
-              <p className="text-xs font-mono" style={{ color: "var(--muted)" }}>Fuel</p>
-              <p className="font-medium" style={{ color: "var(--text)" }}>{car.specs[1]}</p>
+            <div className="p-3 rounded-lg" style={{ background: "#0a0a0a" }}>
+              <p className="text-xs font-mono" style={{ color: "#666" }}>Fuel</p>
+              <p className="font-medium" style={{ color: "#ffffff" }}>{car.specs[1]}</p>
             </div>
-            <div className="p-3 rounded-lg" style={{ background: "var(--bg)" }}>
-              <p className="text-xs font-mono" style={{ color: "var(--muted)" }}>Mileage</p>
-              <p className="font-medium" style={{ color: "var(--text)" }}>{car.specs[2]}</p>
+            <div className="p-3 rounded-lg" style={{ background: "#0a0a0a" }}>
+              <p className="text-xs font-mono" style={{ color: "#666" }}>Mileage</p>
+              <p className="font-medium" style={{ color: "#ffffff" }}>{car.specs[2]}</p>
             </div>
           </div>
 
@@ -847,12 +847,12 @@ function Visit() {
           <div className="contact-card">
             <Phone size={17} color="var(--accent)" />
             <div style={{ width: "100%" }}>
-              <p style={{ fontSize: 13.5, color: "var(--text)", fontWeight: 500 }}>+234 800 555 0132</p>
+              <p style={{ fontSize: 13.5, color: "var(--text)", fontWeight: 500 }}>+234 706 172 2513</p>
               <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 2 }}>Call the sales floor</p>
               <div style={{ height: 1, background: "var(--line)", margin: "12px 0" }} />
               <div className="flex items-center gap-2.5">
                 <Mail size={16} color="var(--accent)" />
-                <p style={{ fontSize: 13.5, color: "var(--text)" }}>sales@Lord Groupmotors.com</p>
+                <p style={{ fontSize: 13.5, color: "var(--text)" }}>lordgroup.limited@gmail.com</p>
               </div>
             </div>
           </div>
@@ -872,7 +872,7 @@ function CTA() {
       <Reveal>
         <h2
           className="font-display"
-          style={{ fontSize: "clamp(1.9rem, 4vw, 3rem)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.12 }}
+          style={{ fontSize: "clamp(1.9rem, 4vw, 3rem)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.12, color: "var(--text)" }}
         >
           Ready to own your
           <br /> next car?
@@ -919,15 +919,15 @@ function GlobalStyle() {
       @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
       :root {
-        --bg: #f8f9fa;
-        --surface: #ffffff;
-        --surface-alt: #f1f3f5;
-        --line: #e9ecef;
-        --line-strong: #dee2e6;
-        --text: #1a1a2e;
-        --muted: #6c757d;
-        --accent: #e63946;
-        --accent-deep: #c62828;
+        --bg: #0a0a0a;
+        --surface: #1a1a1a;
+        --surface-alt: #2a2a2a;
+        --line: #333333;
+        --line-strong: #444444;
+        --text: #ffffff;
+        --muted: #999999;
+        --accent: #0066cc;
+        --accent-deep: #004d99;
       }
 
       * { box-sizing: border-box; }
@@ -970,16 +970,16 @@ function GlobalStyle() {
         padding: 10px 20px; border-radius: 999px; border: 1px solid var(--line-strong);
         font-size: 13.5px; color: var(--text); transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
       }
-      .btn-outline:hover { border-color: var(--accent); background: rgba(230,57,70,0.08); transform: translateY(-1px); }
+      .btn-outline:hover { border-color: var(--accent); background: rgba(0,102,204,0.15); transform: translateY(-1px); }
 
       .btn-primary {
         display: inline-flex; align-items: center; gap: 10px;
         padding: 14px 26px; border-radius: 999px; border: none; cursor: pointer;
         background: var(--accent); color: #ffffff; font-weight: 600; font-size: 14.5px;
-        box-shadow: 0 10px 30px rgba(230,57,70,0.28);
+        box-shadow: 0 10px 30px rgba(0,102,204,0.28);
         transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
       }
-      .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(230,57,70,0.4); background: #ef5350; }
+      .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(0,102,204,0.4); background: #0080ff; }
 
       .search-bar {
         display: flex; align-items: center; gap: 8px;
@@ -996,7 +996,7 @@ function GlobalStyle() {
         background: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
         transition: background 0.25s ease;
       }
-      .search-submit:hover { background: #ef5350; }
+      .search-submit:hover { background: #0080ff; }
 
       .hero-frame {
         position: relative; border-radius: 26px; overflow: hidden;
@@ -1004,10 +1004,10 @@ function GlobalStyle() {
         background: var(--surface);
       }
       .hero-image { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.6s ease; will-change: transform; }
-      .hero-fade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,0.1) 40%, rgba(0,0,0,0.35) 100%); }
+      .hero-fade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.6) 100%); }
       .hero-tag {
         position: absolute; display: flex; align-items: center; gap: 8px;
-        background: rgba(255,255,255,0.88); backdrop-filter: blur(10px);
+        background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
         border: 1px solid var(--line-strong); border-radius: 999px;
         padding: 9px 16px; font-size: 12.5px; color: var(--text);
       }
@@ -1025,13 +1025,13 @@ function GlobalStyle() {
         overflow: hidden; transition: transform 0.15s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
         transform-style: preserve-3d; will-change: transform; height: 100%;
       }
-      .car-card:hover { border-color: var(--line-strong); box-shadow: 0 24px 50px rgba(0,0,0,0.1); }
+      .car-card:hover { border-color: var(--line-strong); box-shadow: 0 24px 50px rgba(0,0,0,0.5); }
       .car-card-media { position: relative; height: 210px; overflow: hidden; }
       .car-card-media img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
       .car-card:hover .car-card-media img { transform: scale(1.06); }
       .car-card-spot { position: absolute; inset: 0; transition: opacity 0.2s ease; pointer-events: none; }
       .car-card-price {
-        position: absolute; top: 14px; right: 14px; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px);
+        position: absolute; top: 14px; right: 14px; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
         border: 1px solid var(--line-strong); color: var(--text); font-family: 'IBM Plex Mono', monospace;
         font-size: 13px; padding: 6px 12px; border-radius: 999px;
       }
@@ -1044,12 +1044,12 @@ function GlobalStyle() {
       .trust-card:hover img { transform: scale(1.06); }
       .trust-card-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.65) 100%); }
       .trust-panel {
-        position: absolute; left: 16px; right: 16px; background: rgba(0,0,0,0.72); backdrop-filter: blur(10px);
+        position: absolute; left: 16px; right: 16px; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
         border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 16px 18px;
       }
       .trust-panel-top { top: 16px; }
       .trust-panel-bottom { bottom: 16px; }
-      .trust-icon { width: 30px; height: 30px; border-radius: 9px; background: rgba(230,57,70,0.18); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+      .trust-icon { width: 30px; height: 30px; border-radius: 9px; background: rgba(0,102,204,0.18); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
 
       .review-card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; transition: border-color 0.3s ease, transform 0.3s ease; }
       .review-card:hover { border-color: var(--line-strong); transform: translateY(-3px); }
