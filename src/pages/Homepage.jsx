@@ -37,6 +37,7 @@ import {
 import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
 import images from "../assets/image.js";
 import { Link } from "react-router-dom";
+import newCars from "../assets/newCar/newcars.js";
 
 /* ------------------------------------------------------------------ */
 /*  DATA                                                               */
@@ -63,6 +64,14 @@ const CAR_IMAGES = [
   images.Car21, images.Car22, images.Car23, images.Car24, images.Car25,
   images.Car26, images.Car27,
 ];
+
+// new cars image mapping - using imported images from newCars
+const NEW_CAR_IMAGES = {
+  lexus: [newCars.lexus1, newCars.lexus2, newCars.lexus3, newCars.lexus4],
+  benz: [newCars.Benz1, newCars.Benz2, newCars.Benz3, newCars.Benz4, newCars.Benz5],
+  highlander: [newCars.ToyotaHighlander, newCars.ToyotaHighlander2, newCars.ToyotaHighlander3, newCars.ToyotaHighlander4, newCars.ToyotaHighlander5, newCars.ToyotaHighlander6],
+  hl: [newCars.hl, newCars.hl1, newCars.hl2, newCars.hl3, newCars.hl4, newCars.hl5],
+};
 
 // Spare parts images from local imports
 const SPARE_PARTS_IMAGES = [
@@ -108,35 +117,59 @@ const CARS = [
   { name: "Lexus RX 2018", trim: "RX 350", specs: ["Automatic", "Petrol", "18,000 mi"], img: CAR_IMAGES[26], imageRange: "Lexus RX 2018" },
 ];
 
-// New Arrivals Data - matching the style of CARS
+// New Arrivals Data - using actual descriptions and images from newCars
 const NEW_ARRIVALS = [
   { 
-    name: "Toyota Camry", 
-    trim: "2024 XLE", 
-    specs: ["Automatic", "Hybrid", "0 mi"], 
-    img: CAR_IMAGES[0] || images.Car1,
-    imageRange: "Toyota Camry",
+    name: "Lexus ES350", 
+    trim: "2016 Full Option", 
+    specs: ["Automatic", "Petrol", "52k mi"], 
+    img: NEW_CAR_IMAGES.lexus[0],
+    imageRange: "lexus",
+    price: "17M",
+    description: "Clean Unregistered Lexus ES350 Direct 2016 Full option park assist BSM",
+    fullDescription: "*Clean Unregistered Lexus ES350 Direct 2016 Full option park assist BSM*\n\n52k mileage\nAccident ✅\nSharp body✔️\n\nThumbstart✔️\nBSM✔️\nPark assist ✔️\nPower boot✔️\nNavigation screen and Reverse Camera✔️\nBluetooth Enabled✔️\nClean factory dashboard✔️\nClean factory leather seat✔️\nUntouched low mileage ✔️\nAll exhaust catalyst are intact✔️\n\n==========================\n🔷Price: *17M*\n🔷Swap deal is highly welcomed\n========================\n\n➡️ Engine: Excellent condition\nUntouched 💯\n➡️ Gear: Very smooth. 100%\nUntouched 💯\n➡️ AC: Factory fitted ac and Chilling. 💯\n\nStatus: Toks Standard 💯\nGrade: A+++\nLocation: Surulere",
+    location: "Surulere",
+    status: "Toks Standard",
+    grade: "A+++"
   },
   { 
-    name: "Mercedes-Benz", 
-    trim: "EQS 580", 
-    specs: ["Automatic", "Electric", "15 mi"], 
-    img: CAR_IMAGES[5] || images.Car6,
-    imageRange: "Mercedes-AMG",
+    name: "Mercedes-Benz GLK350", 
+    trim: "2015 4MATIC", 
+    specs: ["Automatic", "Petrol", "23M"], 
+    img: NEW_CAR_IMAGES.benz[0],
+    imageRange: "benz",
+    price: "23M",
+    description: "JUST ARRIVED 🇺🇸 2015 GLK350 4MATIC",
+    fullDescription: "JUST ARRIVED 🇺🇸 2015 GLK350 4MATIC\n\nACCIDENT FREE\n\nBLACK ON CREAM INTERIOR\n\n2 KEYS\n\nTHUMBSTART\nPANORAMIC ROOF\nREVERSE CAMERA\nPOWER BOOT\n\n23M ONLY ‼️NON NEGOTIABLE",
+    location: "Lagos",
+    status: "Accident Free",
+    grade: "A+"
   },
   { 
-    name: "Lexus", 
-    trim: "RX 500h F Sport", 
-    specs: ["Automatic", "Hybrid", "22 mi"], 
-    img: CAR_IMAGES[9] || images.Car10,
-    imageRange: "Lexus",
+    name: "Toyota Highlander", 
+    trim: "2015 Full Option", 
+    specs: ["Automatic", "Petrol", "24M"], 
+    img: NEW_CAR_IMAGES.highlander[0],
+    imageRange: "highlander",
+    price: "24M",
+    description: "LAST AWOOF in Lagos 24 million ‼️",
+    fullDescription: "LAST AWOOF in Lagos 24 million ‼️\n\nForeign used 2015 Toyota Highlander full opt\n• June 2026 Entry\n• ⁠First body\n• keyless entry\n• ⁠Price : 24million cash",
+    location: "Lagos",
+    status: "First Body",
+    grade: "A+"
   },
   { 
-    name: "Range Rover", 
-    trim: "Sport P550e", 
-    specs: ["Automatic", "Plug-in Hybrid", "8 mi"], 
-    img: CAR_IMAGES[14] || images.Car15,
-    imageRange: "Mercedes-Benz",
+    name: "Toyota Highlander XLE", 
+    trim: "2018 Foreign Used", 
+    specs: ["Automatic", "Petrol", "78,345 mi"], 
+    img: NEW_CAR_IMAGES.hl[0],
+    imageRange: "hl",
+    price: "32M",
+    description: "TOYOTA HIGHLANDER (XLE) 2018🇺🇸",
+    fullDescription: "TOYOTA HIGHLANDER (XLE) 2018🇺🇸\n\nForeign used 🇺🇸\nYear 2018\nThumbstart\nRemote Start\nAmbient lights\nBlind Spot Monitor (BSM)\nProximity sensors active\nCaptain Seats 💺\n3row seats\nGrey on Ash interior\nLow mileage 78,345Miles\nAlloy Rims\nExtremely Clean\n\nLocation, Ago palace, Lagos\n\nAvailable for inspection and Purchase ☘️\n\nPrice: 32Million",
+    location: "Ago Palace, Lagos",
+    status: "Extremely Clean",
+    grade: "A++"
   },
 ];
 
@@ -632,7 +665,7 @@ function CarCard({ car, index, onOpen }) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  LIGHTBOX / MODAL                                                   */
+/*  LIGHTBOX / MODAL - Updated for New Arrivals                       */
 /* ------------------------------------------------------------------ */
 
 function CarLightbox({ car, onClose }) {
@@ -645,21 +678,30 @@ function CarLightbox({ car, onClose }) {
 
   if (!car) return null;
 
-  // Get the image range for this car
-  const range = CAR_IMAGE_RANGES[car.imageRange];
+  // Get images based on the car's imageRange or name
   let carImages = [];
   
-  if (range) {
-    for (let i = range.start; i <= range.end; i++) {
-      if (i < CAR_IMAGES.length) {
-        carImages.push(CAR_IMAGES[i]);
+  if (car.imageRange === "lexus") {
+    carImages = NEW_CAR_IMAGES.lexus;
+  } else if (car.imageRange === "benz") {
+    carImages = NEW_CAR_IMAGES.benz;
+  } else if (car.imageRange === "highlander") {
+    carImages = NEW_CAR_IMAGES.highlander;
+  } else if (car.imageRange === "hl") {
+    carImages = NEW_CAR_IMAGES.hl;
+  } else {
+    // Fallback to regular CAR_IMAGES for non-new arrivals
+    const range = CAR_IMAGE_RANGES[car.imageRange];
+    if (range) {
+      for (let i = range.start; i <= range.end; i++) {
+        if (i < CAR_IMAGES.length) {
+          carImages.push(CAR_IMAGES[i]);
+        }
       }
     }
-  }
-  
-  // Fallback to all images if no range found
-  if (carImages.length === 0) {
-    carImages = CAR_IMAGES;
+    if (carImages.length === 0) {
+      carImages = [car.img];
+    }
   }
 
   const handlePrev = (e) => {
@@ -698,10 +740,24 @@ function CarLightbox({ car, onClose }) {
         </button>
 
         <div className="p-6">
-          <h2 className="font-display text-2xl font-bold mb-2" style={{ color: "#ffffff" }}>
-            {car.name}
-          </h2>
-          <p className="font-mono text-sm" style={{ color: "#999" }}>{car.trim}</p>
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 className="font-display text-2xl font-bold mb-1" style={{ color: "#ffffff" }}>
+                {car.name}
+              </h2>
+              <p className="font-mono text-sm" style={{ color: "#999" }}>{car.trim}</p>
+              {car.price && (
+                <p className="font-display text-lg" style={{ color: "var(--accent)", marginTop: 4 }}>
+                  {car.price}
+                </p>
+              )}
+            </div>
+            {car.location && (
+              <span className="text-xs font-mono px-3 py-1 rounded-full" style={{ background: "var(--surface)", color: "var(--muted)", border: "1px solid var(--line)" }}>
+                📍 {car.location}
+              </span>
+            )}
+          </div>
 
           {/* Gallery */}
           <div className="relative mt-4">
@@ -714,36 +770,51 @@ function CarLightbox({ car, onClose }) {
             </div>
 
             {/* Navigation */}
-            <button
-              onClick={handlePrev}
-              className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 rounded-full shadow-lg hover:bg-black/70 transition-colors"
-              style={{ color: "#ffffff" }}
-            >
-              <ChevronRight className="rotate-180" size={24} />
-            </button>
-            <button
-              onClick={handleNext}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 rounded-full shadow-lg hover:bg-black/70 transition-colors"
-              style={{ color: "#ffffff" }}
-            >
-              <ChevronRight size={24} />
-            </button>
+            {carImages.length > 1 && (
+              <>
+                <button
+                  onClick={handlePrev}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 rounded-full shadow-lg hover:bg-black/70 transition-colors"
+                  style={{ color: "#ffffff" }}
+                >
+                  <ChevronRight className="rotate-180" size={24} />
+                </button>
+                <button
+                  onClick={handleNext}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 rounded-full shadow-lg hover:bg-black/70 transition-colors"
+                  style={{ color: "#ffffff" }}
+                >
+                  <ChevronRight size={24} />
+                </button>
+              </>
+            )}
 
             {/* Thumbnails */}
-            <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
-              {carImages.map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentIndex(i)}
-                  className={`w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all ${
-                    i === currentIndex ? "border-[var(--accent)]" : "border-transparent"
-                  }`}
-                >
-                  <img src={img} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover" />
-                </button>
-              ))}
-            </div>
+            {carImages.length > 1 && (
+              <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
+                {carImages.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentIndex(i)}
+                    className={`w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all ${
+                      i === currentIndex ? "border-[var(--accent)]" : "border-transparent"
+                    }`}
+                  >
+                    <img src={img} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
+
+          {/* Full Description */}
+          {car.fullDescription && (
+            <div className="mt-4 p-4 rounded-lg" style={{ background: "#0a0a0a" }}>
+              <p className="text-sm whitespace-pre-wrap" style={{ color: "#ccc", lineHeight: 1.6 }}>
+                {car.fullDescription}
+              </p>
+            </div>
+          )}
 
           {/* Specs */}
           <div className="grid grid-cols-3 gap-3 mt-4">
@@ -761,8 +832,22 @@ function CarLightbox({ car, onClose }) {
             </div>
           </div>
 
+          {/* Status badges */}
+          <div className="flex flex-wrap gap-2 mt-4">
+            {car.status && (
+              <span className="text-xs px-3 py-1 rounded-full" style={{ background: "rgba(0,102,204,0.15)", color: "var(--accent)", border: "1px solid rgba(0,102,204,0.2)" }}>
+                {car.status}
+              </span>
+            )}
+            {car.grade && (
+              <span className="text-xs px-3 py-1 rounded-full" style={{ background: "rgba(34,197,94,0.15)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.2)" }}>
+                Grade: {car.grade}
+              </span>
+            )}
+          </div>
+
           <button className="w-full mt-4 btn-primary justify-center">
-            Book a Test Drive
+            Enquire About This Vehicle
           </button>
         </div>
       </div>
@@ -809,7 +894,7 @@ function Gallery() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  NEW ARRIVALS GALLERY SECTION - Matching inventory style           */
+/*  NEW ARRIVALS GALLERY SECTION - Updated with new images            */
 /* ------------------------------------------------------------------ */
 
 function NewArrivals() {
@@ -836,6 +921,16 @@ function NewArrivals() {
               <div className="car-card-media">
                 <img src={car.img} alt={`${car.name} ${car.trim}`} />
                 <div className="car-card-spot" />
+                {car.price && (
+                  <div className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold" style={{ background: "var(--accent)", color: "#ffffff" }}>
+                    {car.price}
+                  </div>
+                )}
+                {car.status && (
+                  <div className="absolute bottom-3 left-3 px-3 py-1 rounded-full text-xs" style={{ background: "rgba(0,0,0,0.75)", color: "#ffffff", backdropFilter: "blur(8px)" }}>
+                    {car.status}
+                  </div>
+                )}
               </div>
               <div className="car-card-body">
                 <div className="flex items-baseline justify-between">
@@ -1235,7 +1330,6 @@ function CTA() {
       if (response.ok) {
         setSubmitStatus('success');
         setFormData({ name: "", email: "", phone: "", message: "", interest: "car-sales" });
-        // Auto-hide success message after 6 seconds
         setTimeout(() => {
           setSubmitStatus(null);
         }, 6000);
@@ -1272,7 +1366,6 @@ function CTA() {
       </Reveal>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10" style={{ marginTop: 50 }}>
-        {/* Contact Form */}
         <Reveal delay={100}>
           <div className="contact-form-wrapper">
             <form onSubmit={handleSubmit} className="contact-form">
@@ -1362,7 +1455,6 @@ function CTA() {
                 )}
               </button>
 
-              {/* Success Message */}
               {submitStatus === 'success' && (
                 <div className="form-success">
                   <div className="form-success-content">
@@ -1377,7 +1469,6 @@ function CTA() {
                 </div>
               )}
               
-              {/* Error Message */}
               {submitStatus === 'error' && (
                 <div className="form-error">
                   <div className="form-error-content">
@@ -1395,7 +1486,6 @@ function CTA() {
           </div>
         </Reveal>
 
-        {/* Contact Info & Quick Links */}
         <Reveal delay={200}>
           <div className="contact-info-wrapper">
             <div className="contact-info-header">
@@ -1736,6 +1826,22 @@ function GlobalStyle() {
       .car-card-body { padding: 18px 20px 20px; }
       .car-specs { display: flex; gap: 14px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
       .car-specs span { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
+
+      .spare-part-card {
+        background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+        overflow: hidden; transition: transform 0.3s ease, border-color 0.3s ease;
+      }
+      .spare-part-card:hover { transform: translateY(-4px); border-color: var(--line-strong); }
+      .spare-part-image { position: relative; height: 160px; overflow: hidden; background: var(--surface-alt); }
+      .spare-part-image img { width: 100%; height: 100%; object-fit: cover; }
+      .spare-part-category {
+        position: absolute; bottom: 10px; left: 10px;
+        font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+        background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); padding: 4px 12px; border-radius: 999px;
+        color: var(--muted); border: 1px solid var(--line);
+      }
+      .spare-part-body { padding: 14px 16px 16px; }
+      .spare-part-availability { font-size: 12px; color: #22c55e; font-weight: 500; }
 
       .trust-card { position: relative; border-radius: 20px; overflow: hidden; height: 340px; border: 1px solid var(--line); }
       .trust-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
