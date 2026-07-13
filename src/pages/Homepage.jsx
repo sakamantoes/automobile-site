@@ -32,6 +32,7 @@ import {
   Filter,
   Battery,
   Fan,
+  Sparkle,
 } from "lucide-react";
 import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
 import images from "../assets/image.js";
@@ -105,6 +106,38 @@ const CARS = [
   { name: "Toyota Highlander", trim: "XLE SUV", specs: ["Automatic", "Petrol", "52,000 mi"], img: CAR_IMAGES[23], imageRange: "Toyota Highlander" },
   // Lexus RX 2018 RX350 - cover: Car27 (index 26), range: Car25-Car27
   { name: "Lexus RX 2018", trim: "RX 350", specs: ["Automatic", "Petrol", "18,000 mi"], img: CAR_IMAGES[26], imageRange: "Lexus RX 2018" },
+];
+
+// New Arrivals Data - matching the style of CARS
+const NEW_ARRIVALS = [
+  { 
+    name: "Toyota Camry", 
+    trim: "2024 XLE", 
+    specs: ["Automatic", "Hybrid", "0 mi"], 
+    img: CAR_IMAGES[0] || images.Car1,
+    imageRange: "Toyota Camry",
+  },
+  { 
+    name: "Mercedes-Benz", 
+    trim: "EQS 580", 
+    specs: ["Automatic", "Electric", "15 mi"], 
+    img: CAR_IMAGES[5] || images.Car6,
+    imageRange: "Mercedes-AMG",
+  },
+  { 
+    name: "Lexus", 
+    trim: "RX 500h F Sport", 
+    specs: ["Automatic", "Hybrid", "22 mi"], 
+    img: CAR_IMAGES[9] || images.Car10,
+    imageRange: "Lexus",
+  },
+  { 
+    name: "Range Rover", 
+    trim: "Sport P550e", 
+    specs: ["Automatic", "Plug-in Hybrid", "8 mi"], 
+    img: CAR_IMAGES[14] || images.Car15,
+    imageRange: "Mercedes-Benz",
+  },
 ];
 
 // Spare Parts Data with local images
@@ -765,6 +798,69 @@ function Gallery() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {CARS.map((car, i) => (
           <CarCard car={car} index={i} key={`${car.name}-${car.trim}`} onOpen={setSelectedCar} />
+        ))}
+      </div>
+
+      {selectedCar && (
+        <CarLightbox car={selectedCar} onClose={() => setSelectedCar(null)} />
+      )}
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  NEW ARRIVALS GALLERY SECTION - Matching inventory style           */
+/* ------------------------------------------------------------------ */
+
+function NewArrivals() {
+  const [selectedCar, setSelectedCar] = useState(null);
+
+  return (
+    <section className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 110 }}>
+      <Reveal className="text-center">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <Sparkle size={28} color="var(--accent)" />
+          <h2 className="font-display section-title">New Arrivals</h2>
+          <Sparkle size={28} color="var(--accent)" />
+        </div>
+        <p className="section-sub">The latest models just landed — be the first to drive them</p>
+      </Reveal>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" style={{ marginTop: 46 }}>
+        {NEW_ARRIVALS.map((car, index) => (
+          <Reveal delay={(index % 4) * 100} key={`${car.name}-${car.trim}`}>
+            <article
+              className="car-card cursor-pointer"
+              onClick={() => setSelectedCar(car)}
+            >
+              <div className="car-card-media">
+                <img src={car.img} alt={`${car.name} ${car.trim}`} />
+                <div className="car-card-spot" />
+              </div>
+              <div className="car-card-body">
+                <div className="flex items-baseline justify-between">
+                  <h3 className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "var(--text)" }}>
+                    {car.name}
+                  </h3>
+                  <ArrowUpRight size={17} color="var(--accent)" />
+                </div>
+                <p className="font-mono" style={{ fontSize: 12.5, color: "var(--muted)", marginTop: 3 }}>
+                  {car.trim}
+                </p>
+                <div className="car-specs">
+                  <span>
+                    <Settings2 size={13} /> {car.specs[0]}
+                  </span>
+                  <span>
+                    <Fuel size={13} /> {car.specs[1]}
+                  </span>
+                  <span>
+                    <Gauge size={13} /> {car.specs[2]}
+                  </span>
+                </div>
+              </div>
+            </article>
+          </Reveal>
         ))}
       </div>
 
@@ -1641,58 +1737,6 @@ function GlobalStyle() {
       .car-specs { display: flex; gap: 14px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
       .car-specs span { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
 
-      /* Spare Parts Styles */
-      .spare-part-card {
-        background: var(--surface);
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        overflow: hidden;
-        transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-      }
-      .spare-part-card:hover {
-        border-color: var(--accent);
-        transform: translateY(-4px);
-        box-shadow: 0 12px 30px rgba(0,0,0,0.3);
-      }
-      .spare-part-image {
-        position: relative;
-        height: 160px;
-        overflow: hidden;
-        background: var(--bg);
-      }
-      .spare-part-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-      }
-      .spare-part-card:hover .spare-part-image img {
-        transform: scale(1.05);
-      }
-      .spare-part-category {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        background: rgba(0,0,0,0.8);
-        backdrop-filter: blur(6px);
-        padding: 4px 12px;
-        border-radius: 999px;
-        font-size: 10px;
-        font-weight: 600;
-        color: var(--text);
-        border: 1px solid var(--line);
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-      }
-      .spare-part-body {
-        padding: 14px 16px 16px;
-      }
-      .spare-part-availability {
-        font-size: 12px;
-        color: #22c55e;
-        font-weight: 600;
-      }
-
       .trust-card { position: relative; border-radius: 20px; overflow: hidden; height: 340px; border: 1px solid var(--line); }
       .trust-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
       .trust-card:hover img { transform: scale(1.06); }
@@ -1963,6 +2007,7 @@ export default function HomePage() {
       <NavBar />
       <Hero />
       <BrandStrip />
+      <NewArrivals />
       <Gallery />
       <SpareParts />
       <TrustSection />
