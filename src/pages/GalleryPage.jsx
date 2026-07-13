@@ -211,7 +211,7 @@ function CarLightbox({ car, onClose }) {
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-10 p-2 bg-black/50 rounded-full shadow-lg hover:bg-black/70 transition-colors"
-          style={{ color: "#ffffff" }}
+           style={{ color: "#ffffff" }}
         >
           <X size={28} />
         </button>
@@ -419,28 +419,6 @@ function CarCard({ car, onOpen, onRequestQuote }) {
               e.stopPropagation();
               onRequestQuote(car);
             }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 14px',
-              borderRadius: '999px',
-              border: 'none',
-              background: 'rgba(0,102,204,0.12)',
-              color: 'var(--accent)',
-              fontSize: '13px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'background 0.3s ease, transform 0.3s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(0,102,204,0.2)';
-              e.currentTarget.style.transform = 'translateX(2px)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(0,102,204,0.12)';
-              e.currentTarget.style.transform = 'translateX(0)';
-            }}
           >
             <MessageCircle size={14} />
             Request Quote
@@ -454,7 +432,7 @@ function CarCard({ car, onOpen, onRequestQuote }) {
   );
 }
 
-// Navbar Component
+// Navbar Component - With Full Screen Solid Black Mobile Menu
 function NavBar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -529,7 +507,7 @@ function NavBar() {
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - Full Screen Solid Black */}
       <div
         className="fixed inset-0"
         style={{
@@ -537,7 +515,7 @@ function NavBar() {
           pointerEvents: open ? "auto" : "none",
           opacity: open ? 1 : 0,
           transition: "opacity 0.35s ease",
-          background: "rgba(0,0,0,0.98)",
+          background: "#000000",
         }}
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between" style={{ height: 76 }}>
@@ -572,12 +550,77 @@ function NavBar() {
             <X size={19} />
           </button>
         </div>
-        <nav className="flex flex-col px-8 pt-6 gap-1">
-          <a href="/" onClick={() => setOpen(false)} className="font-display" style={{ fontSize: 28, padding: "14px 0", borderBottom: "1px solid var(--line)", color: "var(--text)" }}>Home</a>
-          <a href="/gallery" onClick={() => setOpen(false)} className="font-display" style={{ fontSize: 28, padding: "14px 0", borderBottom: "1px solid var(--line)", color: "var(--accent)" }}>Gallery</a>
-          <a href="/spare-parts" onClick={() => setOpen(false)} className="font-display" style={{ fontSize: 28, padding: "14px 0", borderBottom: "1px solid var(--line)", color: "var(--text)" }}>Spare Parts</a>
-          <a href="/#about" onClick={() => setOpen(false)} className="font-display" style={{ fontSize: 28, padding: "14px 0", borderBottom: "1px solid var(--line)", color: "var(--text)" }}>About</a>
-          <a href="/#contact" onClick={() => setOpen(false)} className="font-display" style={{ fontSize: 28, padding: "14px 0", borderBottom: "1px solid var(--line)", color: "var(--text)" }}>Contact</a>
+        <nav className="flex flex-col px-8 pt-6 gap-1" style={{ background: "#000000" }}>
+          <a 
+            href="/" 
+            onClick={() => setOpen(false)} 
+            className="font-display" 
+            style={{ 
+              fontSize: 28, 
+              padding: "14px 0", 
+              borderBottom: "1px solid var(--line)", 
+              color: "var(--text)",
+              textDecoration: "none",
+            }}
+          >
+            Home
+          </a>
+          <a 
+            href="/gallery" 
+            onClick={() => setOpen(false)} 
+            className="font-display" 
+            style={{ 
+              fontSize: 28, 
+              padding: "14px 0", 
+              borderBottom: "1px solid var(--line)", 
+              color: "var(--accent)",
+              textDecoration: "none",
+            }}
+          >
+            Gallery
+          </a>
+          <a 
+            href="/spare-parts" 
+            onClick={() => setOpen(false)} 
+            className="font-display" 
+            style={{ 
+              fontSize: 28, 
+              padding: "14px 0", 
+              borderBottom: "1px solid var(--line)", 
+              color: "var(--text)",
+              textDecoration: "none",
+            }}
+          >
+            Spare Parts
+          </a>
+          <a 
+            href="/#about" 
+            onClick={() => setOpen(false)} 
+            className="font-display" 
+            style={{ 
+              fontSize: 28, 
+              padding: "14px 0", 
+              borderBottom: "1px solid var(--line)", 
+              color: "var(--text)",
+              textDecoration: "none",
+            }}
+          >
+            About
+          </a>
+          <a 
+            href="/#contact" 
+            onClick={() => setOpen(false)} 
+            className="font-display" 
+            style={{ 
+              fontSize: 28, 
+              padding: "14px 0", 
+              borderBottom: "1px solid var(--line)", 
+              color: "var(--text)",
+              textDecoration: "none",
+            }}
+          >
+            Contact
+          </a>
         </nav>
       </div>
     </header>

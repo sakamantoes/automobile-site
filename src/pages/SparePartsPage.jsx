@@ -27,6 +27,7 @@ import {
   Award,
   Menu,
   MessageCircle,
+  Send,
 } from 'lucide-react';
 import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from 'react-icons/fa';
 import images from '../assets/image.js';
@@ -232,28 +233,18 @@ const ALL_SPARE_PARTS = [
 const categories = ["All", "Engine", "Electrical", "Brakes", "Suspension", "Fuel System", "Cooling", "Exterior"];
 const brands = ["All", "Genuine", "NGK", "Bosch", "Denso"];
 
-// Navbar Component
+// Navbar Component - Fixed to always be black
 function NavBar() {
-  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 24);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   return (
     <header
       className="fixed top-0 left-0 right-0"
       style={{
         zIndex: 60,
-        transition: "background 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s ease",
-        background: scrolled ? "rgba(0,0,0,0.92)" : "transparent",
-        backdropFilter: scrolled ? "blur(14px)" : "none",
-        borderBottom: `1px solid ${scrolled ? "var(--line)" : "transparent"}`,
+        background: "rgba(0,0,0,0.95)",
+        backdropFilter: "blur(14px)",
+        borderBottom: "1px solid var(--line)",
       }}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-10 flex items-center justify-between" style={{ height: 76 }}>
@@ -307,7 +298,7 @@ function NavBar() {
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - Solid Black Background */}
       <div
         className="fixed inset-0"
         style={{
@@ -315,7 +306,7 @@ function NavBar() {
           pointerEvents: open ? "auto" : "none",
           opacity: open ? 1 : 0,
           transition: "opacity 0.35s ease",
-          background: "rgba(0,0,0,0.98)",
+          background: "#000000",
         }}
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between" style={{ height: 76 }}>
@@ -350,12 +341,77 @@ function NavBar() {
             <X size={19} />
           </button>
         </div>
-        <nav className="flex flex-col px-8 pt-6 gap-1">
-          <a href="/" onClick={() => setOpen(false)} className="font-display" style={{ fontSize: 28, padding: "14px 0", borderBottom: "1px solid var(--line)", color: "var(--text)" }}>Home</a>
-          <a href="/gallery" onClick={() => setOpen(false)} className="font-display" style={{ fontSize: 28, padding: "14px 0", borderBottom: "1px solid var(--line)", color: "var(--text)" }}>Gallery</a>
-          <a href="/spare-parts" onClick={() => setOpen(false)} className="font-display" style={{ fontSize: 28, padding: "14px 0", borderBottom: "1px solid var(--line)", color: "var(--accent)" }}>Spare Parts</a>
-          <a href="/#about" onClick={() => setOpen(false)} className="font-display" style={{ fontSize: 28, padding: "14px 0", borderBottom: "1px solid var(--line)", color: "var(--text)" }}>About</a>
-          <a href="/#contact" onClick={() => setOpen(false)} className="font-display" style={{ fontSize: 28, padding: "14px 0", borderBottom: "1px solid var(--line)", color: "var(--text)" }}>Contact</a>
+        <nav className="flex flex-col px-8 pt-6 gap-1" style={{ background: "#000000" }}>
+          <a 
+            href="/" 
+            onClick={() => setOpen(false)} 
+            className="font-display" 
+            style={{ 
+              fontSize: 28, 
+              padding: "14px 0", 
+              borderBottom: "1px solid var(--line)", 
+              color: "var(--text)",
+              textDecoration: "none",
+            }}
+          >
+            Home
+          </a>
+          <a 
+            href="/gallery" 
+            onClick={() => setOpen(false)} 
+            className="font-display" 
+            style={{ 
+              fontSize: 28, 
+              padding: "14px 0", 
+              borderBottom: "1px solid var(--line)", 
+              color: "var(--text)",
+              textDecoration: "none",
+            }}
+          >
+            Gallery
+          </a>
+          <a 
+            href="/spare-parts" 
+            onClick={() => setOpen(false)} 
+            className="font-display" 
+            style={{ 
+              fontSize: 28, 
+              padding: "14px 0", 
+              borderBottom: "1px solid var(--line)", 
+              color: "var(--accent)",
+              textDecoration: "none",
+            }}
+          >
+            Spare Parts
+          </a>
+          <a 
+            href="/#about" 
+            onClick={() => setOpen(false)} 
+            className="font-display" 
+            style={{ 
+              fontSize: 28, 
+              padding: "14px 0", 
+              borderBottom: "1px solid var(--line)", 
+              color: "var(--text)",
+              textDecoration: "none",
+            }}
+          >
+            About
+          </a>
+          <a 
+            href="/#contact" 
+            onClick={() => setOpen(false)} 
+            className="font-display" 
+            style={{ 
+              fontSize: 28, 
+              padding: "14px 0", 
+              borderBottom: "1px solid var(--line)", 
+              color: "var(--text)",
+              textDecoration: "none",
+            }}
+          >
+            Contact
+          </a>
         </nav>
       </div>
     </header>
@@ -431,7 +487,10 @@ function PartCard({ part, onRequestQuote }) {
           </span>
         )}
         <div className="part-card-overlay" style={{ opacity: isHovered ? 1 : 0 }}>
-         
+          <button className="part-quick-view" onClick={() => onRequestQuote(part)}>
+            <MessageCircle size={16} />
+            Request Quote
+          </button>
         </div>
       </div>
       <div className="part-card-body">
@@ -448,12 +507,366 @@ function PartCard({ part, onRequestQuote }) {
         <p className="part-card-description">{part.description}</p>
         <div className="part-card-footer">
           <span className="part-card-availability">✓ Available</span>
+          <button className="part-card-btn" onClick={() => onRequestQuote(part)}>
+            Get Quote <ArrowUpRight size={14} />
+          </button>
         </div>
       </div>
     </div>
   );
 }
 
+// Quote Modal Component
+function QuoteModal({ part, onClose, onSubmit }) {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: `I'm interested in: ${part.name} (${part.brand})`
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    try {
+      const form = e.target;
+      const formDataObj = new FormData(form);
+      
+      formDataObj.append('_captcha', 'false');
+      formDataObj.append('_subject', `New Quote Request: ${part.name}`);
+
+      const response = await fetch('https://formsubmit.co/chinwekeleuchenn@gmail.com', {
+        method: 'POST',
+        body: formDataObj,
+      });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          message: `I'm interested in: ${part.name} (${part.brand})`
+        });
+        setTimeout(() => {
+          setSubmitStatus(null);
+          onClose();
+        }, 2000);
+      } else {
+        setSubmitStatus('error');
+        setTimeout(() => {
+          setSubmitStatus(null);
+        }, 4000);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setSubmitStatus('error');
+      setTimeout(() => {
+        setSubmitStatus(null);
+      }, 4000);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div
+      className="modal-overlay"
+      onClick={onClose}
+    >
+      <div
+        className="modal-content"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button className="modal-close" onClick={onClose}>
+          <X size={24} />
+        </button>
+        
+        <div className="modal-header">
+          <div className="modal-icon">
+            <MessageCircle size={28} color="var(--accent)" />
+          </div>
+          <div>
+            <h2 className="modal-title">Request Quote</h2>
+            <p className="modal-subtitle">{part.name} · {part.brand}</p>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="quote-form">
+          <input type="hidden" name="part" value={part.name} />
+          <input type="hidden" name="brand" value={part.brand} />
+          
+          <div className="form-group">
+            <label className="form-label">Your Name *</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="John Doe"
+              className="form-input"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Email Address *</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="john@example.com"
+              className="form-input"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Phone Number</label>
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="+234 800 000 0000"
+              className="form-input"
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Additional Information</label>
+            <textarea
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
+              className="form-textarea"
+              rows="3"
+            />
+          </div>
+
+          <button 
+            type="submit" 
+            className="quote-submit-btn"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <span className="spinner"></span>
+                Sending...
+              </>
+            ) : (
+              <>
+                <Send size={18} />
+                Send Quote Request
+              </>
+            )}
+          </button>
+
+          {submitStatus === 'success' && (
+            <div className="form-success">
+              <CheckCircle size={20} color="#22c55e" />
+              <span>Quote request sent successfully! We'll get back to you shortly.</span>
+            </div>
+          )}
+          
+          {submitStatus === 'error' && (
+            <div className="form-error">
+              <AlertCircle size={20} color="#ef4444" />
+              <span>Something went wrong. Please try again or call us directly.</span>
+            </div>
+          )}
+        </form>
+      </div>
+
+      <style>{`
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          z-index: 100;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(0,0,0,0.85);
+          backdrop-filter: blur(12px);
+          animation: fadeIn 0.3s ease;
+          padding: 20px;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        .modal-content {
+          background: var(--surface);
+          border: 1px solid var(--line);
+          border-radius: 20px;
+          max-width: 500px;
+          width: 100%;
+          padding: 32px;
+          position: relative;
+          animation: slideUp 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+          max-height: 90vh;
+          overflow-y: auto;
+        }
+        @keyframes slideUp {
+          from { opacity: 0; transform: scale(0.95) translateY(20px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal-close {
+          position: absolute;
+          top: 16px;
+          right: 16px;
+          background: var(--bg);
+          border: 1px solid var(--line);
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--text);
+          cursor: pointer;
+          transition: border-color 0.3s ease, background 0.3s ease;
+        }
+        .modal-close:hover {
+          border-color: var(--accent);
+          background: var(--surface-alt);
+        }
+        .modal-header {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-bottom: 24px;
+        }
+        .modal-icon {
+          width: 52px;
+          height: 52px;
+          border-radius: 14px;
+          background: rgba(0,102,204,0.1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+        .modal-title {
+          font-family: 'Space Grotesk', sans-serif;
+          font-size: 22px;
+          font-weight: 700;
+          color: var(--text);
+          margin: 0;
+        }
+        .modal-subtitle {
+          font-size: 14px;
+          color: var(--muted);
+          margin: 2px 0 0 0;
+        }
+        .quote-form {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+        .form-group {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+        .form-label {
+          font-size: 13px;
+          font-weight: 500;
+          color: var(--text);
+        }
+        .form-input,
+        .form-textarea {
+          background: var(--bg);
+          border: 1px solid var(--line);
+          border-radius: 10px;
+          padding: 10px 14px;
+          color: var(--text);
+          font-size: 14px;
+          transition: border-color 0.3s ease;
+          font-family: 'Inter', sans-serif;
+          width: 100%;
+        }
+        .form-input:focus,
+        .form-textarea:focus {
+          outline: none;
+          border-color: var(--accent);
+          box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+        }
+        .form-textarea {
+          resize: vertical;
+          min-height: 80px;
+        }
+        .quote-submit-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          padding: 14px 24px;
+          background: var(--accent);
+          color: #ffffff;
+          border: none;
+          border-radius: 999px;
+          font-weight: 600;
+          font-size: 15px;
+          cursor: pointer;
+          transition: background 0.3s ease, transform 0.3s ease;
+          margin-top: 4px;
+        }
+        .quote-submit-btn:hover:not(:disabled) {
+          background: #0080ff;
+          transform: translateY(-2px);
+        }
+        .quote-submit-btn:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+        .form-success {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px 16px;
+          background: rgba(34, 197, 94, 0.08);
+          border: 1px solid #22c55e;
+          border-radius: 10px;
+          color: #86efac;
+          font-size: 14px;
+        }
+        .form-error {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px 16px;
+          background: rgba(239, 68, 68, 0.08);
+          border: 1px solid #ef4444;
+          border-radius: 10px;
+          color: #fca5a5;
+          font-size: 14px;
+        }
+        .spinner {
+          display: inline-block;
+          width: 18px;
+          height: 18px;
+          border: 2px solid rgba(255,255,255,0.3);
+          border-radius: 50%;
+          border-top-color: #ffffff;
+          animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  );
+}
 
 // Main Spare Parts Page
 const SparePartsPage = () => {
@@ -483,10 +896,6 @@ const SparePartsPage = () => {
   const handleRequestQuote = (part) => {
     setSelectedPart(part);
     setShowModal(true);
-  };
-
-  const handleQuoteSubmit = () => {
-    setShowModal(false);
   };
 
   return (
@@ -685,13 +1094,11 @@ const SparePartsPage = () => {
         <QuoteModal 
           part={selectedPart} 
           onClose={() => setShowModal(false)}
-          onSubmit={handleQuoteSubmit}
+          onSubmit={() => setShowModal(false)}
         />
       )}
 
       <Footer />
-
-      <GlobalStyle />
     </div>
   );
 };
@@ -1036,61 +1443,6 @@ function GlobalStyle() {
         flex-direction: column;
         gap: 16px;
         margin-top: 16px;
-      }
-      .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-      }
-      .form-label {
-        font-size: 13px;
-        font-weight: 500;
-        color: var(--text);
-      }
-      .form-input,
-      .form-textarea {
-        background: var(--bg);
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 10px 14px;
-        color: var(--text);
-        font-size: 14px;
-        transition: border-color 0.3s ease;
-        font-family: 'Inter', sans-serif;
-        width: 100%;
-      }
-      .form-input:focus,
-      .form-textarea:focus {
-        outline: none;
-        border-color: var(--accent);
-      }
-      .form-textarea {
-        resize: vertical;
-        min-height: 80px;
-      }
-      .order-submit-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        padding: 14px 24px;
-        background: var(--accent);
-        color: #ffffff;
-        border: none;
-        border-radius: 999px;
-        font-weight: 600;
-        font-size: 15px;
-        cursor: pointer;
-        transition: background 0.3s ease, transform 0.3s ease;
-        margin-top: 8px;
-      }
-      .order-submit-btn:hover:not(:disabled) {
-        background: #0080ff;
-        transform: translateY(-2px);
-      }
-      .order-submit-btn:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
       }
 
       @media (max-width: 768px) {
