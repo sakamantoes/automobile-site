@@ -146,47 +146,43 @@ const filterOptions = {
   fuelTypes: [...new Set(allCars.map(car => car.fuel))].sort(),
 };
 
-// Lightbox Component - NO PRICE
-function CarLightbox({ car, onClose }) {
-  const navigate = useNavigate();
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [lightboxImages, setLightboxImages] = useState([]);
+// Email redirection function
+const redirectToEmail = (car) => {
+  const subject = encodeURIComponent(`Inquiry about ${car.name} (${car.year})`);
+  const body = encodeURIComponent(
+    `Hello Lord Group Autos,\n\nI am interested in the ${car.name} (${car.year}) listed on your website.\n\n` +
+    `Vehicle Details:\n` +
+    `- Make: ${car.make}\n` +
+    `- Model: ${car.model}\n` +
+    `- Year: ${car.year}\n` +
+    `- Color: ${car.color}\n` +
+    `- Transmission: ${car.transmission}\n` +
+    `- Fuel: ${car.fuel}\n` +
+    `- Mileage: ${car.mileage} mi\n\n` +
+    `Please provide me with more information including pricing and availability.\n\n` +
+    `Thank you!`
+  );
+  
+  window.location.href = `mailto:lordgroup.limited@gmail.com?subject=${subject}&body=${body}`;
+};
 
+// Lightbox Component - NO PRICE, redirects to email
+function CarLightbox({ car, onClose }) {
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = ""; };
   }, []);
 
-  useEffect(() => {
-    const carImages = [];
-    const startIdx = allCars.indexOf(car);
-    for (let i = 0; i < Math.min(5, allCars.length); i++) {
-      const idx = (startIdx + i) % allCars.length;
-      carImages.push(allCars[idx].img);
-    }
-    setLightboxImages(carImages);
-  }, [car]);
-
   if (!car) return null;
-
-  const handlePrev = (e) => {
-    e.stopPropagation();
-    setCurrentIndex((prev) => (prev - 1 + lightboxImages.length) % lightboxImages.length);
-  };
-
-  const handleNext = (e) => {
-    e.stopPropagation();
-    setCurrentIndex((prev) => (prev + 1) % lightboxImages.length);
-  };
 
   const handleRequestQuote = () => {
     onClose();
-    navigate('/#contact');
+    redirectToEmail(car);
   };
 
   const handleTestDrive = () => {
     onClose();
-    navigate('/#contact');
+    redirectToEmail(car);
   };
 
   return (
@@ -209,7 +205,7 @@ function CarLightbox({ car, onClose }) {
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-10 p-2 bg-black/50 rounded-full shadow-lg hover:bg-black/70 transition-colors"
-           style={{ color: "#ffffff" }}
+          style={{ color: "#ffffff" }}
         >
           <X size={28} />
         </button>
@@ -224,54 +220,24 @@ function CarLightbox({ car, onClose }) {
                 {car.year} · {car.color}
               </p>
             </div>
-            <span className="flex items-center gap-2 px-4 py-2 rounded-full" style={{ background: "rgba(0,102,204,0.12)", color: "var(--accent)", fontSize: 14, fontWeight: 600 }}>
+            <button 
+              onClick={handleRequestQuote}
+              className="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-opacity-20 transition-colors"
+              style={{ background: "rgba(0,102,204,0.12)", color: "var(--accent)", fontSize: 14, fontWeight: 600 }}
+            >
               <MessageCircle size={16} />
               Request Quote
-            </span>
+            </button>
           </div>
 
           {/* Gallery */}
           <div className="relative mt-4">
             <div className="relative overflow-hidden rounded-xl" style={{ background: "#0a0a0a", height: 400 }}>
               <img
-                src={lightboxImages[currentIndex] || car.img}
-                alt={`${car.name} view ${currentIndex + 1}`}
+                src={car.img}
+                alt={`${car.name} view`}
                 className="w-full h-full object-contain"
               />
-            </div>
-
-            {lightboxImages.length > 1 && (
-              <>
-                <button
-                  onClick={handlePrev}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 rounded-full shadow-lg hover:bg-black/70 transition-colors"
-                  style={{ color: "#ffffff" }}
-                >
-                  <ChevronLeft size={24} />
-                </button>
-                <button
-                  onClick={handleNext}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 rounded-full shadow-lg hover:bg-black/70 transition-colors"
-                  style={{ color: "#ffffff" }}
-                >
-                  <ChevronRight size={24} />
-                </button>
-              </>
-            )}
-
-            {/* Thumbnails */}
-            <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
-              {lightboxImages.map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentIndex(i)}
-                  className={`w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all ${
-                    i === currentIndex ? "border-[var(--accent)]" : "border-transparent"
-                  }`}
-                >
-                  <img src={img} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover" />
-                </button>
-              ))}
             </div>
           </div>
 
@@ -322,7 +288,7 @@ function CarLightbox({ car, onClose }) {
   );
 }
 
-// Car Card Component - NO PRICE
+// Car Card Component - NO PRICE, redirects to email
 function CarCard({ car, onOpen, onRequestQuote }) {
   const ref = useRef(null);
   const [tilt, setTilt] = useState({ rx: 0, ry: 0, sx: 50, sy: 50, active: false });
@@ -351,7 +317,14 @@ function CarCard({ car, onOpen, onRequestQuote }) {
     if (e.target.closest('.request-quote-btn')) {
       return;
     }
+    // Open lightbox instead of redirecting directly
     onOpen(car);
+  };
+
+  const handleRequestQuoteClick = (e) => {
+    e.stopPropagation();
+    // Direct email redirect when clicking Request Quote button
+    redirectToEmail(car);
   };
 
   return (
@@ -413,10 +386,7 @@ function CarCard({ car, onOpen, onRequestQuote }) {
         <div className="flex items-center justify-between" style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid var(--line)" }}>
           <button 
             className="request-quote-btn"
-            onClick={(e) => {
-              e.stopPropagation();
-              onRequestQuote(car);
-            }}
+            onClick={handleRequestQuoteClick}
           >
             <MessageCircle size={14} />
             Request Quote
@@ -678,7 +648,6 @@ function Footer() {
 
 // Main Gallery Page Component
 const GalleryPage = () => {
-  const navigate = useNavigate();
   const [selectedCar, setSelectedCar] = useState(null);
   const [filteredCars, setFilteredCars] = useState(allCars);
   const [filters, setFilters] = useState({
@@ -743,11 +712,6 @@ const GalleryPage = () => {
       fuel: '',
       search: '',
     });
-  };
-
-  const handleRequestQuote = (car) => {
-    // Navigate to contact page with car info in URL params
-    navigate(`/#contact?car=${encodeURIComponent(car.name)}&make=${encodeURIComponent(car.make)}&model=${encodeURIComponent(car.model)}&year=${car.year}`);
   };
 
   // Pagination
@@ -920,7 +884,6 @@ const GalleryPage = () => {
               key={car.id} 
               car={car} 
               onOpen={setSelectedCar}
-              onRequestQuote={handleRequestQuote}
             />
           ))}
         </div>
