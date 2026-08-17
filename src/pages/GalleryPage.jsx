@@ -29,135 +29,108 @@ import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import images from '../assets/image.js';
 
-// Use local images for cars
-const LOCAL_CAR_IMAGES = [
-  images.Car1, images.Car2, images.Car3, images.Car4, images.Car5,
-  images.Car6, images.Car7, images.Car8, images.Car9, images.Car10,
-  images.Car11, images.Car12, images.Car13, images.Car14, images.Car15,
-  images.Car16, images.Car17, images.Car18, images.Car19, images.Car20,
-  images.Car21, images.Car22, images.Car23, images.Car24, images.Car25,
-  images.Car26, images.Car27,
-];
-
-// Pexels car images for additional vehicles
+// Pexels car images with CORRECT vehicle names
 const PEXELS_CAR_IMAGES = [
-  // Toyota Camry & Corolla (Nigeria's most popular daily sedans)
-  //honda civic
-  "https://img.nigeriacarmart.com/upload/25/8h/gpeb/2022-honda-civic-jd.webp", 
-  //camey le 2025 model
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrpWlegHy5Bh0LT_r6OPUqWDq6p6PIC_p4aw&s",
-  //changan unit k
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTosELoQMMJeoFlUec2Z0Ye_9EVssWBAX_L7Q&s",
-  //lexus es 350 f sport
-  "https://img.nigeriacarmart.com/upload/25/3f/r89f/2022-lexus-es-es-350-f-sport-el.webp",
-  
-  // Luxury SUVs & Crossovers (Highly favored Lexus & Mercedes models)
-  //bmw x3 m powered
-  "https://img.nigeriacarmart.com/upload/25/3a/wrtn/2020-bmw-x3-m-powered-el.webp",
-  //totyota highlander
-  "https://luxurycars.ng/wp-content/uploads/Toyota-Highlander-price-in-Nigeria.webp",
-//mercedes benz AMG
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTgqoYcrvzD8BBgycdxwk5z5aUcgTRILo6sA&s",
-  
-  // Honda Accords and compact Hyundai/Kia sedans
-  //hyundai sonate 2021
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSq3p49K4G1VEV99JcMYUGjlDXnB17pGy9C6g&s",
-  //hyundai elantra 2022
-  "https://images.cars.ng/images/cars-ng/product_ca597925s_price_drop_hyundai_elantra_2021_sleek_modern_efficient_1771676417858_ga25wy_d365d1_3_800x800.jpg",
-  //toyota corolla 2023
-  "https://images.carloaded.com/large/R6kMg4aEssoRtjJctVf1dVXVdjGX1kAeSzMdHWQGMKjW1Cnl9e.jpeg",
-  //range rover
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2Rns0rYH0p5QhnGuXA4IGTtg693yhz_ZvHg&s",
-  //mercedes benz glc
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSq0YX3ouVxlMKv5X1Rdyj0BvtJeBL51Q-qA&s",
-  //bmw x5
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxGGGHSGmQ_lPrbudPedG-xGSdHRTaz1F13A&s",
-
-  // Alternating variations for codebase consistency (Completing 30-item array requirement)
-  //madza 3
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWMRNNgFl90-1gIjN2_W8MnCEFYQLEsoQoxg&s",
-  //geely stawrry
-  "https://media.autochek.africa/file/w_732,q_100/X0uauWiq.webp",
-  //mercede benz c classic
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHbdJuZA0e6kAr5npQuLS4yUnXP9okQqweqg&s",
-  //mercedes benz e class
-  "https://media.publit.io/file/w_400,q_85/o90rqvws.webp",
-  "https://images.pexels.com/photos/170809/pexels-photo-170809.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/1394661/pexels-photo-1394661.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/119435/pexels-photo-119435.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/103510/pexels-photo-103510.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/1317990/pexels-photo-1317990.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/1255675/pexels-photo-1255675.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/169878/pexels-photo-169878.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/919073/pexels-photo-919073.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/1149831/pexels-photo-1149831.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/358070/pexels-photo-358070.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg?auto=compress&cs=tinysrgb&w=1200"
+  // Honda Civic
+  { img: "https://img.nigeriacarmart.com/upload/25/8h/gpeb/2022-honda-civic-jd.webp", make: "Honda", model: "Civic", year: "2022" },
+  // Toyota Camry LE 2025
+  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrpWlegHy5Bh0LT_r6OPUqWDq6p6PIC_p4aw&s", make: "Toyota", model: "Camry LE", year: "2025" },
+  // Changan Uni-K
+  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTosELoQMMJeoFlUec2Z0Ye_9EVssWBAX_L7Q&s", make: "Changan", model: "Uni-K", year: "2024" },
+  // Lexus ES 350 F Sport
+  { img: "https://img.nigeriacarmart.com/upload/25/3f/r89f/2022-lexus-es-es-350-f-sport-el.webp", make: "Lexus", model: "ES 350 F Sport", year: "2022" },
+  // BMW X3 M
+  { img: "https://img.nigeriacarmart.com/upload/25/3a/wrtn/2020-bmw-x3-m-powered-el.webp", make: "BMW", model: "X3 M", year: "2020" },
+  // Toyota Highlander
+  { img: "https://luxurycars.ng/wp-content/uploads/Toyota-Highlander-price-in-Nigeria.webp", make: "Toyota", model: "Highlander", year: "2023" },
+  // Mercedes-Benz AMG
+  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTgqoYcrvzD8BBgycdxwk5z5aUcgTRILo6sA&s", make: "Mercedes-Benz", model: "AMG", year: "2023" },
+  // Hyundai Sonata 2021
+  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSq3p49K4G1VEV99JcMYUGjlDXnB17pGy9C6g&s", make: "Hyundai", model: "Sonata", year: "2021" },
+  // Hyundai Elantra 2022
+  { img: "https://images.cars.ng/images/cars-ng/product_ca597925s_price_drop_hyundai_elantra_2021_sleek_modern_efficient_1771676417858_ga25wy_d365d1_3_800x800.jpg", make: "Hyundai", model: "Elantra", year: "2022" },
+  // Toyota Corolla 2023
+  { img: "https://images.carloaded.com/large/R6kMg4aEssoRtjJctVf1dVXVdjGX1kAeSzMdHWQGMKjW1Cnl9e.jpeg", make: "Toyota", model: "Corolla", year: "2023" },
+  // Range Rover
+  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2Rns0rYH0p5QhnGuXA4IGTtg693yhz_ZvHg&s", make: "Range Rover", model: "Sport", year: "2023" },
+  // Mercedes-Benz GLC
+  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSq0YX3ouVxlMKv5X1Rdyj0BvtJeBL51Q-qA&s", make: "Mercedes-Benz", model: "GLC", year: "2022" },
+  // BMW X5
+  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxGGGHSGmQ_lPrbudPedG-xGSdHRTaz1F13A&s", make: "BMW", model: "X5", year: "2023" },
+  // Mazda 3
+  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWMRNNgFl90-1gIjN2_W8MnCEFYQLEsoQoxg&s", make: "Mazda", model: "3", year: "2022" },
+  // Geely Starray
+  { img: "https://media.autochek.africa/file/w_732,q_100/X0uauWiq.webp", make: "Geely", model: "Starray", year: "2024" },
+  // Mercedes-Benz C-Class
+  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHbdJuZA0e6kAr5npQuLS4yUnXP9okQqweqg&s", make: "Mercedes-Benz", model: "C-Class", year: "2022" },
+  // Mercedes-Benz E-Class
+  { img: "https://media.publit.io/file/w_400,q_85/o90rqvws.webp", make: "Mercedes-Benz", model: "E-Class", year: "2023" },
+  // Audi A4
+  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZO4VM8rX-RtuvAiKWdAbSrtZLyEgM0RDaFQ&s", make: "Audi", model: "A4", year: "2022" },
+  // Toyota Hilux
+  { img: "https://uae.autotraders.ae/uploads/cars/175991/1785326408_e6aec7a17ed6e3fb.webp", make: "Toyota", model: "Hilux", year: "2023" },
+  // Peugeot 3008
+  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwX3N3Q0JPcEErI37Iu8ykrzF4od7CTQ2pPQ&s", make: "Peugeot", model: "3008", year: "2022" },
+  // Toyota Highlander (additional)
+  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9XyQjPIKnsWVawn21kHa5mcasMV-jcSiavg&s", make: "Toyota", model: "Highlander", year: "2023" },
 ];
 
-
-// Combine local and Pexels images
-const ALL_CAR_IMAGES = [...LOCAL_CAR_IMAGES, ...PEXELS_CAR_IMAGES];
+// Use only PEXELS car images
+const ALL_CAR_IMAGES = PEXELS_CAR_IMAGES;
 
 const carMakes = [
   "Toyota", "Honda", "Ford", "Chevrolet", "BMW", "Mercedes-Benz", 
   "Audi", "Lexus", "Porsche", "Ferrari", "Lamborghini", "Tesla",
   "Range Rover", "Volvo", "Jaguar", "Maserati", "Bentley", "Aston Martin",
-  "Hyundai", "Kia", "Mazda", "Subaru", "Nissan", "Dodge", "Jeep"
+  "Hyundai", "Kia", "Mazda", "Subaru", "Nissan", "Dodge", "Jeep",
+  "Changan", "Geely", "Peugeot"
 ];
 
 const carModels = [
   "Camry", "Civic", "Mustang", "Corvette", "3 Series", "C-Class",
   "A4", "ES 350", "911", "F8 Tributo", "Aventador", "Model S",
   "Sport", "XC90", "F-PACE", "Ghibli", "Continental", "DB11",
-  "Sonata", "Stinger", "MX-5", "WRX", "GT-R", "Challenger", "Wrangler"
+  "Sonata", "Stinger", "MX-5", "WRX", "GT-R", "Challenger", "Wrangler",
+  "Uni-K", "Starray", "3008", "X3 M", "X5", "GLC", "AMG", "Hilux", "Highlander", "Elantra", "Corolla"
 ];
 
-const years = ["2026", "2025", "2024", "2023", "2022", "2021", "2020"];
+const years = ["2026", "2025", "2024", "2023", "2022", "2021", "2020", "2019"];
 
-const colors = ["Black", "White", "Silver", "Red", "Blue", "Green", "Yellow", "Orange"];
+const colors = ["Black", "White", "Silver", "Red", "Blue", "Green", "Yellow", "Orange", "Gray", "Brown"];
 
 const transmissions = ["Automatic", "Manual", "CVT"];
 
 const fuelTypes = ["Petrol", "Diesel", "Hybrid", "Electric"];
 
-// Generate a large list of cars - NO PRICES
+// Generate cars from PEXELS data only
 const generateCars = () => {
   const cars = [];
-  const totalCars = 60;
   
-  for (let i = 0; i < totalCars; i++) {
-    const make = carMakes[i % carMakes.length];
-    const model = carModels[i % carModels.length];
-    const year = years[i % years.length];
-    const color = colors[i % colors.length];
-    const transmission = transmissions[i % transmissions.length];
-    const fuel = fuelTypes[i % fuelTypes.length];
+  // Add all PEXELS cars with their correct names
+  PEXELS_CAR_IMAGES.forEach((carData, index) => {
+    const color = colors[index % colors.length];
+    const transmission = transmissions[index % transmissions.length];
+    const fuel = fuelTypes[index % fuelTypes.length];
     const mileage = Math.floor(Math.random() * 50000) + 5000;
     
-    const imgIndex = i % ALL_CAR_IMAGES.length;
-    const image = ALL_CAR_IMAGES[imgIndex];
-    
     cars.push({
-      id: i + 1,
-      name: `${make} ${model}`,
-      make: make,
-      model: model,
-      year: year,
+      id: index + 1,
+      name: `${carData.make} ${carData.model}`,
+      make: carData.make,
+      model: carData.model,
+      year: carData.year || years[index % years.length],
       color: color,
       transmission: transmission,
       fuel: fuel,
       mileage: mileage.toLocaleString(),
-      img: image,
+      img: carData.img,
       specs: [transmission, fuel, `${mileage.toLocaleString()} mi`],
       rating: (4 + Math.random() * 0.9).toFixed(1),
       inStock: Math.random() > 0.2,
-      featured: Math.random() > 0.8,
-      newArrival: Math.random() > 0.7,
+      featured: Math.random() > 0.85,
+      newArrival: Math.random() > 0.8,
     });
-  }
+  });
   
   return cars;
 };
