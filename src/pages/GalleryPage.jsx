@@ -41,37 +41,62 @@ const LOCAL_CAR_IMAGES = [
 
 // Pexels car images for additional vehicles
 const PEXELS_CAR_IMAGES = [
-  "https://images.pexels.com/photos/170811/pexels-photo-170811.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/919073/pexels-photo-919073.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/1149831/pexels-photo-1149831.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  // Toyota Camry & Corolla (Nigeria's most popular daily sedans)
+  //honda civic
+  "https://img.nigeriacarmart.com/upload/25/8h/gpeb/2022-honda-civic-jd.webp", 
+  //camey le 2025 model
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrpWlegHy5Bh0LT_r6OPUqWDq6p6PIC_p4aw&s",
+  //changan unit k
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTosELoQMMJeoFlUec2Z0Ye_9EVssWBAX_L7Q&s",
+  //lexus es 350 f sport
+  "https://img.nigeriacarmart.com/upload/25/3f/r89f/2022-lexus-es-es-350-f-sport-el.webp",
+  
+  // Luxury SUVs & Crossovers (Highly favored Lexus & Mercedes models)
+  //bmw x3 m powered
+  "https://img.nigeriacarmart.com/upload/25/3a/wrtn/2020-bmw-x3-m-powered-el.webp",
+  //totyota highlander
+  "https://luxurycars.ng/wp-content/uploads/Toyota-Highlander-price-in-Nigeria.webp",
+//mercedes benz AMG
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTgqoYcrvzD8BBgycdxwk5z5aUcgTRILo6sA&s",
+  
+  // Honda Accords and compact Hyundai/Kia sedans
+  //hyundai sonate 2021
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSq3p49K4G1VEV99JcMYUGjlDXnB17pGy9C6g&s",
+  //hyundai elantra 2022
+  "https://images.cars.ng/images/cars-ng/product_ca597925s_price_drop_hyundai_elantra_2021_sleek_modern_efficient_1771676417858_ga25wy_d365d1_3_800x800.jpg",
+  //toyota corolla 2023
+  "https://images.carloaded.com/large/R6kMg4aEssoRtjJctVf1dVXVdjGX1kAeSzMdHWQGMKjW1Cnl9e.jpeg",
+  //range rover
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2Rns0rYH0p5QhnGuXA4IGTtg693yhz_ZvHg&s",
+  //mercedes benz glc
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSq0YX3ouVxlMKv5X1Rdyj0BvtJeBL51Q-qA&s",
+  //bmw x5
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxGGGHSGmQ_lPrbudPedG-xGSdHRTaz1F13A&s",
+
+  // Alternating variations for codebase consistency (Completing 30-item array requirement)
+  //madza 3
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWMRNNgFl90-1gIjN2_W8MnCEFYQLEsoQoxg&s",
+  //geely stawrry
+  "https://media.autochek.africa/file/w_732,q_100/X0uauWiq.webp",
+  //mercede benz c classic
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHbdJuZA0e6kAr5npQuLS4yUnXP9okQqweqg&s",
+  //mercedes benz e class
+  "https://media.publit.io/file/w_400,q_85/o90rqvws.webp",
+  "https://images.pexels.com/photos/170809/pexels-photo-170809.jpeg?auto=compress&cs=tinysrgb&w=1200",
   "https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/358070/pexels-photo-358070.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/1394661/pexels-photo-1394661.jpeg?auto=compress&cs=tinysrgb&w=1200",
   "https://images.pexels.com/photos/119435/pexels-photo-119435.jpeg?auto=compress&cs=tinysrgb&w=1200",
   "https://images.pexels.com/photos/103510/pexels-photo-103510.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/1394661/pexels-photo-1394661.jpeg?auto=compress&cs=tinysrgb&w=1200",
   "https://images.pexels.com/photos/1317990/pexels-photo-1317990.jpeg?auto=compress&cs=tinysrgb&w=1200",
   "https://images.pexels.com/photos/1255675/pexels-photo-1255675.jpeg?auto=compress&cs=tinysrgb&w=1200",
   "https://images.pexels.com/photos/169878/pexels-photo-169878.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/170809/pexels-photo-170809.jpeg?auto=compress&cs=tinysrgb&w=1200",
   "https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg?auto=compress&cs=tinysrgb&w=1200",
   "https://images.pexels.com/photos/919073/pexels-photo-919073.jpeg?auto=compress&cs=tinysrgb&w=1200",
   "https://images.pexels.com/photos/1149831/pexels-photo-1149831.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg?auto=compress&cs=tinysrgb&w=1200",
   "https://images.pexels.com/photos/358070/pexels-photo-358070.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/119435/pexels-photo-119435.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/103510/pexels-photo-103510.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/1394661/pexels-photo-1394661.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/1317990/pexels-photo-1317990.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/1255675/pexels-photo-1255675.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/169878/pexels-photo-169878.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/170809/pexels-photo-170809.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/116675/pexels-photo-116675.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/919073/pexels-photo-919073.jpeg?auto=compress&cs=tinysrgb&w=1200",
-  "https://images.pexels.com/photos/1149831/pexels-photo-1149831.jpeg?auto=compress&cs=tinysrgb&w=1200",
+  "https://images.pexels.com/photos/210019/pexels-photo-210019.jpeg?auto=compress&cs=tinysrgb&w=1200"
 ];
+
 
 // Combine local and Pexels images
 const ALL_CAR_IMAGES = [...LOCAL_CAR_IMAGES, ...PEXELS_CAR_IMAGES];
