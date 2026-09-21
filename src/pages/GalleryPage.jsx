@@ -28,6 +28,7 @@ import {
 import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import images from '../assets/image.js';
+import { getListings, imageUrl } from '../utils/api';
 
 // Pexels car images with CORRECT vehicle names
 const PEXELS_CAR_IMAGES = [
@@ -135,7 +136,7 @@ const generateCars = () => {
   return cars;
 };
 
-const allCars = generateCars();
+const allCars = [];
 
 // Filter options - removed price range
 const filterOptions = {
@@ -649,7 +650,8 @@ function Footer() {
 // Main Gallery Page Component
 const GalleryPage = () => {
   const [selectedCar, setSelectedCar] = useState(null);
-  const [filteredCars, setFilteredCars] = useState(allCars);
+  const [cars, setCars] = useState([]);
+  const [filteredCars, setFilteredCars] = useState([]);
   const [filters, setFilters] = useState({
     make: '',
     year: '',
@@ -662,9 +664,30 @@ const GalleryPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const carsPerPage = 12;
 
+  useEffect(() => {
+    getListings('gallery')
+      .then((listings) => setCars(listings.map((car) => ({
+        ...car,
+        id: car._id,
+        img: imageUrl(car.imageUrl),
+        name: car.name || `${car.make || ''} ${car.model || ''}`.trim(),
+        specs: [car.transmission || 'Automatic', car.fuel || 'Petrol', car.mileage ? `${car.mileage} mi` : 'Contact us'],
+        inStock: car.inStock !== false,
+      }))))
+      .catch(() => setCars([]));
+  }, []);
+
+  const filterOptions = {
+    makes: [...new Set(cars.map(car => car.make).filter(Boolean))].sort(),
+    years: [...new Set(cars.map(car => car.year).filter(Boolean))].sort().reverse(),
+    colors: [...new Set(cars.map(car => car.color).filter(Boolean))].sort(),
+    transmissions: [...new Set(cars.map(car => car.transmission).filter(Boolean))].sort(),
+    fuelTypes: [...new Set(cars.map(car => car.fuel).filter(Boolean))].sort(),
+  };
+
   // Apply filters - removed price filter
   useEffect(() => {
-    let result = [...allCars];
+    let result = [...cars];
 
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
@@ -697,7 +720,7 @@ const GalleryPage = () => {
 
     setFilteredCars(result);
     setCurrentPage(1);
-  }, [filters]);
+  }, [filters, cars]);
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));

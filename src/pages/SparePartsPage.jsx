@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from 'react-icons/fa';
 import images from '../assets/image.js';
+import { getListings, imageUrl } from '../utils/api';
 
 // Spare parts data with local images - NO PRICES
 const ALL_SPARE_PARTS = [
@@ -870,6 +871,7 @@ function QuoteModal({ part, onClose, onSubmit }) {
 
 // Main Spare Parts Page
 const SparePartsPage = () => {
+  const [parts, setParts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedBrand, setSelectedBrand] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -877,8 +879,24 @@ const SparePartsPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [sortBy, setSortBy] = useState("name");
 
+  useEffect(() => {
+    getListings('spare-parts')
+      .then((listings) => setParts(listings.map((part) => ({
+        ...part,
+        id: part._id,
+        img: imageUrl(part.imageUrl),
+        category: part.category || 'Other',
+        subcategory: part.subcategory || 'Parts',
+        brand: part.brand || 'Genuine',
+        rating: part.rating || 4.8,
+        description: part.description || 'Quality replacement part for your vehicle.',
+        inStock: part.inStock !== false,
+      }))))
+      .catch(() => setParts([]));
+  }, []);
+
   // Filter and sort parts
-  const filteredParts = ALL_SPARE_PARTS
+  const filteredParts = parts
     .filter(part => {
       const matchesCategory = selectedCategory === "All" || part.category === selectedCategory;
       const matchesBrand = selectedBrand === "All" || part.brand === selectedBrand;

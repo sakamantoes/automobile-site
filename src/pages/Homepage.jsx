@@ -38,6 +38,7 @@ import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
 import images from "../assets/image.js";
 import { Link } from "react-router-dom";
 import newCars from "../assets/newCar/newcars.js";
+import { getListings, imageUrl } from "../utils/api";
 
 /* ------------------------------------------------------------------ */
 /*  DATA                                                               */
@@ -866,8 +867,24 @@ function CarLightbox({ car, onClose }) {
   );
 }
 
+function normalizeListing(listing) {
+  return {
+    ...listing,
+    id: listing._id,
+    img: imageUrl(listing.imageUrl),
+    name: listing.name || `${listing.make || ''} ${listing.model || ''}`.trim(),
+    trim: listing.trim || listing.year || '',
+    specs: [listing.transmission || 'Automatic', listing.fuel || 'Petrol', listing.mileage ? `${listing.mileage} mi` : 'Contact us'],
+  };
+}
+
 function Gallery() {
   const [selectedCar, setSelectedCar] = useState(null);
+  const [cars, setCars] = useState([]);
+
+  useEffect(() => {
+    getListings('gallery').then((listings) => setCars(listings.map(normalizeListing))).catch(() => setCars([]));
+  }, []);
 
   return (
     <section id="inventory" className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 110 }}>
@@ -881,7 +898,7 @@ function Gallery() {
       </Link>
       </Reveal>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {CARS.map((car, i) => (
+        {cars.slice(0, 6).map((car, i) => (
           <CarCard car={car} index={i} key={`${car.name}-${car.trim}`} onOpen={setSelectedCar} />
         ))}
       </div>
@@ -899,6 +916,11 @@ function Gallery() {
 
 function NewArrivals() {
   const [selectedCar, setSelectedCar] = useState(null);
+  const [cars, setCars] = useState([]);
+
+  useEffect(() => {
+    getListings('new-arrivals').then((listings) => setCars(listings.map(normalizeListing))).catch(() => setCars([]));
+  }, []);
 
   return (
     <section className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 110 }}>
@@ -912,7 +934,7 @@ function NewArrivals() {
       </Reveal>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" style={{ marginTop: 46 }}>
-        {NEW_ARRIVALS.map((car, index) => (
+        {cars.map((car, index) => (
           <Reveal delay={(index % 4) * 100} key={`${car.name}-${car.trim}`}>
             <article
               className="car-card cursor-pointer"
@@ -971,6 +993,12 @@ function NewArrivals() {
 /* ------------------------------------------------------------------ */
 
 function SpareParts() {
+  const [parts, setParts] = useState([]);
+
+  useEffect(() => {
+    getListings('spare-parts').then((listings) => setParts(listings.map((part) => ({ ...part, img: imageUrl(part.imageUrl), id: part._id })))).catch(() => setParts([]));
+  }, []);
+
   return (
     <section id="spare-parts" className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 110 }}>
       <Reveal className="text-center">
@@ -983,7 +1011,7 @@ function SpareParts() {
       </Reveal>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" style={{ marginTop: 46 }}>
-        {SPARE_PARTS.map((part, index) => (
+        {parts.map((part, index) => (
           <Reveal delay={(index % 4) * 80} key={index}>
             <div className="spare-part-card">
               <div className="spare-part-image">

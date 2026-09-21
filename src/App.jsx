@@ -3,6 +3,7 @@ import React from 'react';
 import GalleryPage from './pages/GalleryPage';
 import SparePartsPage from './pages/SparePartsPage';
 import HomePage from './pages/Homepage';
+import AdminPage from './pages/AdminPage';
 
 const App = () => {
   return (
@@ -11,6 +12,7 @@ const App = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/spare-parts" element={<SparePartsPage />} />
+        <Route path="/admin" element={<AdminPage />} />
       </Routes>
     </Router>
   );
