@@ -1,0 +1,2 @@
+Database credentials belong in a local .env file and must never be committed.
+See .env.example for the required variable names.
