@@ -1,28 +1,28 @@
+// src/server.js
+import 'dotenv/config';
 import app from './app.js';
-import mongoose from 'mongoose';
-import { envConfig } from './config/envConfig.js';
-import connectDB from './config/dbConfig.js';
+import { connectDB } from './config/dbConfig.js';
 
-const PORT = envConfig.PORT;
+// Connect once (module-level). Serverless will reuse the connection
+// across warm invocations of the same function instance.
+let connectionPromise = null;
 
-const start = async () => {
-  await connectDB();
-
-  const server = app.listen(PORT, () => {
-    console.log(`AutoMobile Server running on http://localhost:${PORT}`);
-  });
-
-  const shutdown = async (signal) => {
-    console.log(`\n${signal} received, shutting down...`);
-    server.close(async () => {
-      await mongoose.connection.close();
-      console.log('MongoDB connection closed.');
-      process.exit(0);
-    });
-  };
-
-  process.on('SIGINT', () => shutdown('SIGINT'));
-  process.on('SIGTERM', () => shutdown('SIGTERM'));
+const ensureDb = () => {
+  if (!connectionPromise) connectionPromise = connectDB();
+  return connectionPromise;
 };
 
-start();
+// If running locally (not on Vercel), listen on a port.
+if (!process.env.VERCEL) {
+  (async () => {
+    await ensureDb();
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+  })();
+}
+
+// Export for Vercel serverless
+export default async function handler(req, res) {
+  await ensureDb();
+  return app(req, res);
+}
