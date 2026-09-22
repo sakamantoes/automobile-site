@@ -12,8 +12,8 @@ import {
   Search,
   RefreshCw,
 } from 'lucide-react';
-import { carService } from '../service/carUpload.service';
-import { sparePartService } from '../service/sparePart.service';
+import { carService } from '../services/carUpload.service';
+import { sparePartService } from '../services/sparePart.service';
 
 export default function ManageListingsPage() {
   const navigate = useNavigate();
@@ -30,7 +30,6 @@ export default function ManageListingsPage() {
     setLoading(true);
     setError(null);
     try {
-      // One request for everything; the backend supports ?limit= and filters
       const all = await carService.list();
       setListings(Array.isArray(all) ? all : []);
     } catch (err) {
@@ -232,7 +231,7 @@ export default function ManageListingsPage() {
             <h3 className="font-display">Delete this listing?</h3>
             <p className="modal-sub">
               <strong>{confirmDelete.name}</strong> will be removed from the database, and its
-              images will be deleted  permanently. This cannot be undone.
+              images will be deleted permanently. This cannot be undone.
             </p>
             <div className="modal-actions">
               <button
@@ -304,6 +303,7 @@ function Style() {
         color: var(--muted); font-size: 13px;
         cursor: pointer;
         transition: color .25s ease, border-color .25s ease, transform .25s ease;
+        z-index: 5;
       }
       .back-link:hover { color: var(--text); border-color: var(--accent); transform: translateX(-2px); }
 
@@ -322,6 +322,7 @@ function Style() {
         border: none; cursor: pointer;
         box-shadow: 0 10px 30px rgba(0,102,204,0.3);
         transition: background .25s ease, transform .25s ease, box-shadow .25s ease;
+        white-space: nowrap;
       }
       .primary-btn:hover { background: #0080ff; transform: translateY(-2px); box-shadow: 0 16px 40px rgba(0,102,204,0.42); }
 
@@ -341,6 +342,7 @@ function Style() {
         border-radius: 999px; cursor: pointer; font-size: 13px;
         font-family: 'Inter', sans-serif;
         transition: background .2s ease, color .2s ease;
+        white-space: nowrap;
       }
       .tabs button:hover { color: var(--text); }
       .tabs button.active { background: var(--accent); color: #fff; }
@@ -372,27 +374,46 @@ function Style() {
         background: var(--surface); border: 1px solid var(--line);
         color: var(--text); cursor: pointer;
         transition: border-color .25s ease, background .25s ease;
+        flex-shrink: 0;
       }
       .icon-btn:hover { border-color: var(--accent); background: var(--surface-alt); }
 
-      /* Table */
+      /* ---------- Table (horizontal scroll on mobile) ---------- */
       .table-wrap {
-        border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 16px;
         background: var(--surface);
+        overflow-x: auto;              /* ← enables horizontal scroll */
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
       }
-      .table { width: 100%; border-collapse: collapse; }
+      .table-wrap::-webkit-scrollbar { height: 8px; }
+      .table-wrap::-webkit-scrollbar-track { background: #111; border-radius: 0 0 16px 16px; }
+      .table-wrap::-webkit-scrollbar-thumb {
+        background: var(--line-strong);
+        border-radius: 999px;
+      }
+      .table-wrap::-webkit-scrollbar-thumb:hover { background: #555; }
+
+      .table {
+        width: 100%;
+        min-width: 860px;              /* forces scroll instead of squishing */
+        border-collapse: collapse;
+      }
       .table th {
         text-align: left;
         font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
         color: var(--muted); font-family: 'IBM Plex Mono', monospace;
         padding: 14px 16px;
         background: #111; border-bottom: 1px solid var(--line);
+        white-space: nowrap;
       }
       .table td {
         padding: 14px 16px;
         border-bottom: 1px solid var(--line);
         font-size: 13.5px;
         vertical-align: middle;
+        white-space: nowrap;
       }
       .table tr:last-child td { border-bottom: none; }
       .table tr:hover td { background: #161616; }
@@ -413,6 +434,7 @@ function Style() {
         display: inline-flex; align-items: center;
         padding: 4px 10px; border-radius: 999px;
         font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
+        white-space: nowrap;
       }
       .pill.blue { background: rgba(0,102,204,0.14); color: var(--accent); border: 1px solid rgba(0,102,204,0.3); }
       .pill.violet { background: rgba(139,92,246,0.14); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
@@ -428,6 +450,7 @@ function Style() {
         font-size: 12.5px; font-weight: 600;
         cursor: pointer;
         transition: all .2s ease;
+        white-space: nowrap;
       }
       .row-btn.edit { color: var(--accent); border-color: rgba(0,102,204,0.35); }
       .row-btn.edit:hover { background: rgba(0,102,204,0.12); border-color: var(--accent); }
@@ -477,9 +500,7 @@ function Style() {
         background: transparent; border: 1px solid var(--line); color: var(--muted);
       }
       .btn-ghost:hover:not(:disabled) { border-color: var(--line-strong); color: var(--text); }
-      .btn-danger {
-        background: #dc2626; border: none; color: #fff;
-      }
+      .btn-danger { background: #dc2626; border: none; color: #fff; }
       .btn-danger:hover:not(:disabled) { background: #ef4444; }
       .btn-ghost:disabled, .btn-danger:disabled { opacity: .6; cursor: not-allowed; }
 
@@ -492,14 +513,24 @@ function Style() {
       @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
       @keyframes slideUp { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: none; } }
 
+      /* ---------- Mobile ---------- */
       @media (max-width: 760px) {
         .manage-root { padding: 76px 14px 48px; }
         .back-link { top: 16px; left: 16px; font-size: 12px; }
-        .table th:nth-child(3), .table td:nth-child(3),
-        .table th:nth-child(4), .table td:nth-child(4),
-        .table th:nth-child(6), .table td:nth-child(6) { display: none; }
+        .head h1 { font-size: 22px; }
+        .head-sub { font-size: 12.5px; }
+        .toolbar { gap: 10px; }
+        .tabs { flex: 1; }
+        .tabs button { flex: 1; justify-content: center; padding: 8px 10px; font-size: 12.5px; }
+        .search-wrap { min-width: 100%; max-width: none; order: 3; }
+        .primary-btn { padding: 10px 16px; font-size: 13px; }
         .row-btn span { display: none; }
         .row-btn { padding: 8px 10px; }
+        .table th, .table td { padding: 12px; font-size: 13px; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .spin, .modal, .modal-overlay { animation: none !important; transition: none !important; }
       }
     `}</style>
   );
