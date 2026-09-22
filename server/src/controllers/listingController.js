@@ -76,8 +76,23 @@ export const getListings = async (req, res, next) => {
   try {
     const { section, type, limit } = req.query;
     const filter = {};
-    if (section) filter.section = section;
+
     if (type) filter.type = type;
+
+    if (section === 'new-arrivals') {
+      // Show featured cars OR cars explicitly saved under new-arrivals
+      filter.$or = [
+        { featured: true },
+        { section: 'new-arrivals' },
+      ];
+      filter.type = 'car';
+    } else if (section === 'gallery') {
+      // Gallery shows every car, regardless of section
+      filter.type = 'car';
+    } else if (section === 'spare-parts') {
+      filter.type = 'spare-part';
+      filter.section = 'spare-parts';
+    }
 
     const query = Listing.find(filter).sort({ createdAt: -1 });
     if (limit) query.limit(Number(limit));

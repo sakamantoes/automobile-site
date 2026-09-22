@@ -1020,11 +1020,12 @@ function NewArrivals() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getListings("new-arrivals", { limit: 4 })
-      .then(setCars)
-      .catch(() => setCars([]))
-      .finally(() => setLoading(false));
-  }, []);
+  getListings('new-arrivals', { limit: 6 })
+    .then(setCars)
+    .catch(() => setCars([]))
+    .finally(() => setLoading(false));
+}, []);
+
 
   return (
     <section className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 110 }}>
