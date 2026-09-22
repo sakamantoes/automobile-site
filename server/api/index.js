@@ -1,7 +1,7 @@
 // api/index.js
 import 'dotenv/config';
 import app from '../src/app.js';
-import { connectDB } from '../src/config/db.js';
+import { connectDB } from '../src/config/dbConfig.js';
 
 // Connect once per cold start; reuse the connection across invocations
 let isConnected = false;
