@@ -12,8 +12,8 @@ import {
   Search,
   RefreshCw,
 } from 'lucide-react';
-import { carService } from '../services/carUpload.service';
-import { sparePartService } from '../services/sparePart.service';
+import { carService } from '../service/carUpload.service';
+import { sparePartService } from '../service/sparePart.service';
 
 export default function ManageListingsPage() {
   const navigate = useNavigate();
