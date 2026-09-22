@@ -11,10 +11,11 @@ const AdminLoginPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // If already logged in, skip the login page
+  // Redirect if already logged in
   useEffect(() => {
-    const token = localStorage.getItem("adminToken");
-    if (token) navigate("/admin/dashboard", { replace: true });
+    if (localStorage.getItem("adminToken")) {
+      navigate("/admin/dashboard", { replace: true });
+    }
   }, [navigate]);
 
   const handleSubmit = async (e) => {
@@ -33,189 +34,140 @@ const AdminLoginPage = () => {
 
   return (
     <div className="admin-login-root">
-      <GlobalStyle />
-      <LoginBackdrop />
+      <Style />
 
-      {/* Back to site */}
       <Link to="/" className="back-link">
         <ArrowLeft size={15} />
         <span>Back to site</span>
       </Link>
 
       <div className="login-shell">
-        {/* LEFT PANEL — brand */}
-        <div className="login-panel-brand">
-          <div className="brand-inner">
-            <div className="brand-logo">
-              <img src={images.Logo2} alt="Lord Group Autos" />
-            </div>
-            <h1 className="font-display brand-title">
-              Lord Group
-              <span style={{ color: "var(--accent)" }}> AUTOS</span>
-            </h1>
-            <p className="brand-sub">Admin Control Center</p>
-
-            <div className="brand-points">
-              <div className="brand-point">
-                <ShieldCheck size={16} color="var(--accent)" />
-                <span>Secure access, single password</span>
-              </div>
-              <div className="brand-point">
-                <Lock size={16} color="var(--accent)" />
-                <span>JWT-protected sessions</span>
-              </div>
-            </div>
-
-            <p className="brand-footnote">
-              Authorized personnel only. All access attempts are logged.
-            </p>
+        {/* Brand panel */}
+        <aside className="brand-panel">
+          <div className="brand-logo">
+            <img src={images.Logo2} alt="Lord Group Autos" />
           </div>
-        </div>
+          <h1 className="font-display brand-title">
+            Lord Group<span style={{ color: "var(--accent)" }}> AUTOS</span>
+          </h1>
+          <p className="brand-sub">Admin Control Center</p>
 
-        {/* RIGHT PANEL — form */}
-        <div className="login-panel-form">
-          <div className="form-inner">
-            <div className="eyebrow-row">
-              <span className="eyebrow-line" />
-              <span className="eyebrow-text">Restricted area</span>
-            </div>
+          <div className="brand-point">
+            <ShieldCheck size={16} color="var(--accent)" />
+            <span>Secure, JWT-protected access</span>
+          </div>
 
-            <h2 className="font-display login-heading">Admin Access</h2>
-            <p className="login-sub">
-              Enter the access password to manage inventory, arrivals, and spare parts.
-            </p>
+          <p className="brand-note">
+            Authorized personnel only. All access attempts are logged.
+          </p>
+        </aside>
 
-            <form onSubmit={handleSubmit} className="login-form">
-              <div className="form-field">
-                <label className="form-label" htmlFor="password">
-                  Access Password
-                </label>
-                <div className={`input-wrap ${error ? "input-error" : ""}`}>
-                  <Lock size={15} className="input-icon" />
-                  <input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••••••"
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      if (error) setError("");
-                    }}
-                    autoFocus
-                    disabled={loading}
-                    autoComplete="current-password"
-                  />
-                  <button
-                    type="button"
-                    className="toggle-visibility"
-                    onClick={() => setShowPassword((v) => !v)}
-                    tabIndex={-1}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
-                    {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                  </button>
-                </div>
-              </div>
+        {/* Form panel */}
+        <section className="form-panel">
+          <span className="eyebrow">Restricted area</span>
+          <h2 className="font-display heading">Admin Access</h2>
+          <p className="sub">
+            Enter the access password to manage inventory, arrivals, and spare parts.
+          </p>
 
+          <form onSubmit={handleSubmit} className="form">
+            <label className="label" htmlFor="password">Access Password</label>
+            <div className={`input-wrap ${error ? "input-error" : ""}`}>
+              <Lock size={15} className="input-icon" />
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••••••"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (error) setError("");
+                }}
+                autoFocus
+                disabled={loading}
+                autoComplete="current-password"
+              />
               <button
-                type="submit"
-                className="submit-btn"
-                disabled={loading || !password}
+                type="button"
+                className="toggle"
+                onClick={() => setShowPassword((v) => !v)}
+                tabIndex={-1}
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                {loading ? (
-                  <>
-                    <span className="spinner" />
-                    <span>Verifying…</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Unlock Dashboard</span>
-                    <ArrowRight size={16} strokeWidth={2.4} />
-                  </>
-                )}
+                {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
               </button>
+            </div>
 
-              {error && (
-                <div className="login-error" role="alert">
-                  <span className="dot" />
-                  <span>{error}</span>
-                </div>
+            <button type="submit" className="submit" disabled={loading || !password}>
+              {loading ? (
+                <>
+                  <span className="spinner" />
+                  <span>Verifying…</span>
+                </>
+              ) : (
+                <>
+                  <span>Unlock Dashboard</span>
+                  <ArrowRight size={16} strokeWidth={2.4} />
+                </>
               )}
-            </form>
+            </button>
 
-            <p className="form-footer">
-              Trouble signing in? Contact the site owner at{" "}
-              <span style={{ color: "var(--accent)" }}>lordgroup.limited@gmail.com</span>
-            </p>
-          </div>
-        </div>
+            {error && (
+              <div className="error" role="alert">
+                <span className="dot" />
+                <span>{error}</span>
+              </div>
+            )}
+          </form>
+
+          <p className="footnote">
+            Trouble signing in? Contact{" "}
+            <span style={{ color: "var(--accent)" }}>lordgroup.limited@gmail.com</span>
+          </p>
+        </section>
       </div>
-
-      <GlobalStyle />
     </div>
   );
 };
 
-/* ------------------------------------------------------------------ */
-/*  Decorative background (subtle grid + glow)                         */
-/* ------------------------------------------------------------------ */
+/* ---------------------------------------------------------------- */
+/*  Styles                                                          */
+/* ---------------------------------------------------------------- */
 
-function LoginBackdrop() {
-  return (
-    <>
-      <div className="login-glow" aria-hidden="true" />
-      <div className="login-grid" aria-hidden="true" />
-    </>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Scoped styles matching the homepage design tokens                  */
-/* ------------------------------------------------------------------ */
-
-function GlobalStyle() {
+function Style() {
   return (
     <style>{`
-      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
       :root {
         --bg: #0a0a0a;
         --surface: #1a1a1a;
-        --surface-alt: #2a2a2a;
-        --line: #333333;
-        --line-strong: #444444;
-        --text: #ffffff;
-        --muted: #999999;
+        --line: #333;
+        --line-strong: #444;
+        --text: #fff;
+        --muted: #999;
         --accent: #0066cc;
-        --accent-deep: #004d99;
       }
 
       .font-display { font-family: 'Space Grotesk', sans-serif; }
-      .font-mono { font-family: 'IBM Plex Mono', monospace; }
 
       .admin-login-root {
         position: relative;
         min-height: 100vh;
-        background: var(--bg);
+        background:
+          radial-gradient(50% 40% at 50% 0%, rgba(0,102,204,0.20), transparent 65%),
+          var(--bg);
         color: var(--text);
         font-family: 'Inter', sans-serif;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 24px;
-        overflow: hidden;
       }
 
-      /* ---------- Backdrop ---------- */
-      .login-glow {
-        position: absolute;
-        inset: 0;
-        background:
-          radial-gradient(50% 40% at 50% 0%, rgba(0,102,204,0.20), transparent 65%),
-          radial-gradient(40% 40% at 100% 100%, rgba(0,102,204,0.10), transparent 60%);
-        pointer-events: none;
-      }
-      .login-grid {
+      /* Grid overlay */
+      .admin-login-root::before {
+        content: "";
         position: absolute;
         inset: 0;
         background-image:
@@ -227,7 +179,7 @@ function GlobalStyle() {
         pointer-events: none;
       }
 
-      /* ---------- Back link ---------- */
+      /* Back link */
       .back-link {
         position: absolute;
         top: 24px;
@@ -251,14 +203,14 @@ function GlobalStyle() {
         transform: translateX(-2px);
       }
 
-      /* ---------- Shell ---------- */
+      /* Shell */
       .login-shell {
         position: relative;
         z-index: 2;
         display: grid;
         grid-template-columns: 1fr 1fr;
         width: 100%;
-        max-width: 940px;
+        max-width: 920px;
         background: var(--surface);
         border: 1px solid var(--line);
         border-radius: 24px;
@@ -271,28 +223,26 @@ function GlobalStyle() {
         to   { opacity: 1; transform: translateY(0) scale(1); }
       }
 
-      /* ---------- Left panel: brand ---------- */
-      .login-panel-brand {
-        position: relative;
-        padding: 48px 40px;
+      /* Brand panel */
+      .brand-panel {
+        padding: 44px 36px;
         background:
           radial-gradient(120% 80% at 0% 0%, rgba(0,102,204,0.22), transparent 60%),
           linear-gradient(160deg, #101010 0%, #0a0a0a 100%);
         border-right: 1px solid var(--line);
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        gap: 16px;
       }
-      .brand-inner { display: flex; flex-direction: column; gap: 18px; }
-
       .brand-logo {
         width: 56px; height: 56px;
         border-radius: 14px;
         overflow: hidden;
-        box-shadow: 0 8px 24px rgba(0,102,204,0.35);
         border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 8px 24px rgba(0,102,204,0.35);
       }
       .brand-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
       .brand-title {
         font-size: 26px;
         font-weight: 700;
@@ -301,86 +251,64 @@ function GlobalStyle() {
       }
       .brand-sub {
         font-family: 'IBM Plex Mono', monospace;
-        font-size: 12.5px;
+        font-size: 12px;
         letter-spacing: 0.14em;
         text-transform: uppercase;
         color: var(--accent);
-      }
-
-      .brand-points {
-        margin-top: 8px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
       }
       .brand-point {
         display: flex;
         align-items: center;
         gap: 10px;
-        font-size: 13.5px;
-        color: var(--muted);
+        margin-top: 6px;
         padding: 10px 14px;
         border-radius: 10px;
         background: rgba(255,255,255,0.02);
         border: 1px solid var(--line);
+        font-size: 13.5px;
+        color: var(--muted);
       }
-
-      .brand-footnote {
-        margin-top: 10px;
+      .brand-note {
+        margin-top: 8px;
         font-size: 12px;
         color: #666;
         line-height: 1.6;
       }
 
-      /* ---------- Right panel: form ---------- */
-      .login-panel-form {
-        padding: 52px 44px;
+      /* Form panel */
+      .form-panel {
+        padding: 48px 40px;
         display: flex;
-        align-items: center;
-        background: var(--surface);
-      }
-      .form-inner { width: 100%; display: flex; flex-direction: column; gap: 14px; }
-
-      .eyebrow-row {
-        display: flex;
-        align-items: center;
+        flex-direction: column;
+        justify-content: center;
         gap: 10px;
       }
-      .eyebrow-line {
-        display: inline-block;
-        width: 22px;
-        height: 1px;
-        background: var(--line-strong);
-      }
-      .eyebrow-text {
+      .eyebrow {
         font-family: 'IBM Plex Mono', monospace;
         font-size: 11px;
         letter-spacing: 0.16em;
         text-transform: uppercase;
         color: var(--accent);
       }
-
-      .login-heading {
+      .heading {
         font-size: 30px;
         font-weight: 700;
         letter-spacing: -0.02em;
         line-height: 1.1;
       }
-      .login-sub {
+      .sub {
         font-size: 14px;
         color: var(--muted);
         line-height: 1.6;
         margin-bottom: 6px;
       }
 
-      .login-form { display: flex; flex-direction: column; gap: 16px; }
-
-      .form-field { display: flex; flex-direction: column; gap: 8px; }
-      .form-label {
+      .form { display: flex; flex-direction: column; gap: 14px; }
+      .label {
         font-size: 12.5px;
         font-weight: 500;
         color: var(--text);
-        letter-spacing: 0.02em;
+        margin-bottom: -6px;
       }
 
       .input-wrap {
@@ -391,12 +319,11 @@ function GlobalStyle() {
         background: var(--bg);
         border: 1px solid var(--line);
         border-radius: 12px;
-        transition: border-color .25s ease, box-shadow .25s ease, background .25s ease;
+        transition: border-color .25s ease, box-shadow .25s ease;
       }
       .input-wrap:focus-within {
         border-color: var(--accent);
         box-shadow: 0 0 0 4px rgba(0,102,204,0.15);
-        background: #0d0d0d;
       }
       .input-wrap.input-error {
         border-color: #ef4444;
@@ -415,28 +342,25 @@ function GlobalStyle() {
         padding: 14px 0;
         font-family: 'Inter', sans-serif;
       }
-      .input-wrap input::placeholder {
-        color: #555;
-        letter-spacing: 0.14em;
-      }
+      .input-wrap input::placeholder { color: #555; letter-spacing: 0.14em; }
       .input-wrap input:disabled { opacity: .6; }
 
-      .toggle-visibility {
+      .toggle {
         background: transparent;
         border: none;
         padding: 6px;
         color: var(--muted);
         cursor: pointer;
+        border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 8px;
         transition: color .2s ease, background .2s ease;
       }
-      .toggle-visibility:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+      .toggle:hover { color: var(--text); background: rgba(255,255,255,0.05); }
 
-      .submit-btn {
-        margin-top: 4px;
+      .submit {
+        margin-top: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -446,34 +370,31 @@ function GlobalStyle() {
         border: none;
         cursor: pointer;
         background: var(--accent);
-        color: #ffffff;
+        color: #fff;
         font-weight: 600;
         font-size: 14.5px;
         font-family: 'Inter', sans-serif;
         box-shadow: 0 12px 32px rgba(0,102,204,0.28);
         transition: transform .25s ease, box-shadow .25s ease, background .25s ease, opacity .25s ease;
       }
-      .submit-btn:hover:not(:disabled) {
+      .submit:hover:not(:disabled) {
         background: #0080ff;
         transform: translateY(-2px);
         box-shadow: 0 16px 40px rgba(0,102,204,0.42);
       }
-      .submit-btn:disabled {
-        opacity: .55;
-        cursor: not-allowed;
-      }
+      .submit:disabled { opacity: .55; cursor: not-allowed; }
 
       .spinner {
         display: inline-block;
         width: 16px; height: 16px;
         border: 2px solid rgba(255,255,255,0.35);
-        border-top-color: #ffffff;
+        border-top-color: #fff;
         border-radius: 50%;
         animation: spin .8s linear infinite;
       }
       @keyframes spin { to { transform: rotate(360deg); } }
 
-      .login-error {
+      .error {
         display: flex;
         align-items: center;
         gap: 10px;
@@ -485,8 +406,9 @@ function GlobalStyle() {
         font-size: 13px;
         animation: shake .35s ease;
       }
-      .login-error .dot {
-        width: 7px; height: 7px; border-radius: 999px;
+      .error .dot {
+        width: 7px; height: 7px;
+        border-radius: 999px;
         background: #ef4444;
         box-shadow: 0 0 0 4px rgba(239,68,68,0.18);
         flex-shrink: 0;
@@ -497,34 +419,35 @@ function GlobalStyle() {
         75%     { transform: translateX(4px); }
       }
 
-      .form-footer {
-        margin-top: 8px;
+      .footnote {
+        margin-top: 10px;
         font-size: 12px;
         color: #666;
-        line-height: 1.6;
         text-align: center;
+        line-height: 1.6;
       }
 
-      /* ---------- Responsive ---------- */
+      /* Responsive */
       @media (max-width: 820px) {
         .login-shell { grid-template-columns: 1fr; max-width: 460px; }
-        .login-panel-brand {
+        .brand-panel {
           border-right: none;
           border-bottom: 1px solid var(--line);
-          padding: 32px 28px;
+          padding: 28px 24px;
+          gap: 12px;
         }
-        .brand-points { display: none; }
-        .login-panel-form { padding: 36px 28px; }
-        .login-heading { font-size: 24px; }
+        .brand-point, .brand-note { display: none; }
+        .form-panel { padding: 32px 24px; }
+        .heading { font-size: 24px; }
       }
       @media (max-width: 480px) {
         .admin-login-root { padding: 12px; }
         .back-link { top: 14px; left: 14px; font-size: 12px; }
-        .login-panel-form { padding: 28px 20px; }
+        .form-panel { padding: 24px 18px; }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        .login-shell, .login-error, .spinner { animation: none !important; }
+        .login-shell, .error, .spinner { animation: none !important; }
       }
     `}</style>
   );
