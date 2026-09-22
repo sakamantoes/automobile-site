@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import authRoutes from './routes/authRoutes.js';
+import listingRoutes from './routes/listingRoutes.js';
 
 const app = express();
 
@@ -16,7 +17,9 @@ app.get('/', (req, res) => {
   res.json({ message: 'AutoMobile API is running' });
 });
 
+//main route
 app.use('/api/auth', authRoutes);
+app.use('/api/listings', listingRoutes);
 
 // 404
 app.use((req, res) => {

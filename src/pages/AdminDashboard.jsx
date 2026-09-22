@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogOut, ShieldCheck, LayoutGrid, Package, Users, Menu, X } from "lucide-react";
+import {
+  LogOut,
+  ShieldCheck,
+  LayoutGrid,
+  Package,
+  Wrench,
+  Upload,
+  ArrowUpRight,
+  Layers,
+} from "lucide-react";
 import { adminService } from "../service/admin.service.js";
 import images from "../assets/image.js";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [admin, setAdmin] = useState(null);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
-    // Fetch admin info (also validates token)
     adminService
       .me()
       .then(setAdmin)
@@ -20,7 +27,6 @@ const AdminDashboard = () => {
 
   const handleLogout = () => {
     setLoggingOut(true);
-    // Small delay for UX polish — spinner shows for a beat
     setTimeout(() => {
       adminService.logout();
       navigate("/admin/login", { replace: true });
@@ -34,14 +40,6 @@ const AdminDashboard = () => {
       {/* ---------- Top bar ---------- */}
       <header className="admin-topbar">
         <div className="topbar-left">
-          <button
-            className="icon-btn menu-btn"
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
-
           <div className="topbar-logo">
             <img src={images.Logo2} alt="Lord Group Autos" />
           </div>
@@ -87,21 +85,49 @@ const AdminDashboard = () => {
           </p>
         </div>
 
+        {/* Primary action */}
+        <div className="primary-action">
+          <div>
+            <h2 className="font-display primary-title">Add something new</h2>
+            <p className="primary-sub">
+              Upload a vehicle with interior / engine sub-images, or list a
+              spare part.
+            </p>
+          </div>
+          <button
+            className="primary-btn"
+            onClick={() => navigate("/admin/upload")}
+          >
+            <Upload size={16} strokeWidth={2.4} />
+            <span>Upload Listing</span>
+          </button>
+        </div>
+
+        {/* Admin cards */}
         <div className="admin-cards">
+          <AdminCard
+            icon={<Layers size={18} color="var(--accent)" />}
+            title="Manage Listings"
+            body="Edit or delete any car or spare part already uploaded."
+            onClick={() => navigate("/admin/manage")}
+          />
           <AdminCard
             icon={<LayoutGrid size={18} color="var(--accent)" />}
             title="Inventory"
             body="Add, edit, or remove vehicles from the main gallery."
+            onClick={() => navigate("/admin/upload")}
           />
           <AdminCard
             icon={<Package size={18} color="var(--accent)" />}
             title="New Arrivals"
             body="Publish freshly landed vehicles with full descriptions."
+            onClick={() => navigate("/admin/upload")}
           />
           <AdminCard
-            icon={<Users size={18} color="var(--accent)" />}
+            icon={<Wrench size={18} color="var(--accent)" />}
             title="Spare Parts"
             body="Update stock for filters, brakes, electricals and more."
+            onClick={() => navigate("/admin/upload")}
           />
         </div>
       </main>
@@ -109,13 +135,21 @@ const AdminDashboard = () => {
   );
 };
 
-function AdminCard({ icon, title, body }) {
+function AdminCard({ icon, title, body, onClick }) {
   return (
-    <div className="admin-card">
+    <button
+      type="button"
+      className="admin-card"
+      onClick={onClick}
+      aria-label={title}
+    >
       <div className="admin-card-icon">{icon}</div>
       <h3 className="font-display admin-card-title">{title}</h3>
       <p className="admin-card-body">{body}</p>
-    </div>
+      <span className="admin-card-cta">
+        Open <ArrowUpRight size={14} />
+      </span>
+    </button>
   );
 }
 
@@ -166,14 +200,7 @@ function GlobalStyle() {
         backdrop-filter: blur(14px);
         border-bottom: 1px solid var(--line);
       }
-
-      .topbar-left {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-      .menu-btn { display: none; }
-
+      .topbar-left { display: flex; align-items: center; gap: 14px; }
       .topbar-logo {
         width: 36px; height: 36px;
         border-radius: 10px;
@@ -182,7 +209,6 @@ function GlobalStyle() {
         box-shadow: 0 4px 14px rgba(0,102,204,0.3);
       }
       .topbar-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
       .topbar-brand {
         display: flex;
         align-items: center;
@@ -203,13 +229,7 @@ function GlobalStyle() {
         color: var(--accent);
         border: 1px solid rgba(0,102,204,0.32);
       }
-
-      .topbar-right {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
+      .topbar-right { display: flex; align-items: center; gap: 12px; }
       .admin-chip {
         display: inline-flex;
         align-items: center;
@@ -222,7 +242,7 @@ function GlobalStyle() {
         font-size: 12px;
       }
 
-      /* ---------- Logout button ---------- */
+      /* ---------- Logout ---------- */
       .logout-btn {
         display: inline-flex;
         align-items: center;
@@ -244,22 +264,7 @@ function GlobalStyle() {
         color: #ffffff;
         transform: translateY(-1px);
       }
-      .logout-btn:disabled {
-        opacity: .7;
-        cursor: not-allowed;
-      }
-
-      .icon-btn {
-        width: 36px; height: 36px;
-        border-radius: 10px;
-        display: flex; align-items: center; justify-content: center;
-        background: var(--surface);
-        border: 1px solid var(--line);
-        color: var(--text);
-        cursor: pointer;
-        transition: border-color .25s ease, background .25s ease;
-      }
-      .icon-btn:hover { border-color: var(--accent); background: var(--surface-alt); }
+      .logout-btn:disabled { opacity: .7; cursor: not-allowed; }
 
       .spinner {
         display: inline-block;
@@ -271,7 +276,7 @@ function GlobalStyle() {
       }
       @keyframes spin { to { transform: rotate(360deg); } }
 
-      /* ---------- Main body ---------- */
+      /* ---------- Body ---------- */
       .admin-main {
         flex: 1;
         padding: 48px 28px 64px;
@@ -288,20 +293,74 @@ function GlobalStyle() {
       }
       .admin-sub { color: var(--muted); font-size: 14.5px; margin-top: 8px; }
 
+      /* ---------- Primary action banner ---------- */
+      .primary-action {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 22px 24px;
+        margin-bottom: 28px;
+        border-radius: 18px;
+        background:
+          radial-gradient(120% 80% at 0% 0%, rgba(0,102,204,0.22), transparent 60%),
+          var(--surface);
+        border: 1px solid rgba(0,102,204,0.28);
+      }
+      .primary-title {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      .primary-sub {
+        font-size: 13.5px;
+        color: var(--muted);
+        margin-top: 4px;
+        max-width: 460px;
+      }
+      .primary-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 22px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 14px;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 10px 30px rgba(0,102,204,0.35);
+        transition: background .25s ease, transform .25s ease, box-shadow .25s ease;
+        white-space: nowrap;
+      }
+      .primary-btn:hover {
+        background: #0080ff;
+        transform: translateY(-2px);
+        box-shadow: 0 16px 40px rgba(0,102,204,0.45);
+      }
+
+      /* ---------- Cards ---------- */
       .admin-cards {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
         gap: 18px;
       }
       .admin-card {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
         background: var(--surface);
         border: 1px solid var(--line);
         border-radius: 18px;
         padding: 24px;
+        cursor: pointer;
+        color: inherit;
+        font-family: inherit;
         transition: border-color .3s ease, transform .3s ease, box-shadow .3s ease;
       }
       .admin-card:hover {
-        border-color: var(--line-strong);
+        border-color: var(--accent);
         transform: translateY(-3px);
         box-shadow: 0 24px 50px rgba(0,0,0,0.5);
       }
@@ -313,21 +372,39 @@ function GlobalStyle() {
         margin-bottom: 14px;
       }
       .admin-card-title { font-size: 16.5px; font-weight: 600; }
-      .admin-card-body { color: var(--muted); font-size: 13.5px; margin-top: 6px; line-height: 1.55; }
+      .admin-card-body {
+        color: var(--muted);
+        font-size: 13.5px;
+        margin-top: 6px;
+        line-height: 1.55;
+        flex: 1;
+      }
+      .admin-card-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 16px;
+        color: var(--accent);
+        font-size: 13px;
+        font-weight: 600;
+        transition: gap .25s ease;
+      }
+      .admin-card:hover .admin-card-cta { gap: 10px; }
 
       /* ---------- Responsive ---------- */
       @media (max-width: 720px) {
         .admin-topbar { padding: 12px 16px; }
-        .menu-btn { display: flex; }
         .topbar-brand { font-size: 15px; }
         .admin-chip { display: none; }
         .logout-btn span:not(.spinner) { display: none; }
         .logout-btn { padding: 9px 12px; }
         .admin-main { padding: 32px 16px 48px; }
+        .primary-action { flex-direction: column; align-items: stretch; text-align: center; }
+        .primary-btn { justify-content: center; }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        .admin-card, .logout-btn, .spinner { animation: none !important; transition: none !important; }
+        .admin-card, .logout-btn, .spinner, .primary-btn { animation: none !important; transition: none !important; }
       }
     `}</style>
   );

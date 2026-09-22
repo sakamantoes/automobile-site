@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   Sparkles,
   ChevronRight,
+  ChevronLeft,
   BadgeCheck,
   Diamond,
   XCircle,
@@ -33,6 +34,7 @@ import {
   Battery,
   Fan,
   Sparkle,
+  MessageCircle,
 } from "lucide-react";
 import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
 import images from "../assets/image.js";
@@ -56,7 +58,7 @@ const NAV_LINKS = [
 
 const BRANDS = ["Toyota", "Lexus", "Mercedes-Benz", "Maserati", "Range Rover", "Volvo"];
 
-// Use local images for cars
+// Fallback local images (only used if the API returns nothing)
 const CAR_IMAGES = [
   images.Car1, images.Car2, images.Car3, images.Car4, images.Car5,
   images.Car6, images.Car7, images.Car8, images.Car9, images.Car10,
@@ -66,129 +68,29 @@ const CAR_IMAGES = [
   images.Car26, images.Car27,
 ];
 
-// new cars image mapping - using imported images from newCars
 const NEW_CAR_IMAGES = {
   lexus: [newCars.lexus1, newCars.lexus2, newCars.lexus3, newCars.lexus4],
   benz: [newCars.Benz1, newCars.Benz2, newCars.Benz3, newCars.Benz4, newCars.Benz5],
-  highlander: [newCars.ToyotaHighlander, newCars.ToyotaHighlander2, newCars.ToyotaHighlander3, newCars.ToyotaHighlander4, newCars.ToyotaHighlander5, newCars.ToyotaHighlander6],
+  highlander: [
+    newCars.ToyotaHighlander,
+    newCars.ToyotaHighlander2,
+    newCars.ToyotaHighlander3,
+    newCars.ToyotaHighlander4,
+    newCars.ToyotaHighlander5,
+    newCars.ToyotaHighlander6,
+  ],
   hl: [newCars.hl, newCars.hl1, newCars.hl2, newCars.hl3, newCars.hl4, newCars.hl5],
 };
 
-// Spare parts images from local imports
-const SPARE_PARTS_IMAGES = [
-  images.AirFilter,
-  images.brakePadSet,
-  images.alternator,
-  images.BatteryV12,
-  images.engineOilFilter,
-  images.fuelPump,
-  images.OilPanGasket,
-  images.RadiatorFan,
-  images.ShockAbsorber,
-  images.SparkPlug,
-  images.TimingBelt,
-  images.WiperBlades,
-];
-
-// Define image ranges for each car
 const CAR_IMAGE_RANGES = {
-  "Toyota Camry": { start: 0, end: 4 }, // Car1 to Car5
-  "Mercedes-AMG": { start: 5, end: 7 }, // Car6 to Car8
-  "Lexus": { start: 9, end: 13 }, // Car10 to Car14 (for 2013 ES 350)
-  "Mercedes-Benz": { start: 14, end: 17 }, // Car15 to Car18
-  "Lexus RX 2012": { start: 19, end: 20 }, // Car20 to Car21
-  "Toyota Highlander": { start: 22, end: 23 }, // Car22 to Car24
-  "Lexus RX 2018": { start: 25, end: 26 }, // Car25 to Car27
+  "Toyota Camry": { start: 0, end: 4 },
+  "Mercedes-AMG": { start: 5, end: 7 },
+  Lexus: { start: 9, end: 13 },
+  "Mercedes-Benz": { start: 14, end: 17 },
+  "Lexus RX 2012": { start: 19, end: 20 },
+  "Toyota Highlander": { start: 22, end: 23 },
+  "Lexus RX 2018": { start: 25, end: 26 },
 };
-
-const CARS = [
-  // Toyota Camry 2010 SE - cover: Car2 (index 1), range: Car1-Car5
-  { name: "Toyota Camry", trim: "2010 SE", specs: ["Automatic", "Petrol", "45,000 mi"], img: CAR_IMAGES[1], imageRange: "Toyota Camry" },
-  // Mercedes AMG G 63 - cover: Car6 (index 5), range: Car6-Car8
-  { name: "Mercedes-AMG", trim: "G 63", specs: ["Automatic", "Petrol", "32,000 mi"], img: CAR_IMAGES[5], imageRange: "Mercedes-AMG" },
-  // Lexus 2013 ES 350 - cover: Car10 (index 9), range: Car10-Car14
-  { name: "Lexus", trim: "2013 ES 350", specs: ["Automatic", "Petrol", "28,000 mi"], img: CAR_IMAGES[9], imageRange: "Lexus" },
-  // Mercedes Benz ML 350 4MATIC - cover: Car15 (index 14), range: Car15-Car18
-  { name: "Mercedes-Benz", trim: "ML 350 4MATIC", specs: ["Automatic", "Diesel", "41,000 mi"], img: CAR_IMAGES[14], imageRange: "Mercedes-Benz" },
-  // Lexus RX 2012 RX350 - cover: Car20 (index 19), range: Car20-Car21
-  { name: "Lexus RX 2012", trim: "RX 350", specs: ["Automatic", "Petrol", "38,000 mi"], img: CAR_IMAGES[19], imageRange: "Lexus RX 2012" },
-  // Toyota Highlander XLE SUV - cover: Car24 (index 23), range: Car22-Car24
-  { name: "Toyota Highlander", trim: "XLE SUV", specs: ["Automatic", "Petrol", "52,000 mi"], img: CAR_IMAGES[23], imageRange: "Toyota Highlander" },
-  // Lexus RX 2018 RX350 - cover: Car27 (index 26), range: Car25-Car27
-  { name: "Lexus RX 2018", trim: "RX 350", specs: ["Automatic", "Petrol", "18,000 mi"], img: CAR_IMAGES[26], imageRange: "Lexus RX 2018" },
-];
-
-// New Arrivals Data - using actual descriptions and images from newCars
-const NEW_ARRIVALS = [
-  { 
-    name: "Lexus ES350", 
-    trim: "2016 Full Option", 
-    specs: ["Automatic", "Petrol", "52k mi"], 
-    img: NEW_CAR_IMAGES.lexus[0],
-    imageRange: "lexus",
-    price: "17M",
-    description: "Clean Unregistered Lexus ES350 Direct 2016 Full option park assist BSM",
-    fullDescription: "*Clean Unregistered Lexus ES350 Direct 2016 Full option park assist BSM*\n\n52k mileage\nAccident ✅\nSharp body✔️\n\nThumbstart✔️\nBSM✔️\nPark assist ✔️\nPower boot✔️\nNavigation screen and Reverse Camera✔️\nBluetooth Enabled✔️\nClean factory dashboard✔️\nClean factory leather seat✔️\nUntouched low mileage ✔️\nAll exhaust catalyst are intact✔️\n\n==========================\n🔷Price: *17M*\n🔷Swap deal is highly welcomed\n========================\n\n➡️ Engine: Excellent condition\nUntouched 💯\n➡️ Gear: Very smooth. 100%\nUntouched 💯\n➡️ AC: Factory fitted ac and Chilling. 💯\n\nStatus: Toks Standard 💯\nGrade: A+++\nLocation: Surulere",
-    location: "Surulere",
-    status: "Toks Standard",
-    grade: "A+++"
-  },
-  { 
-    name: "Mercedes-Benz GLK350", 
-    trim: "2015 4MATIC", 
-    specs: ["Automatic", "Petrol", "23M"], 
-    img: NEW_CAR_IMAGES.benz[0],
-    imageRange: "benz",
-    price: "23M",
-    description: "JUST ARRIVED 🇺🇸 2015 GLK350 4MATIC",
-    fullDescription: "JUST ARRIVED 🇺🇸 2015 GLK350 4MATIC\n\nACCIDENT FREE\n\nBLACK ON CREAM INTERIOR\n\n2 KEYS\n\nTHUMBSTART\nPANORAMIC ROOF\nREVERSE CAMERA\nPOWER BOOT\n\n23M ONLY ‼️NON NEGOTIABLE",
-    location: "Lagos",
-    status: "Accident Free",
-    grade: "A+"
-  },
-  { 
-    name: "Toyota Highlander", 
-    trim: "2015 Full Option", 
-    specs: ["Automatic", "Petrol", "24M"], 
-    img: NEW_CAR_IMAGES.highlander[0],
-    imageRange: "highlander",
-    price: "24M",
-    description: "LAST AWOOF in Lagos 24 million ‼️",
-    fullDescription: "LAST AWOOF in Lagos 24 million ‼️\n\nForeign used 2015 Toyota Highlander full opt\n• June 2026 Entry\n• ⁠First body\n• keyless entry\n• ⁠Price : 24million cash",
-    location: "Lagos",
-    status: "First Body",
-    grade: "A+"
-  },
-  { 
-    name: "Toyota Highlander XLE", 
-    trim: "2018 Foreign Used", 
-    specs: ["Automatic", "Petrol", "78,345 mi"], 
-    img: NEW_CAR_IMAGES.hl[0],
-    imageRange: "hl",
-    price: "32M",
-    description: "TOYOTA HIGHLANDER (XLE) 2018🇺🇸",
-    fullDescription: "TOYOTA HIGHLANDER (XLE) 2018🇺🇸\n\nForeign used 🇺🇸\nYear 2018\nThumbstart\nRemote Start\nAmbient lights\nBlind Spot Monitor (BSM)\nProximity sensors active\nCaptain Seats 💺\n3row seats\nGrey on Ash interior\nLow mileage 78,345Miles\nAlloy Rims\nExtremely Clean\n\nLocation, Ago palace, Lagos\n\nAvailable for inspection and Purchase ☘️\n\nPrice: 32Million",
-    location: "Ago Palace, Lagos",
-    status: "Extremely Clean",
-    grade: "A++"
-  },
-];
-
-// Spare Parts Data with local images
-const SPARE_PARTS = [
-  { name: "Air Filter", category: "Filters", img: images.AirFilter },
-  { name: "Brake Pad Set", category: "Brakes", img: images.BrakePadSet },
-  { name: "Alternator", category: "Electrical", img: images.Alternator },
-  { name: "Battery 12V", category: "Electrical", img: images.BatteryV12 },
-  { name: "Engine Oil Filter", category: "Filters", img: images.EngineOilFilter },
-  { name: "Fuel Pump", category: "Fuel System", img: images.FuelPump },
-  { name: "Oil Pan Gasket", category: "Engine", img: images.OilPanGasket },
-  { name: "Radiator Fan", category: "Cooling", img: images.RadiatorFan },
-  { name: "Shock Absorber", category: "Suspension", img: images.ShockAbsorber },
-  { name: "Spark Plug", category: "Ignition", img: images.SparkPlug },
-  { name: "Timing Belt", category: "Engine", img: images.TimingBelt },
-  { name: "Wiper Blades", category: "Exterior", img: images.WiperBlades },
-];
 
 const TRUST_CARDS = [
   {
@@ -240,7 +142,7 @@ const REVIEWS = [
     title: "Bought a Mercedes ML 350",
     rating: "4.9",
     text: "Best buying experience I've had — the team knew every detail of the car.",
-    name: " Musa Bello",
+    name: "Musa Bello",
     time: "7 days ago",
   },
   {
@@ -281,7 +183,7 @@ const ARTICLES = [
 ];
 
 /* ------------------------------------------------------------------ */
-/*  HOOKS                                                               */
+/*  HOOKS                                                              */
 /* ------------------------------------------------------------------ */
 
 function useReveal(threshold = 0.15) {
@@ -325,6 +227,84 @@ function useScrollY() {
 }
 
 /* ------------------------------------------------------------------ */
+/*  HELPERS                                                            */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Collect ALL displayable images for a car listing.
+ * Priority:
+ *   1. API listing:  coverImage.url + subImages[].url + galleries[].images[].url
+ *   2. Legacy local data: imageRange → NEW_CAR_IMAGES / CAR_IMAGE_RANGES
+ *   3. Fallback:    single car.img / car.coverImage.url
+ */
+function collectCarImages(car) {
+  if (!car) return [];
+
+  const list = [];
+  const push = (u) => {
+    if (typeof u === "string" && u.trim()) list.push(u);
+  };
+
+  // 1. API shape
+  push(car.coverImage?.url);
+  if (Array.isArray(car.subImages)) car.subImages.forEach((i) => push(i?.url));
+  if (Array.isArray(car.galleries)) {
+    car.galleries.forEach((g) => {
+      if (Array.isArray(g?.images)) g.images.forEach((i) => push(i?.url));
+    });
+  }
+
+  // 2. Legacy local shape
+  if (!list.length && car.imageRange) {
+    const key = car.imageRange;
+    if (NEW_CAR_IMAGES[key]) {
+      NEW_CAR_IMAGES[key].forEach(push);
+    } else if (CAR_IMAGE_RANGES[key]) {
+      const { start, end } = CAR_IMAGE_RANGES[key];
+      for (let i = start; i <= end && i < CAR_IMAGES.length; i++) push(CAR_IMAGES[i]);
+    }
+  }
+
+  // 3. Fallback to the single `img` field (used by CarCard)
+  if (!list.length) push(car.img);
+
+  // Dedupe, keep order
+  return [...new Set(list)];
+}
+
+/** mailto: order helper — works for cars and spare parts */
+function orderByEmail(item, kind = "car") {
+  const admin = "lordgroup.limited@gmail.com";
+  const lines = [];
+
+  if (kind === "car") {
+    lines.push(`Vehicle: ${item.name || ""} (${item.year || ""})`);
+    if (item.make || item.model) lines.push(`Make / Model: ${item.make || ""} ${item.model || ""}`.trim());
+    if (item.trim) lines.push(`Trim: ${item.trim}`);
+    if (item.color) lines.push(`Color: ${item.color}`);
+    if (item.transmission) lines.push(`Transmission: ${item.transmission}`);
+    if (item.fuel) lines.push(`Fuel: ${item.fuel}`);
+    if (item.mileage) lines.push(`Mileage: ${Number(item.mileage).toLocaleString()} mi`);
+    if (item.price) lines.push(`Price: ${item.price}`);
+    if (item.location) lines.push(`Location: ${item.location}`);
+  } else {
+    lines.push(`Part: ${item.name || ""}`);
+    if (item.brand) lines.push(`Brand: ${item.brand}`);
+    if (item.category) lines.push(`Category: ${item.category}`);
+    if (item.subcategory) lines.push(`Subcategory: ${item.subcategory}`);
+  }
+
+  const subject = encodeURIComponent(`Order Request — ${item.name || "Item"}`);
+  const body = encodeURIComponent(
+    `Hello Lord Group Autos,\n\nI would like to place an order for:\n\n${lines.join(
+      "\n"
+    )}\n\nPlease contact me with payment and delivery details.\n\nThank you.`
+  );
+
+  window.location.href = `mailto:${admin}?subject=${subject}&body=${body}`;
+}
+
+/* ------------------------------------------------------------------ */
 /*  PRIMITIVES                                                         */
 /* ------------------------------------------------------------------ */
 
@@ -348,7 +328,12 @@ function Eyebrow({ children }) {
       <span style={{ width: 22, height: 1, background: "var(--line-strong)" }} />
       <span
         className="font-mono"
-        style={{ fontSize: 12, letterSpacing: "0.16em", color: "var(--accent)", textTransform: "uppercase" }}
+        style={{
+          fontSize: 12,
+          letterSpacing: "0.16em",
+          color: "var(--accent)",
+          textTransform: "uppercase",
+        }}
       >
         {children}
       </span>
@@ -357,17 +342,8 @@ function Eyebrow({ children }) {
   );
 }
 
-function PrimaryButton({ children, icon: Icon = ArrowRight, onClick, style = {} }) {
-  return (
-    <button onClick={onClick} className="btn-primary" style={style}>
-      <span>{children}</span>
-      <Icon size={16} strokeWidth={2.25} />
-    </button>
-  );
-}
-
 /* ------------------------------------------------------------------ */
-/*  NAV                                                                 */
+/*  NAV                                                                */
 /* ------------------------------------------------------------------ */
 
 function Logo({ size = 40 }) {
@@ -385,23 +361,18 @@ function Logo({ size = 40 }) {
           flexShrink: 0,
         }}
       >
-        <img 
-          src={images.Logo2} 
-          alt="Lord Group Autos" 
-          style={{ 
-            width: "100%", 
-            height: "100%", 
-            objectFit: "cover",
-            display: "block",
-          }} 
+        <img
+          src={images.Logo2}
+          alt="Lord Group Autos"
+          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
         />
       </span>
-      <span 
-        className="font-display" 
-        style={{ 
-          fontSize: 20, 
-          fontWeight: 700, 
-          letterSpacing: "-0.02em", 
+      <span
+        className="font-display"
+        style={{
+          fontSize: 20,
+          fontWeight: 700,
+          letterSpacing: "-0.02em",
           color: "var(--text)",
           lineHeight: 1.2,
         }}
@@ -430,7 +401,10 @@ function NavBar() {
           borderBottom: `1px solid ${scrolled ? "var(--line)" : "transparent"}`,
         }}
       >
-        <div className="max-w-7xl mx-auto px-6 md:px-10 flex items-center justify-between" style={{ height: 76 }}>
+        <div
+          className="max-w-7xl mx-auto px-6 md:px-10 flex items-center justify-between"
+          style={{ height: 76 }}
+        >
           <Logo />
           <nav className="hidden lg:flex items-center gap-9">
             {NAV_LINKS.map((l) => (
@@ -440,7 +414,11 @@ function NavBar() {
             ))}
           </nav>
           <div className="flex items-center gap-3">
-            <button className="icon-btn lg:hidden" onClick={() => setOpen(true)} aria-label="Open menu">
+            <button
+              className="icon-btn lg:hidden"
+              onClick={() => setOpen(true)}
+              aria-label="Open menu"
+            >
               <Menu size={19} />
             </button>
           </div>
@@ -457,7 +435,10 @@ function NavBar() {
           background: "rgba(0,0,0,0.98)",
         }}
       >
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between" style={{ height: 76 }}>
+        <div
+          className="max-w-7xl mx-auto px-6 flex items-center justify-between"
+          style={{ height: 76 }}
+        >
           <Logo />
           <button className="icon-btn" onClick={() => setOpen(false)} aria-label="Close menu">
             <X size={19} />
@@ -490,7 +471,7 @@ function NavBar() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  HERO                                                                */
+/*  HERO                                                               */
 /* ------------------------------------------------------------------ */
 
 function Hero() {
@@ -526,8 +507,17 @@ function Hero() {
           </h1>
         </Reveal>
         <Reveal delay={160}>
-          <p style={{ color: "var(--muted)", fontSize: 17, marginTop: 20, maxWidth: 460, marginInline: "auto" }}>
-            Driven by Integrity — Browse a curated, fully inspected inventory with transparent pricing and financing built around you.
+          <p
+            style={{
+              color: "var(--muted)",
+              fontSize: 17,
+              marginTop: 20,
+              maxWidth: 460,
+              marginInline: "auto",
+            }}
+          >
+            Driven by Integrity — Browse a curated, fully inspected inventory with transparent
+            pricing and financing built around you.
           </p>
         </Reveal>
       </div>
@@ -556,7 +546,7 @@ function Hero() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  BRAND MARQUEE                                                       */
+/*  BRAND MARQUEE                                                      */
 /* ------------------------------------------------------------------ */
 
 function BrandStrip() {
@@ -583,7 +573,7 @@ function BrandStrip() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  CAR GALLERY — with click to open lightbox                          */
+/*  CAR CARD                                                           */
 /* ------------------------------------------------------------------ */
 
 function CarCard({ car, index, onOpen }) {
@@ -610,6 +600,11 @@ function CarCard({ car, index, onOpen }) {
     setTilt((t) => ({ ...t, rx: 0, ry: 0, active: false }));
   }, []);
 
+  const cover =
+    car.coverImage?.url ||
+    car.img ||
+    "";
+
   return (
     <div
       ref={revealRef}
@@ -629,7 +624,22 @@ function CarCard({ car, index, onOpen }) {
         }}
       >
         <div className="car-card-media">
-          <img src={car.img} alt={car.name} />
+          {cover ? (
+            <img src={cover} alt={car.name} loading="lazy" />
+          ) : (
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "var(--muted)",
+              }}
+            >
+              <Car size={40} />
+            </div>
+          )}
           <div
             className="car-card-spot"
             style={{
@@ -637,26 +647,41 @@ function CarCard({ car, index, onOpen }) {
               background: `radial-gradient(circle at ${tilt.sx}% ${tilt.sy}%, rgba(255,255,255,0.08), transparent 45%)`,
             }}
           />
+          {car.price && (
+            <div
+              className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold"
+              style={{ background: "var(--accent)", color: "#fff" }}
+            >
+              {car.price}
+            </div>
+          )}
         </div>
         <div className="car-card-body">
           <div className="flex items-baseline justify-between">
-            <h3 className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "var(--text)" }}>
+            <h3
+              className="font-display"
+              style={{ fontSize: 19, fontWeight: 600, color: "var(--text)" }}
+            >
               {car.name}
             </h3>
             <ArrowUpRight size={17} color="var(--accent)" />
           </div>
-          <p className="font-mono" style={{ fontSize: 12.5, color: "var(--muted)", marginTop: 3 }}>
-            {car.trim}
+          <p
+            className="font-mono"
+            style={{ fontSize: 12.5, color: "var(--muted)", marginTop: 3 }}
+          >
+            {car.trim || car.year || ""}
           </p>
           <div className="car-specs">
             <span>
-              <Settings2 size={13} /> {car.specs[0]}
+              <Settings2 size={13} /> {car.transmission || "Automatic"}
             </span>
             <span>
-              <Fuel size={13} /> {car.specs[1]}
+              <Fuel size={13} /> {car.fuel || "Petrol"}
             </span>
             <span>
-              <Gauge size={13} /> {car.specs[2]}
+              <Gauge size={13} />{" "}
+              {car.mileage ? `${Number(car.mileage).toLocaleString()} mi` : "Contact us"}
             </span>
           </div>
         </div>
@@ -666,7 +691,7 @@ function CarCard({ car, index, onOpen }) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  LIGHTBOX / MODAL - Updated for New Arrivals                       */
+/*  LIGHTBOX — safe with API data                                      */
 /* ------------------------------------------------------------------ */
 
 function CarLightbox({ car, onClose }) {
@@ -674,45 +699,32 @@ function CarLightbox({ car, onClose }) {
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, []);
+
+  // Reset index whenever a new car is opened
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [car?._id, car?.id]);
 
   if (!car) return null;
 
-  // Get images based on the car's imageRange or name
-  let carImages = [];
-  
-  if (car.imageRange === "lexus") {
-    carImages = NEW_CAR_IMAGES.lexus;
-  } else if (car.imageRange === "benz") {
-    carImages = NEW_CAR_IMAGES.benz;
-  } else if (car.imageRange === "highlander") {
-    carImages = NEW_CAR_IMAGES.highlander;
-  } else if (car.imageRange === "hl") {
-    carImages = NEW_CAR_IMAGES.hl;
-  } else {
-    // Fallback to regular CAR_IMAGES for non-new arrivals
-    const range = CAR_IMAGE_RANGES[car.imageRange];
-    if (range) {
-      for (let i = range.start; i <= range.end; i++) {
-        if (i < CAR_IMAGES.length) {
-          carImages.push(CAR_IMAGES[i]);
-        }
-      }
-    }
-    if (carImages.length === 0) {
-      carImages = [car.img];
-    }
-  }
+  const carImages = collectCarImages(car);
+  const safeImages = carImages.length ? carImages : [];
+  const currentSrc = safeImages[currentIndex] || safeImages[0] || "";
 
   const handlePrev = (e) => {
     e.stopPropagation();
-    setCurrentIndex((prev) => (prev - 1 + carImages.length) % carImages.length);
+    if (safeImages.length < 2) return;
+    setCurrentIndex((prev) => (prev - 1 + safeImages.length) % safeImages.length);
   };
 
   const handleNext = (e) => {
     e.stopPropagation();
-    setCurrentIndex((prev) => (prev + 1) % carImages.length);
+    if (safeImages.length < 2) return;
+    setCurrentIndex((prev) => (prev + 1) % safeImages.length);
   };
 
   return (
@@ -728,33 +740,48 @@ function CarLightbox({ car, onClose }) {
       <div
         className="relative bg-[#1a1a1a] rounded-2xl max-w-5xl w-full mx-4 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
-        style={{
-          animation: "slideUp 0.4s cubic-bezier(0.22, 0.61, 0.36, 1)",
-        }}
+        style={{ animation: "slideUp 0.4s cubic-bezier(0.22, 0.61, 0.36, 1)" }}
       >
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-10 p-2 bg-black/50 rounded-full shadow-lg hover:bg-black/70 transition-colors"
           style={{ color: "#ffffff" }}
+          aria-label="Close"
         >
           <XCircle size={28} />
         </button>
 
         <div className="p-6">
-          <div className="flex items-start justify-between">
+          <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 className="font-display text-2xl font-bold mb-1" style={{ color: "#ffffff" }}>
+              <h2
+                className="font-display text-2xl font-bold mb-1"
+                style={{ color: "#ffffff" }}
+              >
                 {car.name}
               </h2>
-              <p className="font-mono text-sm" style={{ color: "#999" }}>{car.trim}</p>
+              <p className="font-mono text-sm" style={{ color: "#999" }}>
+                {car.trim || car.year}
+              </p>
               {car.price && (
-                <p className="font-display text-lg" style={{ color: "var(--accent)", marginTop: 4 }}>
+                <p
+                  className="font-display text-lg"
+                  style={{ color: "var(--accent)", marginTop: 4 }}
+                >
                   {car.price}
                 </p>
               )}
             </div>
             {car.location && (
-              <span className="text-xs font-mono px-3 py-1 rounded-full" style={{ background: "var(--surface)", color: "var(--muted)", border: "1px solid var(--line)" }}>
+              <span
+                className="text-xs font-mono px-3 py-1 rounded-full"
+                style={{
+                  background: "var(--surface)",
+                  color: "var(--muted)",
+                  border: "1px solid var(--line)",
+                  whiteSpace: "nowrap",
+                }}
+              >
                 📍 {car.location}
               </span>
             )}
@@ -762,57 +789,88 @@ function CarLightbox({ car, onClose }) {
 
           {/* Gallery */}
           <div className="relative mt-4">
-            <div className="relative overflow-hidden rounded-xl" style={{ background: "#0a0a0a", height: 400 }}>
-              <img
-                src={carImages[currentIndex] || car.img}
-                alt={`${car.name} view ${currentIndex + 1}`}
-                className="w-full h-full object-contain"
-              />
+            <div
+              className="relative overflow-hidden rounded-xl"
+              style={{ background: "#0a0a0a", height: 400 }}
+            >
+              {currentSrc ? (
+                <img
+                  src={currentSrc}
+                  alt={`${car.name} view ${currentIndex + 1}`}
+                  className="w-full h-full object-contain"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              ) : (
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#555",
+                  }}
+                >
+                  <Car size={64} />
+                </div>
+              )}
             </div>
 
-            {/* Navigation */}
-            {carImages.length > 1 && (
+            {safeImages.length > 1 && (
               <>
                 <button
                   onClick={handlePrev}
                   className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 rounded-full shadow-lg hover:bg-black/70 transition-colors"
                   style={{ color: "#ffffff" }}
+                  aria-label="Previous image"
                 >
-                  <ChevronRight className="rotate-180" size={24} />
+                  <ChevronLeft size={24} />
                 </button>
                 <button
                   onClick={handleNext}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 rounded-full shadow-lg hover:bg-black/70 transition-colors"
                   style={{ color: "#ffffff" }}
+                  aria-label="Next image"
                 >
                   <ChevronRight size={24} />
                 </button>
               </>
             )}
 
-            {/* Thumbnails */}
-            {carImages.length > 1 && (
+            {safeImages.length > 1 && (
               <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
-                {carImages.map((img, i) => (
+                {safeImages.map((img, i) => (
                   <button
-                    key={i}
+                    key={`${img}-${i}`}
                     onClick={() => setCurrentIndex(i)}
-                    className={`w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all ${
-                      i === currentIndex ? "border-[var(--accent)]" : "border-transparent"
-                    }`}
+                    className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all"
+                    style={{
+                      borderColor: i === currentIndex ? "var(--accent)" : "transparent",
+                      background: "#0a0a0a",
+                    }}
+                    aria-label={`View image ${i + 1}`}
                   >
-                    <img src={img} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover" />
+                    <img
+                      src={img}
+                      alt={`Thumbnail ${i + 1}`}
+                      className="w-full h-full object-cover"
+                    />
                   </button>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Full Description */}
-          {car.fullDescription && (
+          {/* Full description */}
+          {(car.fullDescription || car.description) && (
             <div className="mt-4 p-4 rounded-lg" style={{ background: "#0a0a0a" }}>
-              <p className="text-sm whitespace-pre-wrap" style={{ color: "#ccc", lineHeight: 1.6 }}>
-                {car.fullDescription}
+              <p
+                className="text-sm whitespace-pre-wrap"
+                style={{ color: "#ccc", lineHeight: 1.6 }}
+              >
+                {car.fullDescription || car.description}
               </p>
             </div>
           )}
@@ -820,87 +878,129 @@ function CarLightbox({ car, onClose }) {
           {/* Specs */}
           <div className="grid grid-cols-3 gap-3 mt-4">
             <div className="p-3 rounded-lg" style={{ background: "#0a0a0a" }}>
-              <p className="text-xs font-mono" style={{ color: "#666" }}>Transmission</p>
-              <p className="font-medium" style={{ color: "#ffffff" }}>{car.specs[0]}</p>
+              <p className="text-xs font-mono" style={{ color: "#666" }}>
+                Transmission
+              </p>
+              <p className="font-medium" style={{ color: "#ffffff" }}>
+                {car.transmission || "—"}
+              </p>
             </div>
             <div className="p-3 rounded-lg" style={{ background: "#0a0a0a" }}>
-              <p className="text-xs font-mono" style={{ color: "#666" }}>Fuel</p>
-              <p className="font-medium" style={{ color: "#ffffff" }}>{car.specs[1]}</p>
+              <p className="text-xs font-mono" style={{ color: "#666" }}>
+                Fuel
+              </p>
+              <p className="font-medium" style={{ color: "#ffffff" }}>
+                {car.fuel || "—"}
+              </p>
             </div>
             <div className="p-3 rounded-lg" style={{ background: "#0a0a0a" }}>
-              <p className="text-xs font-mono" style={{ color: "#666" }}>Mileage</p>
-              <p className="font-medium" style={{ color: "#ffffff" }}>{car.specs[2]}</p>
+              <p className="text-xs font-mono" style={{ color: "#666" }}>
+                Mileage
+              </p>
+              <p className="font-medium" style={{ color: "#ffffff" }}>
+                {car.mileage ? `${Number(car.mileage).toLocaleString()} mi` : "—"}
+              </p>
             </div>
           </div>
 
-          {/* Status badges */}
+          {/* Badges */}
           <div className="flex flex-wrap gap-2 mt-4">
             {car.status && (
-              <span className="text-xs px-3 py-1 rounded-full" style={{ background: "rgba(0,102,204,0.15)", color: "var(--accent)", border: "1px solid rgba(0,102,204,0.2)" }}>
+              <span
+                className="text-xs px-3 py-1 rounded-full"
+                style={{
+                  background: "rgba(0,102,204,0.15)",
+                  color: "var(--accent)",
+                  border: "1px solid rgba(0,102,204,0.2)",
+                }}
+              >
                 {car.status}
               </span>
             )}
             {car.grade && (
-              <span className="text-xs px-3 py-1 rounded-full" style={{ background: "rgba(34,197,94,0.15)", color: "#22c55e", border: "1px solid rgba(34,197,94,0.2)" }}>
+              <span
+                className="text-xs px-3 py-1 rounded-full"
+                style={{
+                  background: "rgba(34,197,94,0.15)",
+                  color: "#22c55e",
+                  border: "1px solid rgba(34,197,94,0.2)",
+                }}
+              >
                 Grade: {car.grade}
               </span>
             )}
           </div>
 
-          <button className="w-full mt-4 btn-primary justify-center">
-            Enquire About This Vehicle
+          <button
+            className="w-full mt-4 btn-primary justify-center"
+            onClick={() => orderByEmail(car, "car")}
+          >
+            <MessageCircle size={16} />
+            Place Order
           </button>
         </div>
       </div>
 
       <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp {
           from { opacity: 0; transform: scale(0.95) translateY(20px); }
-          to { opacity: 1; transform: scale(1) translateY(0); }
+          to   { opacity: 1; transform: scale(1) translateY(0); }
         }
       `}</style>
     </div>
   );
 }
 
-function normalizeListing(listing) {
-  return {
-    ...listing,
-    id: listing._id,
-    img: imageUrl(listing.imageUrl),
-    name: listing.name || `${listing.make || ''} ${listing.model || ''}`.trim(),
-    trim: listing.trim || listing.year || '',
-    specs: [listing.transmission || 'Automatic', listing.fuel || 'Petrol', listing.mileage ? `${listing.mileage} mi` : 'Contact us'],
-  };
-}
+/* ------------------------------------------------------------------ */
+/*  GALLERY (Explore the current inventory)                            */
+/* ------------------------------------------------------------------ */
 
 function Gallery() {
   const [selectedCar, setSelectedCar] = useState(null);
   const [cars, setCars] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getListings('gallery').then((listings) => setCars(listings.map(normalizeListing))).catch(() => setCars([]));
+    getListings("gallery", { limit: 6 })
+      .then(setCars)
+      .catch(() => setCars([]))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
-    <section id="inventory" className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 110 }}>
+    <section
+      id="inventory"
+      className="max-w-7xl mx-auto px-6 md:px-10"
+      style={{ paddingTop: 110 }}
+    >
       <Reveal className="text-center">
         <h2 className="font-display section-title">Explore the current inventory</h2>
         <p className="section-sub">Every vehicle photographed, inspected, and priced upfront</p>
       </Reveal>
       <Reveal delay={80} className="text-center" style={{ marginTop: 22, marginBottom: 46 }}>
-      <Link to="/gallery" className="btn-primary">
-        View All Vehicles
-      </Link>
+        <Link to="/gallery" className="btn-primary">
+          View All Vehicles
+        </Link>
       </Reveal>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {cars.slice(0, 6).map((car, i) => (
-          <CarCard car={car} index={i} key={`${car.name}-${car.trim}`} onOpen={setSelectedCar} />
-        ))}
+        {loading
+          ? Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="car-card"
+                style={{ opacity: 0.4, height: 320 }}
+              />
+            ))
+          : cars.map((car, i) => (
+              <CarCard
+                key={car._id || car.id || i}
+                car={car}
+                index={i}
+                onOpen={setSelectedCar}
+              />
+            ))}
       </div>
 
       {selectedCar && (
@@ -911,15 +1011,19 @@ function Gallery() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  NEW ARRIVALS GALLERY SECTION - Updated with new images            */
+/*  NEW ARRIVALS                                                       */
 /* ------------------------------------------------------------------ */
 
 function NewArrivals() {
   const [selectedCar, setSelectedCar] = useState(null);
   const [cars, setCars] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getListings('new-arrivals').then((listings) => setCars(listings.map(normalizeListing))).catch(() => setCars([]));
+    getListings("new-arrivals", { limit: 4 })
+      .then(setCars)
+      .catch(() => setCars([]))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -933,52 +1037,97 @@ function NewArrivals() {
         <p className="section-sub">The latest models just landed — be the first to drive them</p>
       </Reveal>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" style={{ marginTop: 46 }}>
-        {cars.map((car, index) => (
-          <Reveal delay={(index % 4) * 100} key={`${car.name}-${car.trim}`}>
-            <article
-              className="car-card cursor-pointer"
-              onClick={() => setSelectedCar(car)}
-            >
-              <div className="car-card-media">
-                <img src={car.img} alt={`${car.name} ${car.trim}`} />
-                <div className="car-card-spot" />
-                {car.price && (
-                  <div className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold" style={{ background: "var(--accent)", color: "#ffffff" }}>
-                    {car.price}
+      <div
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+        style={{ marginTop: 46 }}
+      >
+        {loading
+          ? Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="car-card"
+                style={{ opacity: 0.4, height: 320 }}
+              />
+            ))
+          : cars.map((car, index) => (
+              <Reveal delay={(index % 4) * 100} key={car._id || car.id || index}>
+                <article
+                  className="car-card cursor-pointer"
+                  onClick={() => setSelectedCar(car)}
+                >
+                  <div className="car-card-media">
+                    {car.coverImage?.url ? (
+                      <img src={car.coverImage.url} alt={car.name} loading="lazy" />
+                    ) : (
+                      <div
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "var(--muted)",
+                        }}
+                      >
+                        <Car size={40} />
+                      </div>
+                    )}
+                    <div className="car-card-spot" />
+                    {car.price && (
+                      <div
+                        className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold"
+                        style={{ background: "var(--accent)", color: "#fff" }}
+                      >
+                        {car.price}
+                      </div>
+                    )}
+                    {(car.newArrival || car.status) && (
+                      <div
+                        className="absolute bottom-3 left-3 px-3 py-1 rounded-full text-xs"
+                        style={{
+                          background: "rgba(0,0,0,.75)",
+                          color: "#fff",
+                          backdropFilter: "blur(8px)",
+                        }}
+                      >
+                        {car.status || "New Listing"}
+                      </div>
+                    )}
                   </div>
-                )}
-                {car.status && (
-                  <div className="absolute bottom-3 left-3 px-3 py-1 rounded-full text-xs" style={{ background: "rgba(0,0,0,0.75)", color: "#ffffff", backdropFilter: "blur(8px)" }}>
-                    {car.status}
+                  <div className="car-card-body">
+                    <div className="flex items-baseline justify-between">
+                      <h3
+                        className="font-display"
+                        style={{ fontSize: 19, fontWeight: 600, color: "var(--text)" }}
+                      >
+                        {car.name}
+                      </h3>
+                      <ArrowUpRight size={17} color="var(--accent)" />
+                    </div>
+                    <p
+                      className="font-mono"
+                      style={{ fontSize: 12.5, color: "var(--muted)", marginTop: 3 }}
+                    >
+                      {car.trim || car.year}
+                    </p>
+                    <div className="car-specs">
+                      <span>
+                        <Settings2 size={13} /> {car.transmission || "Automatic"}
+                      </span>
+                      <span>
+                        <Fuel size={13} /> {car.fuel || "Petrol"}
+                      </span>
+                      <span>
+                        <Gauge size={13} />{" "}
+                        {car.mileage
+                          ? `${Number(car.mileage).toLocaleString()} mi`
+                          : "Contact us"}
+                      </span>
+                    </div>
                   </div>
-                )}
-              </div>
-              <div className="car-card-body">
-                <div className="flex items-baseline justify-between">
-                  <h3 className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "var(--text)" }}>
-                    {car.name}
-                  </h3>
-                  <ArrowUpRight size={17} color="var(--accent)" />
-                </div>
-                <p className="font-mono" style={{ fontSize: 12.5, color: "var(--muted)", marginTop: 3 }}>
-                  {car.trim}
-                </p>
-                <div className="car-specs">
-                  <span>
-                    <Settings2 size={13} /> {car.specs[0]}
-                  </span>
-                  <span>
-                    <Fuel size={13} /> {car.specs[1]}
-                  </span>
-                  <span>
-                    <Gauge size={13} /> {car.specs[2]}
-                  </span>
-                </div>
-              </div>
-            </article>
-          </Reveal>
-        ))}
+                </article>
+              </Reveal>
+            ))}
       </div>
 
       {selectedCar && (
@@ -989,47 +1138,100 @@ function NewArrivals() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  SPARE PARTS SECTION                                               */
+/*  SPARE PARTS                                                        */
 /* ------------------------------------------------------------------ */
 
 function SpareParts() {
   const [parts, setParts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [active, setActive] = useState(null);
 
   useEffect(() => {
-    getListings('spare-parts').then((listings) => setParts(listings.map((part) => ({ ...part, img: imageUrl(part.imageUrl), id: part._id })))).catch(() => setParts([]));
+    getListings("spare-parts")
+      .then(setParts)
+      .catch(() => setParts([]))
+      .finally(() => setLoading(false));
   }, []);
 
   return (
-    <section id="spare-parts" className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 110 }}>
+    <section
+      id="spare-parts"
+      className="max-w-7xl mx-auto px-6 md:px-10"
+      style={{ paddingTop: 110 }}
+    >
       <Reveal className="text-center">
         <div className="flex items-center justify-center gap-3 mb-4">
           <Wrench size={28} color="var(--accent)" />
           <h2 className="font-display section-title">Genuine Spare Parts</h2>
           <Wrench size={28} color="var(--accent)" />
         </div>
-        <p className="section-sub">Quality parts for every vehicle — from filters to full engine components</p>
+        <p className="section-sub">
+          Quality parts for every vehicle — from filters to full engine components
+        </p>
       </Reveal>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" style={{ marginTop: 46 }}>
-        {parts.map((part, index) => (
-          <Reveal delay={(index % 4) * 80} key={index}>
-            <div className="spare-part-card">
-              <div className="spare-part-image">
-                <img src={part.img} alt={part.name} />
-                <span className="spare-part-category">{part.category}</span>
-              </div>
-              <div className="spare-part-body">
-                <h3 className="font-display" style={{ fontSize: 15, fontWeight: 600, color: "var(--text)" }}>
-                  {part.name}
-                </h3>
-                <div className="flex items-center justify-between" style={{ marginTop: 10 }}>
-                  <span style={{ fontSize: 12, color: "var(--muted)" }}>In Stock</span>
-                  <span className="spare-part-availability">✓ Available</span>
+      <div
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+        style={{ marginTop: 46 }}
+      >
+        {loading
+          ? Array.from({ length: 8 }).map((_, i) => (
+              <div
+                key={i}
+                className="spare-part-card"
+                style={{ opacity: 0.4, height: 240 }}
+              />
+            ))
+          : parts.map((part, index) => (
+              <Reveal delay={(index % 4) * 80} key={part._id || part.id || index}>
+                <div className="spare-part-card">
+                  <div className="spare-part-image">
+                    {part.coverImage?.url ? (
+                      <img src={part.coverImage.url} alt={part.name} loading="lazy" />
+                    ) : (
+                      <div
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "var(--muted)",
+                        }}
+                      >
+                        <Wrench size={32} />
+                      </div>
+                    )}
+                    {part.category && (
+                      <span className="spare-part-category">{part.category}</span>
+                    )}
+                  </div>
+                  <div className="spare-part-body">
+                    <h3
+                      className="font-display"
+                      style={{ fontSize: 15, fontWeight: 600, color: "var(--text)" }}
+                    >
+                      {part.name}
+                    </h3>
+                    <div
+                      className="flex items-center justify-between"
+                      style={{ marginTop: 10 }}
+                    >
+                      <span style={{ fontSize: 12, color: "var(--muted)" }}>
+                        {part.inStock === false ? "Out of Stock" : "In Stock"}
+                      </span>
+                      <button
+                        className="spare-part-order"
+                        onClick={() => orderByEmail(part, "spare-part")}
+                        type="button"
+                      >
+                        Place Order <ArrowUpRight size={12} />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </Reveal>
-        ))}
+              </Reveal>
+            ))}
       </div>
 
       <Reveal delay={100} className="text-center" style={{ marginTop: 40 }}>
@@ -1043,15 +1245,21 @@ function SpareParts() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  TRUST BENTO                                                         */
+/*  TRUST                                                              */
 /* ------------------------------------------------------------------ */
 
 function TrustSection() {
   return (
-    <section id="trust" className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 120 }}>
+    <section
+      id="trust"
+      className="max-w-7xl mx-auto px-6 md:px-10"
+      style={{ paddingTop: 120 }}
+    >
       <Reveal className="text-center">
         <h2 className="font-display section-title">Why buyers trust Lord Group Autos</h2>
-        <p className="section-sub">From first search to signed paperwork, nothing is left vague</p>
+        <p className="section-sub">
+          From first search to signed paperwork, nothing is left vague
+        </p>
       </Reveal>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6" style={{ marginTop: 46 }}>
         {TRUST_CARDS.map((c, i) => {
@@ -1065,10 +1273,22 @@ function TrustSection() {
                   <div className="trust-icon">
                     <Icon size={16} color="var(--accent)" />
                   </div>
-                  <h3 className="font-display" style={{ fontSize: 16.5, fontWeight: 600, color: "#ffffff" }}>
+                  <h3
+                    className="font-display"
+                    style={{ fontSize: 16.5, fontWeight: 600, color: "#ffffff" }}
+                  >
                     {c.title}
                   </h3>
-                  <p style={{ fontSize: 13, color: "rgba(255,255,255,0.8)", marginTop: 4, lineHeight: 1.5 }}>{c.body}</p>
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: "rgba(255,255,255,0.8)",
+                      marginTop: 4,
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    {c.body}
+                  </p>
                 </div>
               </div>
             </Reveal>
@@ -1080,12 +1300,16 @@ function TrustSection() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  ABOUT / FOUNDER SECTION                                            */
+/*  ABOUT / FOUNDER                                                    */
 /* ------------------------------------------------------------------ */
 
 function AboutSection() {
   return (
-    <section id="about" className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 120 }}>
+    <section
+      id="about"
+      className="max-w-7xl mx-auto px-6 md:px-10"
+      style={{ paddingTop: 120 }}
+    >
       <Reveal className="text-center">
         <h2 className="font-display section-title">Meet the Founder</h2>
         <p className="section-sub">Driven by integrity, built on trust</p>
@@ -1107,29 +1331,62 @@ function AboutSection() {
 
         <Reveal delay={200}>
           <div className="founder-content">
-            <h3 className="font-display" style={{ fontSize: 28, fontWeight: 700, color: "var(--text)", letterSpacing: "-0.02em" }}>
+            <h3
+              className="font-display"
+              style={{
+                fontSize: 28,
+                fontWeight: 700,
+                color: "var(--text)",
+                letterSpacing: "-0.02em",
+              }}
+            >
               Obinna Ezichi Fidelis
             </h3>
-            <p className="font-mono" style={{ fontSize: 14, color: "var(--accent)", marginTop: 4 }}>
+            <p
+              className="font-mono"
+              style={{ fontSize: 14, color: "var(--accent)", marginTop: 4 }}
+            >
               Founder, Lord Group Autos
             </p>
 
-            <div style={{ height: 2, width: 60, background: "var(--accent)", marginTop: 20, marginBottom: 20 }} />
+            <div
+              style={{
+                height: 2,
+                width: 60,
+                background: "var(--accent)",
+                marginTop: 20,
+                marginBottom: 20,
+              }}
+            />
 
             <p style={{ fontSize: 15, color: "var(--muted)", lineHeight: 1.7 }}>
-              Obinna Ezichi Fidelis is an entrepreneur based in Abia State, with roots in Ugwunagbo LGA. 
-              He's a graduate of Urban and Regional Planning from Abia State University, and since 2023 
-              he's been building a reputation in the auto industry.
+              Obinna Ezichi Fidelis is an entrepreneur based in Abia State, with roots in
+              Ugwunagbo LGA. He's a graduate of Urban and Regional Planning from Abia State
+              University, and since 2023 he's been building a reputation in the auto industry.
             </p>
 
             <p style={{ fontSize: 15, color: "var(--muted)", lineHeight: 1.7, marginTop: 14 }}>
-              With a planner's mindset and a service-first attitude, Obinna Ezichi leads a mobility business 
-              focused on two things: <strong style={{ color: "var(--text)" }}>helping people own reliable cars</strong> and 
-              <strong style={{ color: "var(--text)" }}> providing dependable car hire solutions</strong>.
+              With a planner's mindset and a service-first attitude, Obinna Ezichi leads a
+              mobility business focused on two things:{" "}
+              <strong style={{ color: "var(--text)" }}>helping people own reliable cars</strong>{" "}
+              and{" "}
+              <strong style={{ color: "var(--text)" }}>
+                providing dependable car hire solutions
+              </strong>
+              .
             </p>
 
-            <p style={{ fontSize: 15, color: "var(--text)", lineHeight: 1.7, marginTop: 20, fontWeight: 500 }}>
-              Driven by integrity and customer satisfaction, Obinna Ezichi believes trust is more valuable than a quick sale.
+            <p
+              style={{
+                fontSize: 15,
+                color: "var(--text)",
+                lineHeight: 1.7,
+                marginTop: 20,
+                fontWeight: 500,
+              }}
+            >
+              Driven by integrity and customer satisfaction, Obinna Ezichi believes trust is
+              more valuable than a quick sale.
             </p>
 
             <div style={{ marginTop: 24 }}>
@@ -1139,8 +1396,12 @@ function AboutSection() {
                     <Car size={16} color="var(--accent)" />
                   </div>
                   <div>
-                    <h4 style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>Car Sales</h4>
-                    <p style={{ fontSize: 12.5, color: "var(--muted)" }}>Sourcing verified, well-maintained vehicles</p>
+                    <h4 style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>
+                      Car Sales
+                    </h4>
+                    <p style={{ fontSize: 12.5, color: "var(--muted)" }}>
+                      Sourcing verified, well-maintained vehicles
+                    </p>
                   </div>
                 </div>
                 <div className="founder-service-item">
@@ -1148,16 +1409,29 @@ function AboutSection() {
                     <Users size={16} color="var(--accent)" />
                   </div>
                   <div>
-                    <h4 style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>Car Hire / Rental</h4>
-                    <p style={{ fontSize: 12.5, color: "var(--muted)" }}>Flexible rental for airport, business, events</p>
+                    <h4 style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>
+                      Car Hire / Rental
+                    </h4>
+                    <p style={{ fontSize: 12.5, color: "var(--muted)" }}>
+                      Flexible rental for airport, business, events
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div style={{ marginTop: 24, padding: 16, borderRadius: 12, background: "var(--surface)", border: "1px solid var(--line)" }}>
+            <div
+              style={{
+                marginTop: 24,
+                padding: 16,
+                borderRadius: 12,
+                background: "var(--surface)",
+                border: "1px solid var(--line)",
+              }}
+            >
               <p style={{ fontSize: 13, color: "var(--muted)", fontStyle: "italic" }}>
-                <span style={{ color: "var(--accent)", fontWeight: 600 }}>Tagline:</span> Reliable Cars. Trusted Hire. Driven by Integrity.
+                <span style={{ color: "var(--accent)", fontWeight: 600 }}>Tagline:</span>{" "}
+                Reliable Cars. Trusted Hire. Driven by Integrity.
               </p>
             </div>
           </div>
@@ -1168,7 +1442,7 @@ function AboutSection() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  REVIEWS                                                             */
+/*  REVIEWS                                                            */
 /* ------------------------------------------------------------------ */
 
 function ReviewCard({ r, index }) {
@@ -1183,11 +1457,23 @@ function ReviewCard({ r, index }) {
         <span className="font-mono" style={{ fontSize: 12, color: "var(--muted)" }}>
           {r.title}
         </span>
-        <span className="flex items-center gap-1" style={{ fontSize: 12.5, color: "var(--text)" }}>
+        <span
+          className="flex items-center gap-1"
+          style={{ fontSize: 12.5, color: "var(--text)" }}
+        >
           <Star size={13} color="var(--accent)" fill="var(--accent)" /> {r.rating}
         </span>
       </div>
-      <p className="font-display" style={{ fontSize: 16, fontWeight: 500, color: "var(--text)", marginTop: 14, lineHeight: 1.4 }}>
+      <p
+        className="font-display"
+        style={{
+          fontSize: 16,
+          fontWeight: 500,
+          color: "var(--text)",
+          marginTop: 14,
+          lineHeight: 1.4,
+        }}
+      >
         {r.text}
       </p>
       <div className="flex items-center gap-3" style={{ marginTop: 20 }}>
@@ -1203,12 +1489,19 @@ function ReviewCard({ r, index }) {
 
 function Reviews() {
   return (
-    <section id="reviews" className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 120 }}>
+    <section
+      id="reviews"
+      className="max-w-7xl mx-auto px-6 md:px-10"
+      style={{ paddingTop: 120 }}
+    >
       <Reveal className="text-center">
         <h2 className="font-display section-title">Reviews from our buyers</h2>
         <p className="section-sub">Real deliveries, verified by purchase record</p>
       </Reveal>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" style={{ marginTop: 46 }}>
+      <div
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+        style={{ marginTop: 46 }}
+      >
         {REVIEWS.map((r, i) => (
           <ReviewCard r={r} index={i} key={r.name} />
         ))}
@@ -1218,13 +1511,17 @@ function Reviews() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  ARTICLES                                                            */
+/*  ARTICLES                                                           */
 /* ------------------------------------------------------------------ */
 
 function ArticleCard({ a, index }) {
   const [ref, visible] = useReveal();
   return (
-    <div ref={ref} className={`reveal ${visible ? "reveal-visible" : ""}`} style={{ transitionDelay: `${index * 100}ms` }}>
+    <div
+      ref={ref}
+      className={`reveal ${visible ? "reveal-visible" : ""}`}
+      style={{ transitionDelay: `${index * 100}ms` }}
+    >
       <a href="#" className="article-card">
         <div className="article-media">
           <img src={a.img} alt={a.title} />
@@ -1232,13 +1529,26 @@ function ArticleCard({ a, index }) {
             <ArrowUpRight size={16} color="#ffffff" />
           </span>
         </div>
-        <p className="font-mono" style={{ fontSize: 11.5, color: "var(--muted)", marginTop: 14, letterSpacing: "0.06em" }}>
+        <p
+          className="font-mono"
+          style={{
+            fontSize: 11.5,
+            color: "var(--muted)",
+            marginTop: 14,
+            letterSpacing: "0.06em",
+          }}
+        >
           {a.date}
         </p>
-        <h3 className="font-display" style={{ fontSize: 18, fontWeight: 600, color: "var(--text)", marginTop: 6 }}>
+        <h3
+          className="font-display"
+          style={{ fontSize: 18, fontWeight: 600, color: "var(--text)", marginTop: 6 }}
+        >
           {a.title}
         </h3>
-        <p style={{ fontSize: 13.5, color: "var(--muted)", marginTop: 6, lineHeight: 1.5 }}>{a.body}</p>
+        <p style={{ fontSize: 13.5, color: "var(--muted)", marginTop: 6, lineHeight: 1.5 }}>
+          {a.body}
+        </p>
       </a>
     </div>
   );
@@ -1246,7 +1556,11 @@ function ArticleCard({ a, index }) {
 
 function Articles() {
   return (
-    <section id="journal" className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 120 }}>
+    <section
+      id="journal"
+      className="max-w-7xl mx-auto px-6 md:px-10"
+      style={{ paddingTop: 120 }}
+    >
       <Reveal className="text-center">
         <h2 className="font-display section-title">Latest from the garage journal</h2>
         <p className="section-sub">Buying guides and ownership notes, written plainly</p>
@@ -1261,12 +1575,16 @@ function Articles() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  VISIT / CONTACT — Nigeria map                                      */
+/*  VISIT / CONTACT                                                    */
 /* ------------------------------------------------------------------ */
 
 function Visit() {
   return (
-    <section id="visit" className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 120 }}>
+    <section
+      id="visit"
+      className="max-w-7xl mx-auto px-6 md:px-10"
+      style={{ paddingTop: 120 }}
+    >
       <Reveal className="text-center">
         <h2 className="font-display section-title">Comfort and performance await you</h2>
         <p className="section-sub">Visit our showroom in Lagos, Nigeria</p>
@@ -1290,8 +1608,17 @@ function Visit() {
           <div className="contact-card">
             <MapPin size={17} color="var(--accent)" />
             <div>
-              <p style={{ fontSize: 13.5, color: "var(--text)", fontWeight: 500 }}>Showroom</p>
-              <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 2, lineHeight: 1.5 }}>
+              <p style={{ fontSize: 13.5, color: "var(--text)", fontWeight: 500 }}>
+                Showroom
+              </p>
+              <p
+                style={{
+                  fontSize: 13,
+                  color: "var(--muted)",
+                  marginTop: 2,
+                  lineHeight: 1.5,
+                }}
+              >
                 Victoria Island
                 <br />
                 Lagos, Nigeria
@@ -1303,12 +1630,18 @@ function Visit() {
           <div className="contact-card">
             <Phone size={17} color="var(--accent)" />
             <div style={{ width: "100%" }}>
-              <p style={{ fontSize: 13.5, color: "var(--text)", fontWeight: 500 }}>+234 706 172 2513</p>
-              <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 2 }}>Call the sales floor</p>
+              <p style={{ fontSize: 13.5, color: "var(--text)", fontWeight: 500 }}>
+                +234 706 172 2513
+              </p>
+              <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 2 }}>
+                Call the sales floor
+              </p>
               <div style={{ height: 1, background: "var(--line)", margin: "12px 0" }} />
               <div className="flex items-center gap-2.5">
                 <Mail size={16} color="var(--accent)" />
-                <p style={{ fontSize: 13.5, color: "var(--text)" }}>lordgroup.limited@gmail.com</p>
+                <p style={{ fontSize: 13.5, color: "var(--text)" }}>
+                  lordgroup.limited@gmail.com
+                </p>
               </div>
             </div>
           </div>
@@ -1319,7 +1652,7 @@ function Visit() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  CONTACT / CTA SECTION                                              */
+/*  CTA                                                                */
 /* ------------------------------------------------------------------ */
 
 function CTA() {
@@ -1346,44 +1679,49 @@ function CTA() {
     try {
       const form = e.target;
       const formDataObj = new FormData(form);
-      
-      formDataObj.append('_captcha', 'false');
-      formDataObj.append('_subject', 'New Contact Form Submission - Lord Group Autos');
+      formDataObj.append("_captcha", "false");
+      formDataObj.append("_subject", "New Contact Form Submission - Lord Group Autos");
 
-      const response = await fetch('https://formsubmit.co/chinwekeleuchenn@gmail.com', {
-        method: 'POST',
-        body: formDataObj,
-      });
+      const response = await fetch(
+        "https://formsubmit.co/chinwekeleuchenn@gmail.com",
+        {
+          method: "POST",
+          body: formDataObj,
+        }
+      );
 
       if (response.ok) {
-        setSubmitStatus('success');
+        setSubmitStatus("success");
         setFormData({ name: "", email: "", phone: "", message: "", interest: "car-sales" });
-        setTimeout(() => {
-          setSubmitStatus(null);
-        }, 6000);
+        setTimeout(() => setSubmitStatus(null), 6000);
       } else {
-        setSubmitStatus('error');
-        setTimeout(() => {
-          setSubmitStatus(null);
-        }, 6000);
+        setSubmitStatus("error");
+        setTimeout(() => setSubmitStatus(null), 6000);
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
-      setSubmitStatus('error');
-      setTimeout(() => {
-        setSubmitStatus(null);
-      }, 6000);
+      console.error("Error submitting form:", error);
+      setSubmitStatus("error");
+      setTimeout(() => setSubmitStatus(null), 6000);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 130, paddingBottom: 40 }}>
+    <section
+      className="max-w-7xl mx-auto px-6 md:px-10"
+      style={{ paddingTop: 130, paddingBottom: 40 }}
+    >
       <Reveal className="text-center">
         <h2
           className="font-display"
-          style={{ fontSize: "clamp(1.9rem, 4vw, 3rem)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.12, color: "var(--text)" }}
+          style={{
+            fontSize: "clamp(1.9rem, 4vw, 3rem)",
+            fontWeight: 700,
+            letterSpacing: "-0.02em",
+            lineHeight: 1.12,
+            color: "var(--text)",
+          }}
         >
           Ready to own your
           <br /> next car?
@@ -1465,8 +1803,8 @@ function CTA() {
                 />
               </div>
 
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="contact-submit-btn"
                 disabled={isSubmitting}
               >
@@ -1483,28 +1821,30 @@ function CTA() {
                 )}
               </button>
 
-              {submitStatus === 'success' && (
+              {submitStatus === "success" && (
                 <div className="form-success">
                   <div className="form-success-content">
                     <div className="form-success-icon">✅</div>
                     <div>
                       <h4 className="form-success-title">Message Sent Successfully!</h4>
                       <p className="form-success-text">
-                        Thank you for reaching out to Lord Group Autos. We've received your message and will get back to you within 24 hours.
+                        Thank you for reaching out to Lord Group Autos. We've received your
+                        message and will get back to you within 24 hours.
                       </p>
                     </div>
                   </div>
                 </div>
               )}
-              
-              {submitStatus === 'error' && (
+
+              {submitStatus === "error" && (
                 <div className="form-error">
                   <div className="form-error-content">
                     <div className="form-error-icon">❌</div>
                     <div>
                       <h4 className="form-error-title">Something Went Wrong</h4>
                       <p className="form-error-text">
-                        We couldn't send your message. Please try again or contact us directly at <strong>+234 706 172 2513</strong>.
+                        We couldn't send your message. Please try again or contact us directly
+                        at <strong>+234 706 172 2513</strong>.
                       </p>
                     </div>
                   </div>
@@ -1517,7 +1857,10 @@ function CTA() {
         <Reveal delay={200}>
           <div className="contact-info-wrapper">
             <div className="contact-info-header">
-              <h3 className="font-display" style={{ fontSize: 22, fontWeight: 600, color: "var(--text)" }}>
+              <h3
+                className="font-display"
+                style={{ fontSize: 22, fontWeight: 600, color: "var(--text)" }}
+              >
                 Get in Touch
               </h3>
               <p style={{ fontSize: 14, color: "var(--muted)", marginTop: 6 }}>
@@ -1531,8 +1874,12 @@ function CTA() {
                   <Phone size={18} color="var(--accent)" />
                 </div>
                 <div>
-                  <p style={{ fontSize: 12, color: "var(--muted)", fontWeight: 500 }}>Call Us</p>
-                  <p style={{ fontSize: 15, color: "var(--text)", fontWeight: 500 }}>+234 706 172 2513</p>
+                  <p style={{ fontSize: 12, color: "var(--muted)", fontWeight: 500 }}>
+                    Call Us
+                  </p>
+                  <p style={{ fontSize: 15, color: "var(--text)", fontWeight: 500 }}>
+                    +234 706 172 2513
+                  </p>
                   <p style={{ fontSize: 12, color: "var(--muted)" }}>Mon-Sat, 8am - 6pm</p>
                 </div>
               </div>
@@ -1542,8 +1889,12 @@ function CTA() {
                   <Mail size={18} color="var(--accent)" />
                 </div>
                 <div>
-                  <p style={{ fontSize: 12, color: "var(--muted)", fontWeight: 500 }}>Email Us</p>
-                  <p style={{ fontSize: 14, color: "var(--text)", fontWeight: 500 }}>lordgroup.limited@gmail.com</p>
+                  <p style={{ fontSize: 12, color: "var(--muted)", fontWeight: 500 }}>
+                    Email Us
+                  </p>
+                  <p style={{ fontSize: 14, color: "var(--text)", fontWeight: 500 }}>
+                    lordgroup.limited@gmail.com
+                  </p>
                   <p style={{ fontSize: 12, color: "var(--muted)" }}>We reply within 24hrs</p>
                 </div>
               </div>
@@ -1553,8 +1904,12 @@ function CTA() {
                   <MapPin size={18} color="var(--accent)" />
                 </div>
                 <div>
-                  <p style={{ fontSize: 12, color: "var(--muted)", fontWeight: 500 }}>Visit Us</p>
-                  <p style={{ fontSize: 14, color: "var(--text)", fontWeight: 500 }}>Victoria Island</p>
+                  <p style={{ fontSize: 12, color: "var(--muted)", fontWeight: 500 }}>
+                    Visit Us
+                  </p>
+                  <p style={{ fontSize: 14, color: "var(--text)", fontWeight: 500 }}>
+                    Victoria Island
+                  </p>
                   <p style={{ fontSize: 12, color: "var(--muted)" }}>Lagos, Nigeria</p>
                 </div>
               </div>
@@ -1564,26 +1919,45 @@ function CTA() {
                   <Clock size={18} color="var(--accent)" />
                 </div>
                 <div>
-                  <p style={{ fontSize: 12, color: "var(--muted)", fontWeight: 500 }}>Working Hours</p>
-                  <p style={{ fontSize: 14, color: "var(--text)", fontWeight: 500 }}>Mon - Sat: 8am - 6pm</p>
-                  <p style={{ fontSize: 12, color: "var(--muted)" }}>Sunday: By Appointment</p>
+                  <p style={{ fontSize: 12, color: "var(--muted)", fontWeight: 500 }}>
+                    Working Hours
+                  </p>
+                  <p style={{ fontSize: 14, color: "var(--text)", fontWeight: 500 }}>
+                    Mon - Sat: 8am - 6pm
+                  </p>
+                  <p style={{ fontSize: 12, color: "var(--muted)" }}>
+                    Sunday: By Appointment
+                  </p>
                 </div>
               </div>
             </div>
 
             <div className="contact-social">
-              <p style={{ fontSize: 13, color: "var(--muted)", fontWeight: 500 }}>Connect with us</p>
+              <p style={{ fontSize: 13, color: "var(--muted)", fontWeight: 500 }}>
+                Connect with us
+              </p>
               <div className="contact-social-icons">
-                <a href="#" className="social-link"><FaFacebook size={18} color="var(--muted)" /></a>
-                <a href="#" className="social-link"><FaTwitter size={18} color="var(--muted)" /></a>
-                <a href="#" className="social-link"><FaInstagram size={18} color="var(--muted)" /></a>
-                <a href="#" className="social-link"><FaLinkedin size={18} color="var(--muted)" /></a>
+                <a href="#" className="social-link">
+                  <FaFacebook size={18} color="var(--muted)" />
+                </a>
+                <a href="#" className="social-link">
+                  <FaTwitter size={18} color="var(--muted)" />
+                </a>
+                <a href="#" className="social-link">
+                  <FaInstagram size={18} color="var(--muted)" />
+                </a>
+                <a href="#" className="social-link">
+                  <FaLinkedin size={18} color="var(--muted)" />
+                </a>
               </div>
             </div>
 
             <div className="contact-cta-box">
               <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.6 }}>
-                <span style={{ color: "var(--accent)", fontWeight: 600 }}>✨ Quick Tip:</span> Book a test drive online and get a free vehicle inspection report.
+                <span style={{ color: "var(--accent)", fontWeight: 600 }}>
+                  ✨ Quick Tip:
+                </span>{" "}
+                Book a test drive online and get a free vehicle inspection report.
               </p>
             </div>
           </div>
@@ -1593,17 +1967,13 @@ function CTA() {
       <style>{`
         .spinner {
           display: inline-block;
-          width: 18px;
-          height: 18px;
+          width: 18px; height: 18px;
           border: 2px solid rgba(255,255,255,0.3);
           border-radius: 50%;
           border-top-color: #ffffff;
           animation: spin 0.8s linear infinite;
         }
-
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .form-success {
           padding: 16px 20px;
@@ -1613,33 +1983,13 @@ function CTA() {
           margin-top: 4px;
           animation: slideDown 0.4s ease;
         }
-
-        .form-success-content {
-          display: flex;
-          gap: 14px;
-          align-items: flex-start;
-        }
-
-        .form-success-icon {
-          font-size: 24px;
-          flex-shrink: 0;
-          margin-top: 2px;
-        }
-
+        .form-success-content { display: flex; gap: 14px; align-items: flex-start; }
+        .form-success-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
         .form-success-title {
-          color: #22c55e;
-          font-size: 16px;
-          font-weight: 600;
-          margin: 0 0 4px 0;
-          font-family: 'Space Grotesk', sans-serif;
+          color: #22c55e; font-size: 16px; font-weight: 600;
+          margin: 0 0 4px 0; font-family: 'Space Grotesk', sans-serif;
         }
-
-        .form-success-text {
-          color: #86efac;
-          font-size: 14px;
-          line-height: 1.5;
-          margin: 0;
-        }
+        .form-success-text { color: #86efac; font-size: 14px; line-height: 1.5; margin: 0; }
 
         .form-error {
           padding: 16px 20px;
@@ -1649,52 +1999,36 @@ function CTA() {
           margin-top: 4px;
           animation: slideDown 0.4s ease;
         }
-
-        .form-error-content {
-          display: flex;
-          gap: 14px;
-          align-items: flex-start;
-        }
-
-        .form-error-icon {
-          font-size: 24px;
-          flex-shrink: 0;
-          margin-top: 2px;
-        }
-
+        .form-error-content { display: flex; gap: 14px; align-items: flex-start; }
+        .form-error-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
         .form-error-title {
-          color: #ef4444;
-          font-size: 16px;
-          font-weight: 600;
-          margin: 0 0 4px 0;
-          font-family: 'Space Grotesk', sans-serif;
+          color: #ef4444; font-size: 16px; font-weight: 600;
+          margin: 0 0 4px 0; font-family: 'Space Grotesk', sans-serif;
         }
-
-        .form-error-text {
-          color: #fca5a5;
-          font-size: 14px;
-          line-height: 1.5;
-          margin: 0;
-        }
-
-        .form-error-text strong {
-          color: #ffffff;
-        }
+        .form-error-text { color: #fca5a5; font-size: 14px; line-height: 1.5; margin: 0; }
+        .form-error-text strong { color: #ffffff; }
 
         @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-10px) scale(0.98);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
+          from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
         }
+        .contact-submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
-        .contact-submit-btn:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
+        .spare-part-order {
+          display: inline-flex; align-items: center; gap: 4px;
+          padding: 5px 12px;
+          border-radius: 999px;
+          border: none;
+          background: rgba(0,102,204,0.12);
+          color: var(--accent);
+          font-size: 12px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background 0.25s ease, transform 0.25s ease;
+        }
+        .spare-part-order:hover {
+          background: rgba(0,102,204,0.22);
+          transform: translateX(2px);
         }
       `}</style>
     </section>
@@ -1722,7 +2056,9 @@ function Footer() {
       </div>
       <div style={{ borderTop: "1px solid var(--line)" }}>
         <div className="max-w-7xl mx-auto px-6 md:px-10 py-5 flex items-center justify-center">
-          <p style={{ fontSize: 11.5, color: "var(--muted)" }}>&copy; 2026 Lord Group Motors. All rights reserved.</p>
+          <p style={{ fontSize: 11.5, color: "var(--muted)" }}>
+            &copy; 2026 Lord Group Motors. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>
@@ -1730,7 +2066,7 @@ function Footer() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  GLOBAL STYLE (injected once)                                        */
+/*  GLOBAL STYLE                                                       */
 /* ------------------------------------------------------------------ */
 
 function GlobalStyle() {
@@ -1763,7 +2099,12 @@ function GlobalStyle() {
       .font-display { font-family: 'Space Grotesk', sans-serif; }
       .font-mono { font-family: 'IBM Plex Mono', monospace; }
 
-      .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s cubic-bezier(.22,.61,.36,1), transform 0.8s cubic-bezier(.22,.61,.36,1); }
+      .reveal {
+        opacity: 0;
+        transform: translateY(28px);
+        transition: opacity 0.8s cubic-bezier(.22,.61,.36,1),
+                    transform 0.8s cubic-bezier(.22,.61,.36,1);
+      }
       .reveal-visible { opacity: 1; transform: translateY(0); }
 
       @media (prefers-reduced-motion: reduce) {
@@ -1771,7 +2112,12 @@ function GlobalStyle() {
         * { animation: none !important; }
       }
 
-      .section-title { font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
+      .section-title {
+        font-size: clamp(1.6rem, 3vw, 2.3rem);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--text);
+      }
       .section-sub { color: var(--muted); font-size: 14.5px; margin-top: 8px; }
 
       .nav-link { font-size: 14px; color: var(--muted); transition: color 0.25s ease; }
@@ -1781,16 +2127,11 @@ function GlobalStyle() {
         width: 38px; height: 38px; border-radius: 10px;
         display: flex; align-items: center; justify-content: center;
         background: var(--surface); border: 1px solid var(--line);
-        color: var(--text); transition: border-color 0.25s ease, background 0.25s ease;
+        color: var(--text);
+        transition: border-color 0.25s ease, background 0.25s ease;
+        cursor: pointer;
       }
       .icon-btn:hover { border-color: var(--accent); background: var(--surface-alt); }
-
-      .btn-outline {
-        display: inline-flex; align-items: center; gap: 8px;
-        padding: 10px 20px; border-radius: 999px; border: 1px solid var(--line-strong);
-        font-size: 13.5px; color: var(--text); transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
-      }
-      .btn-outline:hover { border-color: var(--accent); background: rgba(0,102,204,0.15); transform: translateY(-1px); }
 
       .btn-primary {
         display: inline-flex; align-items: center; gap: 10px;
@@ -1798,33 +2139,27 @@ function GlobalStyle() {
         background: var(--accent); color: #ffffff; font-weight: 600; font-size: 14.5px;
         box-shadow: 0 10px 30px rgba(0,102,204,0.28);
         transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+        text-decoration: none;
       }
-      .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(0,102,204,0.4); background: #0080ff; }
-
-      .search-bar {
-        display: flex; align-items: center; gap: 8px;
-        background: var(--surface); border: 1px solid var(--line-strong);
-        border-radius: 999px; padding: 6px; max-width: 520px; margin-inline: auto;
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 36px rgba(0,102,204,0.4);
+        background: #0080ff;
       }
-      .search-input {
-        flex: 1; background: transparent; border: none; outline: none;
-        color: var(--text); font-size: 14px; padding: 10px 4px;
-      }
-      .search-input::placeholder { color: var(--muted); }
-      .search-submit {
-        width: 40px; height: 40px; border-radius: 999px; border: none; cursor: pointer;
-        background: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-        transition: background 0.25s ease;
-      }
-      .search-submit:hover { background: #0080ff; }
 
       .hero-frame {
         position: relative; border-radius: 26px; overflow: hidden;
         border: 1px solid var(--line); height: min(62vw, 520px);
         background: var(--surface);
       }
-      .hero-image { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.6s ease; will-change: transform; }
-      .hero-fade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.6) 100%); }
+      .hero-image {
+        width: 100%; height: 100%; object-fit: cover;
+        display: block; transition: transform 0.6s ease; will-change: transform;
+      }
+      .hero-fade {
+        position: absolute; inset: 0;
+        background: linear-gradient(180deg, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.6) 100%);
+      }
       .hero-tag {
         position: absolute; display: flex; align-items: center; gap: 8px;
         background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
@@ -1834,281 +2169,236 @@ function GlobalStyle() {
       .hero-tag-left { left: 20px; bottom: 20px; }
       .hero-tag-right { right: 20px; top: 20px; }
 
-      .marquee-mask { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
-      .marquee-track { display: flex; gap: 56px; width: max-content; animation: marquee 26s linear infinite; }
-      .marquee-item { font-size: 15px; letter-spacing: 0.08em; color: var(--muted); white-space: nowrap; opacity: 0.7; transition: opacity 0.25s ease, color 0.25s ease; }
+      .marquee-mask {
+        overflow: hidden;
+        -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+        mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+      }
+      .marquee-track {
+        display: flex; gap: 56px; width: max-content;
+        animation: marquee 26s linear infinite;
+      }
+      .marquee-item {
+        font-size: 15px; letter-spacing: 0.08em; color: var(--muted);
+        white-space: nowrap; opacity: 0.7;
+        transition: opacity 0.25s ease, color 0.25s ease;
+      }
       .marquee-item:hover { opacity: 1; color: var(--accent); }
       @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
       .car-card {
         background: var(--surface); border: 1px solid var(--line); border-radius: 20px;
-        overflow: hidden; transition: transform 0.15s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+        transition: transform 0.15s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
         transform-style: preserve-3d; will-change: transform; height: 100%;
       }
       .car-card:hover { border-color: var(--line-strong); box-shadow: 0 24px 50px rgba(0,0,0,0.5); }
       .car-card-media { position: relative; height: 210px; overflow: hidden; }
-      .car-card-media img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+      .car-card-media img {
+        width: 100%; height: 100%; object-fit: cover;
+        transition: transform 0.5s ease;
+      }
       .car-card:hover .car-card-media img { transform: scale(1.06); }
-      .car-card-spot { position: absolute; inset: 0; transition: opacity 0.2s ease; pointer-events: none; }
+      .car-card-spot {
+        position: absolute; inset: 0;
+        transition: opacity 0.2s ease; pointer-events: none;
+      }
 
       .car-card-body { padding: 18px 20px 20px; }
-      .car-specs { display: flex; gap: 14px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
-      .car-specs span { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
+      .car-specs {
+        display: flex; gap: 14px; margin-top: 14px; padding-top: 14px;
+        border-top: 1px solid var(--line);
+      }
+      .car-specs span {
+        display: flex; align-items: center; gap: 5px;
+        font-size: 12px; color: var(--muted);
+      }
 
       .spare-part-card {
         background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
-        overflow: hidden; transition: transform 0.3s ease, border-color 0.3s ease;
+        overflow: hidden;
+        transition: transform 0.3s ease, border-color 0.3s ease;
       }
       .spare-part-card:hover { transform: translateY(-4px); border-color: var(--line-strong); }
-      .spare-part-image { position: relative; height: 160px; overflow: hidden; background: var(--surface-alt); }
+      .spare-part-image {
+        position: relative; height: 160px; overflow: hidden; background: var(--surface-alt);
+      }
       .spare-part-image img { width: 100%; height: 100%; object-fit: cover; }
       .spare-part-category {
         position: absolute; bottom: 10px; left: 10px;
         font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
-        background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); padding: 4px 12px; border-radius: 999px;
+        background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+        padding: 4px 12px; border-radius: 999px;
         color: var(--muted); border: 1px solid var(--line);
       }
       .spare-part-body { padding: 14px 16px 16px; }
-      .spare-part-availability { font-size: 12px; color: #22c55e; font-weight: 500; }
 
-      .trust-card { position: relative; border-radius: 20px; overflow: hidden; height: 340px; border: 1px solid var(--line); }
-      .trust-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+      .trust-card {
+        position: relative; border-radius: 20px; overflow: hidden; height: 340px;
+        border: 1px solid var(--line);
+      }
+      .trust-card img {
+        width: 100%; height: 100%; object-fit: cover;
+        transition: transform 0.6s ease;
+      }
       .trust-card:hover img { transform: scale(1.06); }
-      .trust-card-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.65) 100%); }
+      .trust-card-overlay {
+        position: absolute; inset: 0;
+        background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.65) 100%);
+      }
       .trust-panel {
-        position: absolute; left: 16px; right: 16px; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+        position: absolute; left: 16px; right: 16px;
+        background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
         border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 16px 18px;
       }
       .trust-panel-top { top: 16px; }
       .trust-panel-bottom { bottom: 16px; }
-      .trust-icon { width: 30px; height: 30px; border-radius: 9px; background: rgba(0,102,204,0.18); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+      .trust-icon {
+        width: 30px; height: 30px; border-radius: 9px;
+        background: rgba(0,102,204,0.18);
+        display: flex; align-items: center; justify-content: center;
+        margin-bottom: 10px;
+      }
 
-      .review-card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; transition: border-color 0.3s ease, transform 0.3s ease; }
+      .review-card {
+        background: var(--surface); border: 1px solid var(--line); border-radius: 18px;
+        padding: 22px; transition: border-color 0.3s ease, transform 0.3s ease;
+      }
       .review-card:hover { border-color: var(--line-strong); transform: translateY(-3px); }
       .avatar-dot {
-        width: 34px; height: 34px; border-radius: 999px; background: linear-gradient(135deg, var(--accent), var(--accent-deep));
-        display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: #ffffff;
+        width: 34px; height: 34px; border-radius: 999px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+        display: flex; align-items: center; justify-content: center;
+        font-size: 13px; font-weight: 600; color: #ffffff;
       }
 
       .article-card { display: block; }
-      .article-media { position: relative; border-radius: 18px; overflow: hidden; height: 220px; border: 1px solid var(--line); }
-      .article-media img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+      .article-media {
+        position: relative; border-radius: 18px; overflow: hidden;
+        height: 220px; border: 1px solid var(--line);
+      }
+      .article-media img {
+        width: 100%; height: 100%; object-fit: cover;
+        transition: transform 0.5s ease;
+      }
       .article-card:hover .article-media img { transform: scale(1.07); }
       .article-arrow {
-        position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 999px;
-        background: var(--accent); display: flex; align-items: center; justify-content: center;
+        position: absolute; top: 14px; right: 14px;
+        width: 34px; height: 34px; border-radius: 999px;
+        background: var(--accent);
+        display: flex; align-items: center; justify-content: center;
         transition: transform 0.3s ease;
       }
       .article-card:hover .article-arrow { transform: rotate(45deg); }
 
       .map-frame { height: 360px; border-radius: 22px; overflow: hidden; border: 1px solid var(--line); }
-      .contact-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; display: flex; gap: 14px; align-items: flex-start; }
+      .contact-card {
+        background: var(--surface); border: 1px solid var(--line); border-radius: 16px;
+        padding: 20px; display: flex; gap: 14px; align-items: flex-start;
+      }
 
-      /* Founder / About Section Styles */
       .founder-image-wrapper {
-        position: relative;
-        border-radius: 20px;
-        overflow: hidden;
-        border: 1px solid var(--line);
-        background: var(--surface);
+        position: relative; border-radius: 20px; overflow: hidden;
+        border: 1px solid var(--line); background: var(--surface);
       }
-      .founder-image {
-        width: 100%;
-        height: 500px;
-        object-fit: cover;
-        display: block;
-      }
-      .founder-image-overlay {
-        position: absolute;
-        bottom: 20px;
-        left: 20px;
-      }
+      .founder-image { width: 100%; height: 500px; object-fit: cover; display: block; }
+      .founder-image-overlay { position: absolute; bottom: 20px; left: 20px; }
       .founder-tag {
-        display: inline-block;
-        padding: 6px 16px;
-        border-radius: 999px;
-        background: var(--accent);
-        color: #ffffff;
-        font-size: 12px;
-        font-weight: 600;
-        letter-spacing: 0.06em;
+        display: inline-block; padding: 6px 16px; border-radius: 999px;
+        background: var(--accent); color: #ffffff;
+        font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
       }
-      .founder-content {
-        display: flex;
-        flex-direction: column;
-      }
-      .founder-services {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
+      .founder-content { display: flex; flex-direction: column; }
+      .founder-services { display: flex; flex-direction: column; gap: 12px; }
       .founder-service-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 14px;
-        padding: 14px 16px;
-        border-radius: 12px;
-        background: var(--surface);
-        border: 1px solid var(--line);
+        display: flex; align-items: flex-start; gap: 14px;
+        padding: 14px 16px; border-radius: 12px;
+        background: var(--surface); border: 1px solid var(--line);
         transition: border-color 0.3s ease;
       }
-      .founder-service-item:hover {
-        border-color: var(--accent);
-      }
+      .founder-service-item:hover { border-color: var(--accent); }
       .founder-service-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 9px;
+        width: 36px; height: 36px; border-radius: 9px;
         background: rgba(0,102,204,0.12);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: flex; align-items: center; justify-content: center;
         flex-shrink: 0;
       }
 
-      /* Contact Form Styles */
       .contact-form-wrapper {
-        background: var(--surface);
-        border: 1px solid var(--line);
-        border-radius: 20px;
-        padding: 32px;
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: 20px; padding: 32px;
       }
-      .contact-form {
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
-      }
-      .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-      }
+      .contact-form { display: flex; flex-direction: column; gap: 18px; }
+      .form-group { display: flex; flex-direction: column; gap: 6px; }
       .form-label {
-        font-size: 13px;
-        font-weight: 500;
-        color: var(--text);
+        font-size: 13px; font-weight: 500; color: var(--text);
         letter-spacing: 0.02em;
       }
       .form-input,
       .form-select,
       .form-textarea {
-        background: var(--bg);
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 12px 16px;
-        color: var(--text);
-        font-size: 14px;
+        background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
+        padding: 12px 16px; color: var(--text); font-size: 14px;
         transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        font-family: 'Inter', sans-serif;
-        width: 100%;
+        font-family: 'Inter', sans-serif; width: 100%;
       }
       .form-input:focus,
       .form-select:focus,
       .form-textarea:focus {
-        outline: none;
-        border-color: var(--accent);
+        outline: none; border-color: var(--accent);
         box-shadow: 0 0 0 3px rgba(0,102,204,0.15);
       }
       .form-input::placeholder,
-      .form-textarea::placeholder {
-        color: var(--muted);
-      }
+      .form-textarea::placeholder { color: var(--muted); }
       .form-select {
-        appearance: none;
-        cursor: pointer;
+        appearance: none; cursor: pointer;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999999' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
         background-position: right 16px center;
       }
-      .form-textarea {
-        resize: vertical;
-        min-height: 100px;
-      }
+      .form-textarea { resize: vertical; min-height: 100px; }
       .contact-submit-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        padding: 14px 28px;
-        background: var(--accent);
-        color: #ffffff;
-        border: none;
-        border-radius: 999px;
-        font-weight: 600;
-        font-size: 15px;
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        padding: 14px 28px; background: var(--accent); color: #ffffff;
+        border: none; border-radius: 999px; font-weight: 600; font-size: 15px;
         cursor: pointer;
         transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
         box-shadow: 0 8px 24px rgba(0,102,204,0.25);
         margin-top: 6px;
       }
       .contact-submit-btn:hover {
-        background: #0080ff;
-        transform: translateY(-2px);
+        background: #0080ff; transform: translateY(-2px);
         box-shadow: 0 12px 32px rgba(0,102,204,0.35);
       }
 
       .contact-info-wrapper {
-        display: flex;
-        flex-direction: column;
-        gap: 28px;
-        padding: 32px 0;
+        display: flex; flex-direction: column; gap: 28px; padding: 32px 0;
       }
-      .contact-info-header h3 {
-        margin-bottom: 4px;
-      }
-      .contact-info-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-      }
+      .contact-info-header h3 { margin-bottom: 4px; }
+      .contact-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
       .contact-info-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 14px;
-        padding: 16px;
-        background: var(--surface);
-        border: 1px solid var(--line);
-        border-radius: 14px;
+        display: flex; align-items: flex-start; gap: 14px;
+        padding: 16px; background: var(--surface);
+        border: 1px solid var(--line); border-radius: 14px;
         transition: border-color 0.3s ease, transform 0.3s ease;
       }
-      .contact-info-item:hover {
-        border-color: var(--accent);
-        transform: translateY(-2px);
-      }
+      .contact-info-item:hover { border-color: var(--accent); transform: translateY(-2px); }
       .contact-info-icon {
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
+        width: 38px; height: 38px; border-radius: 10px;
         background: rgba(0,102,204,0.12);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: flex; align-items: center; justify-content: center;
         flex-shrink: 0;
       }
-      .contact-social {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-      }
-      .contact-social-icons {
-        display: flex;
-        gap: 12px;
-      }
+      .contact-social { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+      .contact-social-icons { display: flex; gap: 12px; }
       .social-link {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        background: var(--surface);
-        border: 1px solid var(--line);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        width: 40px; height: 40px; border-radius: 10px;
+        background: var(--surface); border: 1px solid var(--line);
+        display: flex; align-items: center; justify-content: center;
         transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s ease;
       }
       .social-link:hover {
-        border-color: var(--accent);
-        background: rgba(0,102,204,0.08);
+        border-color: var(--accent); background: rgba(0,102,204,0.08);
         transform: translateY(-2px);
       }
       .contact-cta-box {
@@ -2119,19 +2409,15 @@ function GlobalStyle() {
       }
 
       @media (max-width: 768px) {
-        .contact-info-grid {
-          grid-template-columns: 1fr;
-        }
-        .contact-form-wrapper {
-          padding: 20px;
-        }
+        .contact-info-grid { grid-template-columns: 1fr; }
+        .contact-form-wrapper { padding: 20px; }
       }
     `}</style>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/*  APP                                                                 */
+/*  APP                                                                */
 /* ------------------------------------------------------------------ */
 
 export default function HomePage() {

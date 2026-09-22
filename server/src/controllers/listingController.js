@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Listing from '../models/Listing.js';
+import Listing from '../model/Listing.js';
 import { deleteManyFromCloudinary } from '../config/cloudinary.js';
 
 /* ------------------------------------------------------------------ */

@@ -1,11 +1,14 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import React from 'react';
-import GalleryPage from './pages/GalleryPage';
-import SparePartsPage from './pages/SparePartsPage';
-import HomePage from './pages/Homepage';
-import AdminLoginPage from './pages/AdminLoginPage';
-import AdminDashboard from './pages/AdminDashboard';   // ← new
-import ProtectedRoute from '../components/ProtectedRoute';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React from "react";
+import GalleryPage from "./pages/GalleryPage";
+import SparePartsPage from "./pages/SparePartsPage";
+import HomePage from "./pages/Homepage";
+import AdminLoginPage from "./pages/AdminLoginPage";
+import AdminDashboard from "./pages/AdminDashboard"; // ← new
+import ProtectedRoute from "../components/ProtectedRoute";
+import AdminUploadPage from './pages/AdminUploadPage';
+import ManageListingsPage from './pages/ManageListingsPage';
+import EditListingPage from './pages/EditListingPage';
 
 const App = () => (
   <Router>
@@ -22,6 +25,22 @@ const App = () => (
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/admin/upload"
+        element={
+          <ProtectedRoute>
+            <AdminUploadPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+  path="/admin/manage"
+  element={<ProtectedRoute><ManageListingsPage /></ProtectedRoute>}
+/>
+<Route
+  path="/admin/edit/:id"
+  element={<ProtectedRoute><EditListingPage /></ProtectedRoute>}
+/>
     </Routes>
   </Router>
 );

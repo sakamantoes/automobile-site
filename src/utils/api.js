@@ -1,17 +1,46 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUD_NAME}/image/upload`;
 
-export function imageUrl(value) {
-  if (!value) return '';
-  if (value.startsWith('http') || value.startsWith('data:')) return value;
-  return `${API_URL.replace('/api', '')}${value}`;
-}
+/**
+ * Fetch listings by section. Returns an array.
+ * @param {'gallery'|'new-arrivals'|'spare-parts'} section
+ * @param {Object} opts  { limit }
+ */
+export const getListings = async (section, { limit } = {}) => {
+  const params = new URLSearchParams({ section });
+  if (limit) params.set('limit', String(limit));
 
-export async function getListings(type) {
-  const response = await fetch(`${API_URL}/listings?type=${encodeURIComponent(type)}`);
-  if (!response.ok) throw new Error('Could not load listings');
-  return response.json();
-}
+  const res = await fetch(`${API_URL}/listings?${params}`);
+  if (!res.ok) throw new Error('Failed to load listings');
+  return res.json();
+};
+
+/**
+ * Listings already store full Cloudinary URLs on coverImage.url.
+ * This helper keeps your existing callers working: pass a listing and get its main image URL.
+ */
+export const imageUrl = (source) => {
+  if (!source) return '';
+  if (typeof source === 'string') return source;
+  // listing object
+  if (source.coverImage?.url) return source.coverImage.url;
+  if (source.imageUrl) return source.imageUrl;
+  return '';
+};
+
+/**
+ * All displayable images for a car (cover + subs + galleries).
+ */
+export const allCarImages = (listing) => {
+  if (!listing) return [];
+  const images = [];
+  if (listing.coverImage?.url) images.push(listing.coverImage.url);
+  listing.subImages?.forEach((i) => i.url && images.push(i.url));
+  listing.galleries?.forEach((g) =>
+    g.images?.forEach((i) => i.url && images.push(i.url))
+  );
+  return images;
+};
 
 export async function loginAdmin(credentials) {
   const response = await fetch(`${API_URL}/admin/login`, {
