@@ -11,286 +11,183 @@ import {
   ChevronLeft,
   ChevronRight,
   Calendar,
-  MapPin,
-  Phone,
-  Mail,
-  Clock,
   Car,
-  Users,
-  ShieldCheck,
-  Sparkles,
-  BadgeCheck,
   Wrench,
-  Cog,
   Menu,
   MessageCircle,
 } from 'lucide-react';
 import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
 import images from '../assets/image.js';
-import { getListings, imageUrl } from '../utils/api';
+import { getListings } from '../utils/api';
 
-// Pexels car images with CORRECT vehicle names
-const PEXELS_CAR_IMAGES = [
-  // Honda Civic
-  { img: "https://img.nigeriacarmart.com/upload/25/8h/gpeb/2022-honda-civic-jd.webp", make: "Honda", model: "Civic", year: "2022" },
-  // Toyota Camry LE 2025
-  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrpWlegHy5Bh0LT_r6OPUqWDq6p6PIC_p4aw&s", make: "Toyota", model: "Camry LE", year: "2025" },
-  // Changan Uni-K
-  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTosELoQMMJeoFlUec2Z0Ye_9EVssWBAX_L7Q&s", make: "Changan", model: "Uni-K", year: "2024" },
-  // Lexus ES 350 F Sport
-  { img: "https://img.nigeriacarmart.com/upload/25/3f/r89f/2022-lexus-es-es-350-f-sport-el.webp", make: "Lexus", model: "ES 350 F Sport", year: "2022" },
-  // BMW X3 M
-  { img: "https://img.nigeriacarmart.com/upload/25/3a/wrtn/2020-bmw-x3-m-powered-el.webp", make: "BMW", model: "X3 M", year: "2020" },
-  // Toyota Highlander
-  { img: "https://luxurycars.ng/wp-content/uploads/Toyota-Highlander-price-in-Nigeria.webp", make: "Toyota", model: "Highlander", year: "2023" },
-  // Mercedes-Benz AMG
-  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTgqoYcrvzD8BBgycdxwk5z5aUcgTRILo6sA&s", make: "Mercedes-Benz", model: "AMG", year: "2023" },
-  // Hyundai Sonata 2021
-  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSq3p49K4G1VEV99JcMYUGjlDXnB17pGy9C6g&s", make: "Hyundai", model: "Sonata", year: "2021" },
-  // Hyundai Elantra 2022
-  { img: "https://images.cars.ng/images/cars-ng/product_ca597925s_price_drop_hyundai_elantra_2021_sleek_modern_efficient_1771676417858_ga25wy_d365d1_3_800x800.jpg", make: "Hyundai", model: "Elantra", year: "2022" },
-  // Toyota Corolla 2023
-  { img: "https://images.carloaded.com/large/R6kMg4aEssoRtjJctVf1dVXVdjGX1kAeSzMdHWQGMKjW1Cnl9e.jpeg", make: "Toyota", model: "Corolla", year: "2023" },
-  // Range Rover
-  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2Rns0rYH0p5QhnGuXA4IGTtg693yhz_ZvHg&s", make: "Range Rover", model: "Sport", year: "2023" },
-  // Mercedes-Benz GLC
-  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSq0YX3ouVxlMKv5X1Rdyj0BvtJeBL51Q-qA&s", make: "Mercedes-Benz", model: "GLC", year: "2022" },
-  // BMW X5
-  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxGGGHSGmQ_lPrbudPedG-xGSdHRTaz1F13A&s", make: "BMW", model: "X5", year: "2023" },
-  // Mazda 3
-  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWMRNNgFl90-1gIjN2_W8MnCEFYQLEsoQoxg&s", make: "Mazda", model: "3", year: "2022" },
-  // Geely Starray
-  { img: "https://media.autochek.africa/file/w_732,q_100/X0uauWiq.webp", make: "Geely", model: "Starray", year: "2024" },
-  // Mercedes-Benz C-Class
-  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHbdJuZA0e6kAr5npQuLS4yUnXP9okQqweqg&s", make: "Mercedes-Benz", model: "C-Class", year: "2022" },
-  // Mercedes-Benz E-Class
-  { img: "https://media.publit.io/file/w_400,q_85/o90rqvws.webp", make: "Mercedes-Benz", model: "E-Class", year: "2023" },
-  // Audi A4
-  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZO4VM8rX-RtuvAiKWdAbSrtZLyEgM0RDaFQ&s", make: "Audi", model: "A4", year: "2022" },
-  // Toyota Hilux
-  { img: "https://uae.autotraders.ae/uploads/cars/175991/1785326408_e6aec7a17ed6e3fb.webp", make: "Toyota", model: "Hilux", year: "2023" },
-  // Peugeot 3008
-  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwX3N3Q0JPcEErI37Iu8ykrzF4od7CTQ2pPQ&s", make: "Peugeot", model: "3008", year: "2022" },
-  // Toyota Highlander (additional)
-  { img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9XyQjPIKnsWVawn21kHa5mcasMV-jcSiavg&s", make: "Toyota", model: "Highlander", year: "2023" },
-];
+/* ------------------------------------------------------------------ */
+/*  Helpers                                                            */
+/* ------------------------------------------------------------------ */
 
-// Use only PEXELS car images
-const ALL_CAR_IMAGES = PEXELS_CAR_IMAGES;
+const normalizeCar = (car) => ({
+  ...car,
+  id: car._id,
+  img: car.coverImage?.url || car.imageUrl || '',
+  name: car.name || `${car.make || ''} ${car.model || ''}`.trim() || 'Untitled',
+  specs: [
+    car.transmission || 'Automatic',
+    car.fuel || 'Petrol',
+    car.mileage ? `${car.mileage} mi` : 'Contact us',
+  ],
+  inStock: car.inStock !== false,
+  rating: car.rating ?? 4.8,
+});
 
-const carMakes = [
-  "Toyota", "Honda", "Ford", "Chevrolet", "BMW", "Mercedes-Benz", 
-  "Audi", "Lexus", "Porsche", "Ferrari", "Lamborghini", "Tesla",
-  "Range Rover", "Volvo", "Jaguar", "Maserati", "Bentley", "Aston Martin",
-  "Hyundai", "Kia", "Mazda", "Subaru", "Nissan", "Dodge", "Jeep",
-  "Changan", "Geely", "Peugeot"
-];
-
-const carModels = [
-  "Camry", "Civic", "Mustang", "Corvette", "3 Series", "C-Class",
-  "A4", "ES 350", "911", "F8 Tributo", "Aventador", "Model S",
-  "Sport", "XC90", "F-PACE", "Ghibli", "Continental", "DB11",
-  "Sonata", "Stinger", "MX-5", "WRX", "GT-R", "Challenger", "Wrangler",
-  "Uni-K", "Starray", "3008", "X3 M", "X5", "GLC", "AMG", "Hilux", "Highlander", "Elantra", "Corolla"
-];
-
-const years = ["2026", "2025", "2024", "2023", "2022", "2021", "2020", "2019"];
-
-const colors = ["Black", "White", "Silver", "Red", "Blue", "Green", "Yellow", "Orange", "Gray", "Brown"];
-
-const transmissions = ["Automatic", "Manual", "CVT"];
-
-const fuelTypes = ["Petrol", "Diesel", "Hybrid", "Electric"];
-
-// Generate cars from PEXELS data only
-const generateCars = () => {
-  const cars = [];
-  
-  // Add all PEXELS cars with their correct names
-  PEXELS_CAR_IMAGES.forEach((carData, index) => {
-    const color = colors[index % colors.length];
-    const transmission = transmissions[index % transmissions.length];
-    const fuel = fuelTypes[index % fuelTypes.length];
-    const mileage = Math.floor(Math.random() * 50000) + 5000;
-    
-    cars.push({
-      id: index + 1,
-      name: `${carData.make} ${carData.model}`,
-      make: carData.make,
-      model: carData.model,
-      year: carData.year || years[index % years.length],
-      color: color,
-      transmission: transmission,
-      fuel: fuel,
-      mileage: mileage.toLocaleString(),
-      img: carData.img,
-      specs: [transmission, fuel, `${mileage.toLocaleString()} mi`],
-      rating: (4 + Math.random() * 0.9).toFixed(1),
-      inStock: Math.random() > 0.2,
-      featured: Math.random() > 0.85,
-      newArrival: Math.random() > 0.8,
-    });
-  });
-  
-  return cars;
-};
-
-const allCars = [];
-
-// Filter options - removed price range
-const filterOptions = {
-  makes: [...new Set(allCars.map(car => car.make))].sort(),
-  years: [...new Set(allCars.map(car => car.year))].sort().reverse(),
-  colors: [...new Set(allCars.map(car => car.color))].sort(),
-  transmissions: [...new Set(allCars.map(car => car.transmission))].sort(),
-  fuelTypes: [...new Set(allCars.map(car => car.fuel))].sort(),
-};
-
-// Email redirection function
 const redirectToEmail = (car) => {
-  const subject = encodeURIComponent(`Inquiry about ${car.name} (${car.year})`);
+  const subject = encodeURIComponent(`Inquiry about ${car.name} (${car.year || ''})`);
   const body = encodeURIComponent(
-    `Hello Lord Group Autos,\n\nI am interested in the ${car.name} (${car.year}) listed on your website.\n\n` +
-    `Vehicle Details:\n` +
-    `- Make: ${car.make}\n` +
-    `- Model: ${car.model}\n` +
-    `- Year: ${car.year}\n` +
-    `- Color: ${car.color}\n` +
-    `- Transmission: ${car.transmission}\n` +
-    `- Fuel: ${car.fuel}\n` +
-    `- Mileage: ${car.mileage} mi\n\n` +
-    `Please provide me with more information including pricing and availability.\n\n` +
-    `Thank you!`
+    `Hello Lord Group Autos,\n\nI am interested in the ${car.name} ${car.year ? `(${car.year})` : ''}.\n\n` +
+      `Vehicle Details:\n` +
+      `- Make: ${car.make || '—'}\n` +
+      `- Model: ${car.model || '—'}\n` +
+      `- Year: ${car.year || '—'}\n` +
+      `- Color: ${car.color || '—'}\n` +
+      `- Transmission: ${car.transmission || '—'}\n` +
+      `- Fuel: ${car.fuel || '—'}\n` +
+      `- Mileage: ${car.mileage ? `${car.mileage} mi` : '—'}\n` +
+      (car.price ? `- Price: ${car.price}\n` : '') +
+      `\nPlease provide more information including pricing and availability.\n\nThank you!`
   );
-  
   window.location.href = `mailto:lordgroup.limited@gmail.com?subject=${subject}&body=${body}`;
 };
 
-// Lightbox Component - NO PRICE, redirects to email
+/* ------------------------------------------------------------------ */
+/*  Lightbox                                                           */
+/* ------------------------------------------------------------------ */
+
 function CarLightbox({ car, onClose }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
   useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
   }, []);
 
   if (!car) return null;
 
-  const handleRequestQuote = () => {
-    onClose();
-    redirectToEmail(car);
-  };
+  // Build image list: cover first, then subImages
+  const gallery = [
+    car.coverImage?.url,
+    ...(car.subImages || []).map((s) => s.url),
+  ].filter(Boolean);
 
-  const handleTestDrive = () => {
-    onClose();
-    redirectToEmail(car);
+  const safeGallery = gallery.length ? gallery : [car.img];
+
+  const handlePrev = (e) => {
+    e.stopPropagation();
+    setCurrentIndex((prev) => (prev - 1 + safeGallery.length) % safeGallery.length);
+  };
+  const handleNext = (e) => {
+    e.stopPropagation();
+    setCurrentIndex((prev) => (prev + 1) % safeGallery.length);
   };
 
   return (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center"
-      onClick={onClose}
-      style={{
-        background: "rgba(0,0,0,0.95)",
-        backdropFilter: "blur(20px)",
-        animation: "fadeIn 0.3s ease",
-      }}
-    >
-      <div
-        className="relative bg-[#1a1a1a] rounded-2xl max-w-5xl w-full mx-4 max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          animation: "slideUp 0.4s cubic-bezier(0.22, 0.61, 0.36, 1)",
-        }}
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 bg-black/50 rounded-full shadow-lg hover:bg-black/70 transition-colors"
-          style={{ color: "#ffffff" }}
-        >
-          <X size={28} />
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose} aria-label="Close">
+          <X size={22} />
         </button>
 
-        <div className="p-6">
-          <div className="flex items-start justify-between mb-2">
-            <div>
-              <h2 className="font-display text-2xl font-bold" style={{ color: "#ffffff" }}>
-                {car.name}
-              </h2>
-              <p className="font-mono text-sm" style={{ color: "#999" }}>
-                {car.year} · {car.color}
-              </p>
-            </div>
-            <button 
-              onClick={handleRequestQuote}
-              className="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-opacity-20 transition-colors"
-              style={{ background: "rgba(0,102,204,0.12)", color: "var(--accent)", fontSize: 14, fontWeight: 600 }}
-            >
-              <MessageCircle size={16} />
-              Request Quote
-            </button>
+        <div className="modal-head">
+          <div>
+            <h2 className="modal-title">{car.name}</h2>
+            <p className="modal-sub">
+              {car.year ? `${car.year} · ` : ''}{car.color || ''}
+              {car.price ? ` · ${car.price}` : ''}
+            </p>
           </div>
+          {car.location && (
+            <span className="modal-badge">{car.location}</span>
+          )}
+        </div>
 
-          {/* Gallery */}
-          <div className="relative mt-4">
-            <div className="relative overflow-hidden rounded-xl" style={{ background: "#0a0a0a", height: 400 }}>
-              <img
-                src={car.img}
-                alt={`${car.name} view`}
-                className="w-full h-full object-contain"
-              />
-            </div>
+        <div className="modal-gallery">
+          <img
+            src={safeGallery[currentIndex]}
+            alt={car.name}
+            className="modal-img"
+          />
+          {safeGallery.length > 1 && (
+            <>
+              <button className="modal-arrow left" onClick={handlePrev}>
+                <ChevronLeft size={22} />
+              </button>
+              <button className="modal-arrow right" onClick={handleNext}>
+                <ChevronRight size={22} />
+              </button>
+            </>
+          )}
+        </div>
+
+        {safeGallery.length > 1 && (
+          <div className="modal-thumbs">
+            {safeGallery.map((src, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentIndex(i)}
+                className={`modal-thumb ${i === currentIndex ? 'active' : ''}`}
+              >
+                <img src={src} alt="" />
+              </button>
+            ))}
           </div>
+        )}
 
-          {/* Specs */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
-            <div className="p-3 rounded-lg" style={{ background: "#0a0a0a" }}>
-              <p className="text-xs font-mono" style={{ color: "#666" }}>Transmission</p>
-              <p className="font-medium" style={{ color: "#ffffff" }}>{car.transmission}</p>
-            </div>
-            <div className="p-3 rounded-lg" style={{ background: "#0a0a0a" }}>
-              <p className="text-xs font-mono" style={{ color: "#666" }}>Fuel</p>
-              <p className="font-medium" style={{ color: "#ffffff" }}>{car.fuel}</p>
-            </div>
-            <div className="p-3 rounded-lg" style={{ background: "#0a0a0a" }}>
-              <p className="text-xs font-mono" style={{ color: "#666" }}>Mileage</p>
-              <p className="font-medium" style={{ color: "#ffffff" }}>{car.mileage} mi</p>
-            </div>
-            <div className="p-3 rounded-lg" style={{ background: "#0a0a0a" }}>
-              <p className="text-xs font-mono" style={{ color: "#666" }}>Year</p>
-              <p className="font-medium" style={{ color: "#ffffff" }}>{car.year}</p>
-            </div>
+        <div className="modal-specs">
+          <div className="spec">
+            <span>Transmission</span>
+            <strong>{car.transmission || '—'}</strong>
           </div>
-
-          <div className="flex flex-col sm:flex-row gap-3 mt-4">
-            <button className="flex-1 btn-primary justify-center" onClick={handleTestDrive}>
-              <Calendar size={18} />
-              Book a Test Drive
-            </button>
-            <button className="flex-1 btn-outline justify-center" onClick={handleRequestQuote}>
-              <MessageCircle size={18} />
-              Request Quote
-            </button>
+          <div className="spec">
+            <span>Fuel</span>
+            <strong>{car.fuel || '—'}</strong>
+          </div>
+          <div className="spec">
+            <span>Mileage</span>
+            <strong>{car.mileage ? `${car.mileage} mi` : '—'}</strong>
+          </div>
+          <div className="spec">
+            <span>Year</span>
+            <strong>{car.year || '—'}</strong>
           </div>
         </div>
-      </div>
 
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes slideUp {
-          from { opacity: 0; transform: scale(0.95) translateY(20px); }
-          to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-      `}</style>
+        {car.fullDescription && (
+          <div className="modal-desc">
+            <p>{car.fullDescription}</p>
+          </div>
+        )}
+
+        <div className="modal-actions">
+          <button
+            className="btn-primary"
+            onClick={() => { onClose(); redirectToEmail(car); }}
+          >
+            <Calendar size={16} /> Book a Test Drive
+          </button>
+          <button
+            className="btn-outline"
+            onClick={() => { onClose(); redirectToEmail(car); }}
+          >
+            <MessageCircle size={16} /> Request Quote
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
 
-// Car Card Component - NO PRICE, redirects to email
-function CarCard({ car, onOpen, onRequestQuote }) {
+/* ------------------------------------------------------------------ */
+/*  Car Card                                                           */
+/* ------------------------------------------------------------------ */
+
+function CarCard({ car, onOpen }) {
   const ref = useRef(null);
   const [tilt, setTilt] = useState({ rx: 0, ry: 0, sx: 50, sy: 50, active: false });
 
@@ -314,17 +211,12 @@ function CarCard({ car, onOpen, onRequestQuote }) {
   }, []);
 
   const handleCardClick = (e) => {
-    // Check if the click was on the request quote button
-    if (e.target.closest('.request-quote-btn')) {
-      return;
-    }
-    // Open lightbox instead of redirecting directly
+    if (e.target.closest('.request-quote-btn')) return;
     onOpen(car);
   };
 
   const handleRequestQuoteClick = (e) => {
     e.stopPropagation();
-    // Direct email redirect when clicking Request Quote button
     redirectToEmail(car);
   };
 
@@ -337,12 +229,16 @@ function CarCard({ car, onOpen, onRequestQuote }) {
       onClick={handleCardClick}
       style={{
         transform: `perspective(1000px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg) ${
-          tilt.active ? "scale3d(1.015,1.015,1.015)" : "scale3d(1,1,1)"
+          tilt.active ? 'scale3d(1.015,1.015,1.015)' : 'scale3d(1,1,1)'
         }`,
       }}
     >
       <div className="car-card-media">
-        <img src={car.img} alt={car.name} loading="lazy" />
+        {car.img ? (
+          <img src={car.img} alt={car.name} loading="lazy" />
+        ) : (
+          <div className="car-card-noimg"><Car size={32} /></div>
+        )}
         <div
           className="car-card-spot"
           style={{
@@ -350,49 +246,33 @@ function CarCard({ car, onOpen, onRequestQuote }) {
             background: `radial-gradient(circle at ${tilt.sx}% ${tilt.sy}%, rgba(255,255,255,0.08), transparent 45%)`,
           }}
         />
-        {car.featured && (
-          <span className="car-badge featured">Featured</span>
-        )}
-        {car.newArrival && (
-          <span className="car-badge new">New</span>
-        )}
-        {!car.inStock && (
-          <span className="car-badge sold">Sold</span>
-        )}
+        {car.featured && <span className="car-badge featured">Featured</span>}
+        {car.newArrival && <span className="car-badge new">New</span>}
+        {!car.inStock && <span className="car-badge sold">Sold</span>}
       </div>
       <div className="car-card-body">
         <div className="flex items-baseline justify-between">
-          <h3 className="font-display" style={{ fontSize: 17, fontWeight: 600, color: "var(--text)" }}>
+          <h3 className="font-display" style={{ fontSize: 17, fontWeight: 600, color: 'var(--text)' }}>
             {car.name}
           </h3>
           <div className="flex items-center gap-1">
             <Star size={14} color="var(--accent)" fill="var(--accent)" />
-            <span style={{ fontSize: 13, color: "var(--text)" }}>{car.rating}</span>
+            <span style={{ fontSize: 13, color: 'var(--text)' }}>{car.rating}</span>
           </div>
         </div>
-        <p className="font-mono" style={{ fontSize: 12, color: "var(--muted)", marginTop: 2 }}>
-          {car.year} · {car.color}
+        <p className="font-mono" style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
+          {car.year ? `${car.year} · ` : ''}{car.color || ''}
         </p>
         <div className="car-specs">
-          <span>
-            <Settings2 size={13} /> {car.transmission}
-          </span>
-          <span>
-            <Fuel size={13} /> {car.fuel}
-          </span>
-          <span>
-            <Gauge size={13} /> {car.mileage}
-          </span>
+          <span><Settings2 size={13} /> {car.transmission || 'Automatic'}</span>
+          <span><Fuel size={13} /> {car.fuel || 'Petrol'}</span>
+          <span><Gauge size={13} /> {car.mileage ? `${car.mileage} mi` : '—'}</span>
         </div>
-        <div className="flex items-center justify-between" style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid var(--line)" }}>
-          <button 
-            className="request-quote-btn"
-            onClick={handleRequestQuoteClick}
-          >
-            <MessageCircle size={14} />
-            Request Quote
+        <div className="car-card-foot">
+          <button className="request-quote-btn" onClick={handleRequestQuoteClick}>
+            <MessageCircle size={14} /> Request Quote
           </button>
-          <span className="flex items-center gap-1" style={{ fontSize: 12, color: "var(--muted)" }}>
+          <span className="car-card-view">
             View Details <ArrowUpRight size={14} />
           </span>
         </div>
@@ -401,555 +281,184 @@ function CarCard({ car, onOpen, onRequestQuote }) {
   );
 }
 
-// Navbar Component - With Full Screen Solid Black Mobile Menu
-function NavBar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
+/* ------------------------------------------------------------------ */
+/*  Page                                                               */
+/* ------------------------------------------------------------------ */
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 24);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  return (
-    <header
-      className="fixed top-0 left-0 right-0"
-      style={{
-        zIndex: 60,
-        transition: "background 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s ease",
-        background: scrolled ? "rgba(0,0,0,0.92)" : "transparent",
-        backdropFilter: scrolled ? "blur(14px)" : "none",
-        borderBottom: `1px solid ${scrolled ? "var(--line)" : "transparent"}`,
-      }}
-    >
-      <div className="max-w-7xl mx-auto px-6 md:px-10 flex items-center justify-between" style={{ height: 76 }}>
-        <div className="flex items-center gap-3">
-          <span
-            className="flex items-center justify-center"
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 10,
-              background: "linear-gradient(135deg, var(--accent), var(--accent-deep))",
-              boxShadow: "0 4px 16px rgba(0,102,204,0.35)",
-              overflow: "hidden",
-              flexShrink: 0,
-            }}
-          >
-            <img 
-              src={images.Logo2} 
-              alt="Lord Group Autos" 
-              style={{ 
-                width: "100%", 
-                height: "100%", 
-                objectFit: "cover",
-                display: "block",
-              }} 
-            />
-          </span>
-          <span 
-            className="font-display" 
-            style={{ 
-              fontSize: 20, 
-              fontWeight: 700, 
-              letterSpacing: "-0.02em", 
-              color: "var(--text)",
-              lineHeight: 1.2,
-            }}
-          >
-            Lord Group
-            <span style={{ color: "var(--accent)" }}> AUTOS</span>
-          </span>
-        </div>
-        <nav className="hidden lg:flex items-center gap-8">
-          <a href="/" className="nav-link">Home</a>
-          <a href="/gallery" className="nav-link" style={{ color: "var(--accent)" }}>Gallery</a>
-          <a href="/spare-parts" className="nav-link">Spare Parts</a>
-          <a href="/#about" className="nav-link">About</a>
-          <a href="/#contact" className="nav-link">Contact</a>
-        </nav>
-        <button className="icon-btn lg:hidden" onClick={() => setOpen(true)} aria-label="Open menu">
-          <Menu size={19} />
-        </button>
-      </div>
-
-      {/* Mobile Menu - Full Screen Solid Black */}
-      <div
-        className="fixed inset-0"
-        style={{
-          zIndex: 90,
-          pointerEvents: open ? "auto" : "none",
-          opacity: open ? 1 : 0,
-          transition: "opacity 0.35s ease",
-          background: "#000000",
-        }}
-      >
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between" style={{ height: 76 }}>
-          <div className="flex items-center gap-3">
-            <span
-              className="flex items-center justify-center"
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 10,
-                background: "linear-gradient(135deg, var(--accent), var(--accent-deep))",
-                overflow: "hidden",
-                flexShrink: 0,
-              }}
-            >
-              <img 
-                src={images.Logo2} 
-                alt="Lord Group Autos" 
-                style={{ 
-                  width: "100%", 
-                  height: "100%", 
-                  objectFit: "cover",
-                  display: "block",
-                }} 
-              />
-            </span>
-            <span className="font-display" style={{ fontSize: 20, fontWeight: 700, color: "var(--text)" }}>
-              Lord Group<span style={{ color: "var(--accent)" }}> AUTOS</span>
-            </span>
-          </div>
-          <button className="icon-btn" onClick={() => setOpen(false)} aria-label="Close menu">
-            <X size={19} />
-          </button>
-        </div>
-        <nav className="flex flex-col px-8 pt-6 gap-1" style={{ background: "#000000" }}>
-          <a 
-            href="/" 
-            onClick={() => setOpen(false)} 
-            className="font-display" 
-            style={{ 
-              fontSize: 28, 
-              padding: "14px 0", 
-              borderBottom: "1px solid var(--line)", 
-              color: "var(--text)",
-              textDecoration: "none",
-            }}
-          >
-            Home
-          </a>
-          <a 
-            href="/gallery" 
-            onClick={() => setOpen(false)} 
-            className="font-display" 
-            style={{ 
-              fontSize: 28, 
-              padding: "14px 0", 
-              borderBottom: "1px solid var(--line)", 
-              color: "var(--accent)",
-              textDecoration: "none",
-            }}
-          >
-            Gallery
-          </a>
-          <a 
-            href="/spare-parts" 
-            onClick={() => setOpen(false)} 
-            className="font-display" 
-            style={{ 
-              fontSize: 28, 
-              padding: "14px 0", 
-              borderBottom: "1px solid var(--line)", 
-              color: "var(--text)",
-              textDecoration: "none",
-            }}
-          >
-            Spare Parts
-          </a>
-          <a 
-            href="/#about" 
-            onClick={() => setOpen(false)} 
-            className="font-display" 
-            style={{ 
-              fontSize: 28, 
-              padding: "14px 0", 
-              borderBottom: "1px solid var(--line)", 
-              color: "var(--text)",
-              textDecoration: "none",
-            }}
-          >
-            About
-          </a>
-          <a 
-            href="/#contact" 
-            onClick={() => setOpen(false)} 
-            className="font-display" 
-            style={{ 
-              fontSize: 28, 
-              padding: "14px 0", 
-              borderBottom: "1px solid var(--line)", 
-              color: "var(--text)",
-              textDecoration: "none",
-            }}
-          >
-            Contact
-          </a>
-        </nav>
-      </div>
-    </header>
-  );
-}
-
-// Footer Component
-function Footer() {
-  return (
-    <footer style={{ borderTop: "1px solid var(--line)", marginTop: 70 }}>
-      <div className="max-w-7xl mx-auto px-6 md:px-10 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="flex items-center gap-3">
-          <span
-            className="flex items-center justify-center"
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: 8,
-              background: "linear-gradient(135deg, var(--accent), var(--accent-deep))",
-              overflow: "hidden",
-              flexShrink: 0,
-            }}
-          >
-            <img 
-              src={images.Logo2} 
-              alt="Lord Group Autos" 
-              style={{ 
-                width: "100%", 
-                height: "100%", 
-                objectFit: "cover",
-                display: "block",
-              }} 
-            />
-          </span>
-          <span className="font-display" style={{ fontSize: 16, fontWeight: 700, color: "var(--text)" }}>
-            Lord Group<span style={{ color: "var(--accent)" }}> AUTOS</span>
-          </span>
-        </div>
-        <p style={{ fontSize: 12.5, color: "var(--muted)" }} className="text-center">
-          Victoria Island, Lagos, Nigeria
-        </p>
-        <div className="flex items-center gap-4">
-          <FaFacebook size={16} color="var(--muted)" className="hover:text-[#1877f2] transition-colors cursor-pointer" />
-          <FaTwitter size={16} color="var(--muted)" className="hover:text-[#1da1f2] transition-colors cursor-pointer" />
-          <FaInstagram size={16} color="var(--muted)" className="hover:text-[#e4405f] transition-colors cursor-pointer" />
-          <FaLinkedin size={16} color="var(--muted)" className="hover:text-[#0a66c2] transition-colors cursor-pointer" />
-        </div>
-      </div>
-      <div style={{ borderTop: "1px solid var(--line)" }}>
-        <div className="max-w-7xl mx-auto px-6 md:px-10 py-5 flex items-center justify-center">
-          <p style={{ fontSize: 11.5, color: "var(--muted)" }}>&copy; 2026 Lord Group Motors. All rights reserved.</p>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
-// Main Gallery Page Component
 const GalleryPage = () => {
   const [selectedCar, setSelectedCar] = useState(null);
   const [cars, setCars] = useState([]);
-  const [filteredCars, setFilteredCars] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
-    make: '',
-    year: '',
-    color: '',
-    transmission: '',
-    fuel: '',
-    search: '',
+    make: '', year: '', color: '', transmission: '', fuel: '', search: '',
   });
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const carsPerPage = 12;
 
   useEffect(() => {
+    setLoading(true);
     getListings('gallery')
-      .then((listings) => setCars(listings.map((car) => ({
-        ...car,
-        id: car._id,
-        img: imageUrl(car.imageUrl),
-        name: car.name || `${car.make || ''} ${car.model || ''}`.trim(),
-        specs: [car.transmission || 'Automatic', car.fuel || 'Petrol', car.mileage ? `${car.mileage} mi` : 'Contact us'],
-        inStock: car.inStock !== false,
-      }))))
-      .catch(() => setCars([]));
+      .then((listings) => setCars((listings || []).map(normalizeCar)))
+      .catch(() => setCars([]))
+      .finally(() => setLoading(false));
   }, []);
 
   const filterOptions = {
-    makes: [...new Set(cars.map(car => car.make).filter(Boolean))].sort(),
-    years: [...new Set(cars.map(car => car.year).filter(Boolean))].sort().reverse(),
-    colors: [...new Set(cars.map(car => car.color).filter(Boolean))].sort(),
-    transmissions: [...new Set(cars.map(car => car.transmission).filter(Boolean))].sort(),
-    fuelTypes: [...new Set(cars.map(car => car.fuel).filter(Boolean))].sort(),
+    makes: [...new Set(cars.map((c) => c.make).filter(Boolean))].sort(),
+    years: [...new Set(cars.map((c) => c.year).filter(Boolean))].sort().reverse(),
+    colors: [...new Set(cars.map((c) => c.color).filter(Boolean))].sort(),
+    transmissions: [...new Set(cars.map((c) => c.transmission).filter(Boolean))].sort(),
+    fuelTypes: [...new Set(cars.map((c) => c.fuel).filter(Boolean))].sort(),
   };
 
-  // Apply filters - removed price filter
-  useEffect(() => {
-    let result = [...cars];
-
-    if (filters.search) {
-      const searchLower = filters.search.toLowerCase();
-      result = result.filter(car => 
-        car.name.toLowerCase().includes(searchLower) ||
-        car.make.toLowerCase().includes(searchLower) ||
-        car.model.toLowerCase().includes(searchLower)
-      );
+  const filteredCars = cars.filter((car) => {
+    const q = filters.search.toLowerCase();
+    if (q) {
+      const hay = `${car.name} ${car.make} ${car.model}`.toLowerCase();
+      if (!hay.includes(q)) return false;
     }
+    if (filters.make && car.make !== filters.make) return false;
+    if (filters.year && car.year !== filters.year) return false;
+    if (filters.color && car.color !== filters.color) return false;
+    if (filters.transmission && car.transmission !== filters.transmission) return false;
+    if (filters.fuel && car.fuel !== filters.fuel) return false;
+    return true;
+  });
 
-    if (filters.make) {
-      result = result.filter(car => car.make === filters.make);
-    }
+  const handleFilterChange = (key, value) =>
+    setFilters((prev) => ({ ...prev, [key]: value }));
 
-    if (filters.year) {
-      result = result.filter(car => car.year === filters.year);
-    }
+  const clearFilters = () =>
+    setFilters({ make: '', year: '', color: '', transmission: '', fuel: '', search: '' });
 
-    if (filters.color) {
-      result = result.filter(car => car.color === filters.color);
-    }
-
-    if (filters.transmission) {
-      result = result.filter(car => car.transmission === filters.transmission);
-    }
-
-    if (filters.fuel) {
-      result = result.filter(car => car.fuel === filters.fuel);
-    }
-
-    setFilteredCars(result);
-    setCurrentPage(1);
-  }, [filters, cars]);
-
-  const handleFilterChange = (key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-  };
-
-  const clearFilters = () => {
-    setFilters({
-      make: '',
-      year: '',
-      color: '',
-      transmission: '',
-      fuel: '',
-      search: '',
-    });
-  };
-
-  // Pagination
   const totalPages = Math.ceil(filteredCars.length / carsPerPage);
   const startIndex = (currentPage - 1) * carsPerPage;
-  const endIndex = startIndex + carsPerPage;
-  const currentCars = filteredCars.slice(startIndex, endIndex);
+  const currentCars = filteredCars.slice(startIndex, startIndex + carsPerPage);
 
   const goToPage = (page) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  useEffect(() => { setCurrentPage(1); }, [filters]);
+
   return (
     <div className="app-root">
       <GlobalStyle />
-      <NavBar />
+      <NavBar active="gallery" />
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden" style={{ paddingTop: 76 }}>
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(60% 50% at 50% 0%, rgba(0,102,204,0.15), transparent 60%), var(--bg)",
-          }}
-        />
-        <div className="relative max-w-6xl mx-auto text-center px-6 pt-16 pb-12">
-          <h1
-            className="font-display"
-            style={{
-              fontSize: "clamp(2.2rem, 5vw, 3.8rem)",
-              lineHeight: 1.04,
-              fontWeight: 700,
-              letterSpacing: "-0.03em",
-              color: "var(--text)",
-            }}
-          >
-            Explore Our
-            <br />
-            <span style={{ color: "var(--accent)" }}>Premium Collection</span>
-          </h1>
-          <p style={{ color: "var(--muted)", fontSize: 17, marginTop: 16, maxWidth: 520, marginInline: "auto" }}>
-            {filteredCars.length} vehicles available — each thoroughly inspected and ready for delivery
-          </p>
+      <section className="page-hero">
+        <h1 className="font-display hero-title">
+          Explore Our
+          <br />
+          <span style={{ color: 'var(--accent)' }}>Premium Collection</span>
+        </h1>
+        <p className="hero-sub">
+          {loading ? 'Loading vehicles…' : `${filteredCars.length} vehicles available — each thoroughly inspected and ready for delivery`}
+        </p>
 
-          {/* Search Bar */}
-          <div className="search-bar" style={{ marginTop: 30 }}>
-            <Search size={18} color="var(--muted)" style={{ marginLeft: 10 }} />
-            <input
-              type="text"
-              placeholder="Search by make, model..."
-              className="search-input"
-              value={filters.search}
-              onChange={(e) => handleFilterChange('search', e.target.value)}
-            />
-            <button 
-              className="search-submit"
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <Filter size={16} color="#ffffff" />
-            </button>
-          </div>
-
-          {/* Filter Toggle */}
-          <button
-            className="btn-outline"
-            onClick={() => setShowFilters(!showFilters)}
-            style={{ marginTop: 16 }}
-          >
-            <Filter size={16} />
-            {showFilters ? 'Hide Filters' : 'Show Filters'}
+        <div className="search-bar">
+          <Search size={18} color="var(--muted)" style={{ marginLeft: 10 }} />
+          <input
+            type="text"
+            placeholder="Search by make, model..."
+            className="search-input"
+            value={filters.search}
+            onChange={(e) => handleFilterChange('search', e.target.value)}
+          />
+          <button className="search-submit" onClick={() => setShowFilters(!showFilters)}>
+            <Filter size={16} color="#fff" />
           </button>
         </div>
+
+        <button className="btn-outline" onClick={() => setShowFilters(!showFilters)} style={{ marginTop: 16 }}>
+          <Filter size={16} />
+          {showFilters ? 'Hide Filters' : 'Show Filters'}
+        </button>
       </section>
 
-      {/* Filters Panel - removed price range */}
       {showFilters && (
-        <div className="max-w-7xl mx-auto px-6 md:px-10" style={{ marginTop: 20 }}>
+        <section className="max-w-7xl mx-auto px-6 md:px-10" style={{ marginTop: 20 }}>
           <div className="filters-panel">
             <div className="filters-grid">
               <div className="filter-group">
                 <label className="filter-label">Make</label>
-                <select
-                  className="filter-select"
-                  value={filters.make}
-                  onChange={(e) => handleFilterChange('make', e.target.value)}
-                >
+                <select className="filter-select" value={filters.make} onChange={(e) => handleFilterChange('make', e.target.value)}>
                   <option value="">All Makes</option>
-                  {filterOptions.makes.map(make => (
-                    <option key={make} value={make}>{make}</option>
-                  ))}
+                  {filterOptions.makes.map((m) => <option key={m} value={m}>{m}</option>)}
                 </select>
               </div>
-
               <div className="filter-group">
                 <label className="filter-label">Year</label>
-                <select
-                  className="filter-select"
-                  value={filters.year}
-                  onChange={(e) => handleFilterChange('year', e.target.value)}
-                >
+                <select className="filter-select" value={filters.year} onChange={(e) => handleFilterChange('year', e.target.value)}>
                   <option value="">All Years</option>
-                  {filterOptions.years.map(year => (
-                    <option key={year} value={year}>{year}</option>
-                  ))}
+                  {filterOptions.years.map((y) => <option key={y} value={y}>{y}</option>)}
                 </select>
               </div>
-
               <div className="filter-group">
                 <label className="filter-label">Color</label>
-                <select
-                  className="filter-select"
-                  value={filters.color}
-                  onChange={(e) => handleFilterChange('color', e.target.value)}
-                >
+                <select className="filter-select" value={filters.color} onChange={(e) => handleFilterChange('color', e.target.value)}>
                   <option value="">All Colors</option>
-                  {filterOptions.colors.map(color => (
-                    <option key={color} value={color}>{color}</option>
-                  ))}
+                  {filterOptions.colors.map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
-
               <div className="filter-group">
                 <label className="filter-label">Transmission</label>
-                <select
-                  className="filter-select"
-                  value={filters.transmission}
-                  onChange={(e) => handleFilterChange('transmission', e.target.value)}
-                >
+                <select className="filter-select" value={filters.transmission} onChange={(e) => handleFilterChange('transmission', e.target.value)}>
                   <option value="">All</option>
-                  {filterOptions.transmissions.map(trans => (
-                    <option key={trans} value={trans}>{trans}</option>
-                  ))}
+                  {filterOptions.transmissions.map((t) => <option key={t} value={t}>{t}</option>)}
                 </select>
               </div>
-
               <div className="filter-group">
                 <label className="filter-label">Fuel Type</label>
-                <select
-                  className="filter-select"
-                  value={filters.fuel}
-                  onChange={(e) => handleFilterChange('fuel', e.target.value)}
-                >
+                <select className="filter-select" value={filters.fuel} onChange={(e) => handleFilterChange('fuel', e.target.value)}>
                   <option value="">All</option>
-                  {filterOptions.fuelTypes.map(fuel => (
-                    <option key={fuel} value={fuel}>{fuel}</option>
-                  ))}
+                  {filterOptions.fuelTypes.map((f) => <option key={f} value={f}>{f}</option>)}
                 </select>
               </div>
             </div>
-
             <div className="filters-actions">
-              <button className="btn-outline" onClick={clearFilters}>
-                Clear All
-              </button>
-              <span style={{ fontSize: 13, color: "var(--muted)" }}>
-                {filteredCars.length} vehicles found
-              </span>
+              <button className="btn-outline" onClick={clearFilters}>Clear All</button>
+              <span style={{ fontSize: 13, color: 'var(--muted)' }}>{filteredCars.length} vehicles found</span>
             </div>
           </div>
-        </div>
+        </section>
       )}
 
-      {/* Car Grid */}
       <section className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 50 }}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {currentCars.map((car) => (
-            <CarCard 
-              key={car.id} 
-              car={car} 
-              onOpen={setSelectedCar}
-            />
-          ))}
-        </div>
-
-        {/* Empty State */}
-        {currentCars.length === 0 && (
-          <div className="text-center" style={{ padding: 80 }}>
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="car-skeleton" />
+            ))}
+          </div>
+        ) : currentCars.length === 0 ? (
+          <div className="empty-state">
             <Car size={64} color="var(--muted)" />
-            <h3 className="font-display" style={{ fontSize: 24, color: "var(--text)", marginTop: 20 }}>
-              No vehicles found
-            </h3>
-            <p style={{ color: "var(--muted)", marginTop: 8 }}>
-              Try adjusting your filters to find more options
-            </p>
-            <button className="btn-outline" onClick={clearFilters} style={{ marginTop: 16 }}>
-              Clear Filters
-            </button>
+            <h3 className="font-display">No vehicles found</h3>
+            <p>Try adjusting your filters to find more options</p>
+            <button className="btn-outline" onClick={clearFilters}>Clear Filters</button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {currentCars.map((car) => (
+              <CarCard key={car.id} car={car} onOpen={setSelectedCar} />
+            ))}
           </div>
         )}
 
-        {/* Pagination */}
         {totalPages > 1 && (
-          <div className="pagination" style={{ marginTop: 40, display: 'flex', justifyContent: 'center', gap: 8 }}>
-            <button
-              className="pagination-btn"
-              onClick={() => goToPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-            >
+          <div className="pagination">
+            <button className="pagination-btn" onClick={() => goToPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1}>
               <ChevronLeft size={16} />
             </button>
-            
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               let pageNum;
-              if (totalPages <= 5) {
-                pageNum = i + 1;
-              } else if (currentPage <= 3) {
-                pageNum = i + 1;
-              } else if (currentPage >= totalPages - 2) {
-                pageNum = totalPages - 4 + i;
-              } else {
-                pageNum = currentPage - 2 + i;
-              }
-              
+              if (totalPages <= 5) pageNum = i + 1;
+              else if (currentPage <= 3) pageNum = i + 1;
+              else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + i;
+              else pageNum = currentPage - 2 + i;
               return (
                 <button
                   key={pageNum}
@@ -960,32 +469,109 @@ const GalleryPage = () => {
                 </button>
               );
             })}
-
-            <button
-              className="pagination-btn"
-              onClick={() => goToPage(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage === totalPages}
-            >
+            <button className="pagination-btn" onClick={() => goToPage(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages}>
               <ChevronRight size={16} />
             </button>
           </div>
         )}
       </section>
 
-      {/* Lightbox */}
-      {selectedCar && (
-        <CarLightbox car={selectedCar} onClose={() => setSelectedCar(null)} />
-      )}
+      {selectedCar && <CarLightbox car={selectedCar} onClose={() => setSelectedCar(null)} />}
 
       <Footer />
-
-      {/* Global Styles */}
-      <GlobalStyle />
     </div>
   );
 };
 
-// Global Style Component
+/* ------------------------------------------------------------------ */
+/*  NavBar / Footer (shared, inline)                                   */
+/* ------------------------------------------------------------------ */
+
+function NavBar({ active }) {
+  const [open, setOpen] = useState(false);
+  const links = [
+    { href: '/', label: 'Home', key: 'home' },
+    { href: '/gallery', label: 'Gallery', key: 'gallery' },
+    { href: '/spare-parts', label: 'Spare Parts', key: 'spare-parts' },
+    { href: '/#about', label: 'About', key: 'about' },
+    { href: '/#contact', label: 'Contact', key: 'contact' },
+  ];
+
+  return (
+    <header className="site-nav">
+      <div className="nav-inner">
+        <a href="/" className="nav-logo">
+          <span className="nav-logo-img">
+            <img src={images.Logo2} alt="Lord Group Autos" />
+          </span>
+          <span className="font-display nav-logo-text">
+            Lord Group<span style={{ color: 'var(--accent)' }}> AUTOS</span>
+          </span>
+        </a>
+        <nav className="nav-links">
+          {links.map((l) => (
+            <a key={l.key} href={l.href} className={`nav-link ${active === l.key ? 'active' : ''}`}>
+              {l.label}
+            </a>
+          ))}
+        </nav>
+        <button className="icon-btn nav-mobile-toggle" onClick={() => setOpen(true)} aria-label="Open menu">
+          <Menu size={19} />
+        </button>
+      </div>
+
+      <div className={`mobile-menu ${open ? 'open' : ''}`}>
+        <div className="mobile-menu-head">
+          <span className="font-display nav-logo-text">
+            Lord Group<span style={{ color: 'var(--accent)' }}> AUTOS</span>
+          </span>
+          <button className="icon-btn" onClick={() => setOpen(false)} aria-label="Close menu">
+            <X size={19} />
+          </button>
+        </div>
+        <nav className="mobile-menu-links">
+          {links.map((l) => (
+            <a key={l.key} href={l.href} onClick={() => setOpen(false)} className={`mobile-link ${active === l.key ? 'active' : ''}`}>
+              {l.label}
+            </a>
+          ))}
+        </nav>
+      </div>
+    </header>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="site-footer">
+      <div className="footer-inner">
+        <div className="footer-brand">
+          <span className="nav-logo-img small">
+            <img src={images.Logo2} alt="Lord Group Autos" />
+          </span>
+          <span className="font-display nav-logo-text">
+            Lord Group<span style={{ color: 'var(--accent)' }}> AUTOS</span>
+          </span>
+        </div>
+        <p className="footer-loc">Victoria Island, Lagos, Nigeria</p>
+        <div className="footer-social">
+          <FaFacebook size={16} />
+          <FaTwitter size={16} />
+          <FaInstagram size={16} />
+          <FaLinkedin size={16} />
+        </div>
+      </div>
+      <div className="footer-bottom">
+        <p>&copy; 2026 Lord Group Motors. All rights reserved.</p>
+      </div>
+    </footer>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Global styles                                                      */
+/* ------------------------------------------------------------------ */
+
 function GlobalStyle() {
   return (
     <style>{`
@@ -995,15 +581,16 @@ function GlobalStyle() {
         --bg: #0a0a0a;
         --surface: #1a1a1a;
         --surface-alt: #2a2a2a;
-        --line: #333333;
-        --line-strong: #444444;
-        --text: #ffffff;
-        --muted: #999999;
+        --line: #333;
+        --line-strong: #444;
+        --text: #fff;
+        --muted: #999;
         --accent: #0066cc;
         --accent-deep: #004d99;
       }
-
       * { box-sizing: border-box; }
+      .font-display { font-family: 'Space Grotesk', sans-serif; }
+      .font-mono { font-family: 'IBM Plex Mono', monospace; }
 
       .app-root {
         background: var(--bg);
@@ -1013,286 +600,308 @@ function GlobalStyle() {
         overflow-x: hidden;
       }
 
-      .font-display { font-family: 'Space Grotesk', sans-serif; }
-      .font-mono { font-family: 'IBM Plex Mono', monospace; }
-
+      /* Nav */
+      .site-nav {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 60;
+        background: rgba(0,0,0,0.92);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--line);
+      }
+      .nav-inner {
+        max-width: 1280px; margin: 0 auto; padding: 0 24px;
+        height: 76px; display: flex; align-items: center; justify-content: space-between;
+      }
+      .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+      .nav-logo-img {
+        width: 40px; height: 40px; border-radius: 10px; overflow: hidden;
+        background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+        box-shadow: 0 4px 16px rgba(0,102,204,0.35);
+        flex-shrink: 0;
+      }
+      .nav-logo-img.small { width: 32px; height: 32px; border-radius: 8px; }
+      .nav-logo-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .nav-logo-text { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
+      .nav-links { display: flex; gap: 28px; }
       .nav-link {
-        font-size: 14px;
-        color: var(--muted);
-        transition: color 0.25s ease;
-        text-decoration: none;
+        font-size: 14px; color: var(--muted); text-decoration: none;
+        transition: color .25s ease;
       }
       .nav-link:hover { color: var(--text); }
-
+      .nav-link.active { color: var(--accent); }
+      .nav-mobile-toggle { display: none; }
       .icon-btn {
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--surface);
-        border: 1px solid var(--line);
-        color: var(--text);
-        transition: border-color 0.25s ease, background 0.25s ease;
-        cursor: pointer;
+        width: 38px; height: 38px; border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        background: var(--surface); border: 1px solid var(--line);
+        color: var(--text); cursor: pointer;
+        transition: border-color .25s ease, background .25s ease;
       }
       .icon-btn:hover { border-color: var(--accent); background: var(--surface-alt); }
 
-      .btn-outline {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 20px;
-        border-radius: 999px;
-        border: 1px solid var(--line-strong);
-        font-size: 13.5px;
-        color: var(--text);
-        transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
-        background: transparent;
-        cursor: pointer;
-        text-decoration: none;
+      .mobile-menu {
+        position: fixed; inset: 0; z-index: 90;
+        background: #000;
+        opacity: 0; pointer-events: none;
+        transition: opacity .3s ease;
       }
-      .btn-outline:hover {
-        border-color: var(--accent);
-        background: rgba(0,102,204,0.15);
-        transform: translateY(-1px);
+      .mobile-menu.open { opacity: 1; pointer-events: auto; }
+      .mobile-menu-head {
+        height: 76px; padding: 0 24px;
+        display: flex; align-items: center; justify-content: space-between;
       }
+      .mobile-menu-links { display: flex; flex-direction: column; padding: 12px 32px; }
+      .mobile-link {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 26px; padding: 14px 0; color: var(--text);
+        border-bottom: 1px solid var(--line); text-decoration: none;
+      }
+      .mobile-link.active { color: var(--accent); }
 
-      .btn-primary {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 14px 26px;
-        border-radius: 999px;
-        border: none;
-        cursor: pointer;
-        background: var(--accent);
-        color: #ffffff;
-        font-weight: 600;
-        font-size: 14.5px;
-        box-shadow: 0 10px 30px rgba(0,102,204,0.28);
-        transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-        text-decoration: none;
+      /* Hero */
+      .page-hero {
+        padding: 76px 24px 40px;
+        text-align: center;
+        background: radial-gradient(60% 50% at 50% 0%, rgba(0,102,204,0.15), transparent 60%), var(--bg);
       }
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 16px 36px rgba(0,102,204,0.4);
-        background: #0080ff;
+      .hero-title {
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        line-height: 1.04; font-weight: 700; letter-spacing: -0.03em;
+        margin: 40px 0 0;
       }
+      .hero-sub { color: var(--muted); font-size: 16px; margin-top: 16px; max-width: 520px; margin-inline: auto; }
 
       .search-bar {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: var(--surface);
-        border: 1px solid var(--line-strong);
-        border-radius: 999px;
-        padding: 6px;
-        max-width: 520px;
-        margin-inline: auto;
+        display: flex; align-items: center; gap: 8px;
+        background: var(--surface); border: 1px solid var(--line-strong);
+        border-radius: 999px; padding: 6px;
+        max-width: 520px; margin: 26px auto 0;
       }
       .search-input {
-        flex: 1;
-        background: transparent;
-        border: none;
-        outline: none;
-        color: var(--text);
-        font-size: 14px;
-        padding: 10px 4px;
+        flex: 1; background: transparent; border: none; outline: none;
+        color: var(--text); font-size: 14px; padding: 10px 4px;
       }
       .search-input::placeholder { color: var(--muted); }
       .search-submit {
-        width: 40px;
-        height: 40px;
-        border-radius: 999px;
-        border: none;
-        cursor: pointer;
-        background: var(--accent);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        transition: background 0.25s ease;
+        width: 40px; height: 40px; border-radius: 999px; border: none;
+        background: var(--accent); cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
       }
       .search-submit:hover { background: #0080ff; }
 
-      .car-card {
-        background: var(--surface);
-        border: 1px solid var(--line);
-        border-radius: 20px;
-        overflow: hidden;
-        transition: transform 0.15s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
-        transform-style: preserve-3d;
-        will-change: transform;
-        height: 100%;
+      .btn-outline {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 10px 20px; border-radius: 999px;
+        border: 1px solid var(--line-strong);
+        font-size: 13.5px; color: var(--text);
+        background: transparent; cursor: pointer;
+        transition: border-color .25s ease, background .25s ease, transform .25s ease;
       }
-      .car-card:hover {
-        border-color: var(--line-strong);
-        box-shadow: 0 24px 50px rgba(0,0,0,0.5);
-      }
-      .car-card-media {
-        position: relative;
-        height: 200px;
-        overflow: hidden;
-        background: var(--bg);
-      }
-      .car-card-media img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-      }
-      .car-card:hover .car-card-media img { transform: scale(1.06); }
-      .car-card-spot {
-        position: absolute;
-        inset: 0;
-        transition: opacity 0.2s ease;
-        pointer-events: none;
-      }
-      .car-card-body { padding: 16px 18px 18px; }
-      .car-specs {
-        display: flex;
-        gap: 12px;
-        margin-top: 10px;
-        padding-top: 10px;
-        border-top: 1px solid var(--line);
-      }
-      .car-specs span {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 11px;
-        color: var(--muted);
-      }
+      .btn-outline:hover { border-color: var(--accent); background: rgba(0,102,204,0.15); transform: translateY(-1px); }
 
-      .car-badge {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        padding: 4px 12px;
-        border-radius: 999px;
-        font-size: 10px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+      .btn-primary {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 13px 24px; border-radius: 999px; border: none;
+        background: var(--accent); color: #fff; font-weight: 600; font-size: 14px;
+        cursor: pointer; box-shadow: 0 10px 30px rgba(0,102,204,0.28);
+        transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
       }
-      .car-badge.featured {
-        background: var(--accent);
-        color: #ffffff;
-      }
-      .car-badge.new {
-        background: #22c55e;
-        color: #ffffff;
-      }
-      .car-badge.sold {
-        background: #ef4444;
-        color: #ffffff;
-      }
+      .btn-primary:hover { transform: translateY(-2px); background: #0080ff; }
 
+      /* Filters */
       .filters-panel {
-        background: var(--surface);
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        padding: 20px 24px;
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: 16px; padding: 20px 24px;
       }
       .filters-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 16px;
       }
-      .filter-group {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-      }
+      .filter-group { display: flex; flex-direction: column; gap: 4px; }
       .filter-label {
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+        font-size: 12px; font-weight: 600; color: var(--muted);
+        text-transform: uppercase; letter-spacing: 0.04em;
       }
       .filter-select {
-        background: var(--bg);
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 8px 12px;
-        color: var(--text);
-        font-size: 14px;
-        transition: border-color 0.3s ease;
-        font-family: 'Inter', sans-serif;
-        cursor: pointer;
+        background: var(--bg); border: 1px solid var(--line);
+        border-radius: 8px; padding: 8px 12px; color: var(--text);
+        font-size: 14px; font-family: 'Inter', sans-serif; cursor: pointer;
       }
-      .filter-select:focus {
-        outline: none;
-        border-color: var(--accent);
-      }
+      .filter-select:focus { outline: none; border-color: var(--accent); }
       .filters-actions {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-top: 16px;
-        padding-top: 16px;
-        border-top: 1px solid var(--line);
+        display: flex; align-items: center; justify-content: space-between;
+        margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line);
       }
 
-      .pagination-btn {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        border: 1px solid var(--line);
-        background: transparent;
-        color: var(--text);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.25s ease;
-        font-size: 14px;
+      /* Car card */
+      .car-card {
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: 20px; overflow: hidden;
+        transition: transform .15s ease-out, border-color .3s ease, box-shadow .3s ease;
+        transform-style: preserve-3d; will-change: transform;
+        height: 100%; display: flex; flex-direction: column;
       }
-      .pagination-btn:hover:not(:disabled) {
-        border-color: var(--accent);
-        background: rgba(0,102,204,0.1);
+      .car-card:hover { border-color: var(--line-strong); box-shadow: 0 24px 50px rgba(0,0,0,0.5); }
+      .car-card-media { position: relative; height: 200px; overflow: hidden; background: var(--bg); }
+      .car-card-media img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+      .car-card:hover .car-card-media img { transform: scale(1.06); }
+      .car-card-noimg {
+        width: 100%; height: 100%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--muted);
       }
-      .pagination-btn.active {
-        background: var(--accent);
-        border-color: var(--accent);
-        color: #ffffff;
+      .car-card-spot { position: absolute; inset: 0; transition: opacity .2s ease; pointer-events: none; }
+      .car-card-body { padding: 16px 18px 18px; display: flex; flex-direction: column; flex: 1; }
+      .car-specs {
+        display: flex; gap: 12px; margin-top: 10px;
+        padding-top: 10px; border-top: 1px solid var(--line);
       }
-      .pagination-btn:disabled {
-        opacity: 0.3;
-        cursor: not-allowed;
+      .car-specs span { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--muted); }
+      .car-card-foot {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line);
       }
+      .car-card-view { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--muted); }
 
       .request-quote-btn {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 14px;
-        border-radius: 999px;
-        border: none;
-        background: rgba(0,102,204,0.12);
-        color: var(--accent);
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.3s ease, transform 0.3s ease;
+        display: flex; align-items: center; gap: 6px;
+        padding: 6px 14px; border-radius: 999px; border: none;
+        background: rgba(0,102,204,0.12); color: var(--accent);
+        font-size: 13px; font-weight: 600; cursor: pointer;
+        transition: background .3s ease, transform .3s ease;
       }
-      .request-quote-btn:hover {
-        background: rgba(0,102,204,0.2);
-        transform: translateX(2px);
+      .request-quote-btn:hover { background: rgba(0,102,204,0.2); transform: translateX(2px); }
+
+      .car-badge {
+        position: absolute; top: 10px; right: 10px;
+        padding: 4px 12px; border-radius: 999px;
+        font-size: 10px; font-weight: 600; text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .car-badge.featured { background: var(--accent); color: #fff; }
+      .car-badge.new { background: #22c55e; color: #fff; }
+      .car-badge.sold { background: #ef4444; color: #fff; }
+
+      .car-skeleton {
+        height: 320px; border-radius: 20px;
+        background: linear-gradient(90deg, #141414, #1c1c1c, #141414);
+        background-size: 200% 100%;
+        animation: shimmer 1.4s linear infinite;
+        border: 1px solid var(--line);
+      }
+      @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+      /* Pagination */
+      .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 40px; }
+      .pagination-btn {
+        width: 40px; height: 40px; border-radius: 10px;
+        border: 1px solid var(--line); background: transparent;
+        color: var(--text); cursor: pointer; font-size: 14px;
+        display: flex; align-items: center; justify-content: center;
+        transition: all .25s ease;
+      }
+      .pagination-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(0,102,204,0.1); }
+      .pagination-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+      .pagination-btn:disabled { opacity: .3; cursor: not-allowed; }
+
+      /* Empty */
+      .empty-state {
+        text-align: center; padding: 80px 20px;
+        display: flex; flex-direction: column; align-items: center; gap: 12px;
+        color: var(--muted);
+      }
+      .empty-state h3 { font-size: 22px; color: var(--text); margin: 8px 0 0; }
+
+      /* Modal */
+      .modal-overlay {
+        position: fixed; inset: 0; z-index: 100;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(0,0,0,0.92); backdrop-filter: blur(16px);
+        padding: 20px;
+      }
+      .modal {
+        position: relative; background: #1a1a1a;
+        border: 1px solid var(--line); border-radius: 20px;
+        max-width: 960px; width: 100%; max-height: 92vh; overflow-y: auto;
+        padding: 28px;
+      }
+      .modal-close {
+        position: absolute; top: 16px; right: 16px;
+        background: rgba(0,0,0,0.6); border: none; color: #fff;
+        width: 38px; height: 38px; border-radius: 999px; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .modal-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding-right: 50px; }
+      .modal-title { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin: 0; }
+      .modal-sub { font-size: 13px; color: var(--muted); margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
+      .modal-badge {
+        font-size: 11px; padding: 5px 12px; border-radius: 999px;
+        background: var(--surface); border: 1px solid var(--line); color: var(--muted);
+        white-space: nowrap;
+      }
+      .modal-gallery { position: relative; margin-top: 18px; border-radius: 14px; overflow: hidden; background: #0a0a0a; height: 420px; }
+      .modal-img { width: 100%; height: 100%; object-fit: contain; display: block; }
+      .modal-arrow {
+        position: absolute; top: 50%; transform: translateY(-50%);
+        background: rgba(0,0,0,0.65); border: none; color: #fff;
+        width: 42px; height: 42px; border-radius: 999px; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: background .2s ease;
+      }
+      .modal-arrow:hover { background: rgba(0,0,0,0.9); }
+      .modal-arrow.left { left: 12px; }
+      .modal-arrow.right { right: 12px; }
+
+      .modal-thumbs { display: flex; gap: 8px; margin-top: 12px; overflow-x: auto; padding-bottom: 4px; }
+      .modal-thumb {
+        width: 68px; height: 68px; border-radius: 10px; overflow: hidden;
+        border: 2px solid transparent; cursor: pointer; flex-shrink: 0;
+        background: transparent; padding: 0;
+      }
+      .modal-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .modal-thumb.active { border-color: var(--accent); }
+
+      .modal-specs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 18px; }
+      .modal-specs .spec { background: #0a0a0a; padding: 12px; border-radius: 10px; }
+      .modal-specs .spec span { display: block; font-size: 11px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; }
+      .modal-specs .spec strong { font-size: 14px; color: #fff; font-weight: 600; }
+
+      .modal-desc { margin-top: 16px; padding: 16px; background: #0a0a0a; border-radius: 12px; }
+      .modal-desc p { font-size: 13.5px; color: #ccc; line-height: 1.6; white-space: pre-wrap; margin: 0; }
+
+      .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+      .modal-actions > * { flex: 1; justify-content: center; }
+
+      /* Footer */
+      .site-footer { border-top: 1px solid var(--line); margin-top: 80px; }
+      .footer-inner {
+        max-width: 1280px; margin: 0 auto; padding: 40px 24px;
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 24px; flex-wrap: wrap;
+      }
+      .footer-brand { display: flex; align-items: center; gap: 12px; }
+      .footer-loc { font-size: 12.5px; color: var(--muted); }
+      .footer-social { display: flex; gap: 16px; color: var(--muted); }
+      .footer-social svg { cursor: pointer; transition: color .25s ease; }
+      .footer-social svg:hover { color: var(--accent); }
+      .footer-bottom { border-top: 1px solid var(--line); padding: 20px 24px; text-align: center; }
+      .footer-bottom p { font-size: 11.5px; color: var(--muted); margin: 0; }
+
+      /* Responsive */
+      @media (max-width: 900px) {
+        .nav-links { display: none; }
+        .nav-mobile-toggle { display: flex; }
+      }
+      @media (max-width: 768px) {
+        .filters-grid { grid-template-columns: 1fr 1fr; }
+        .modal-specs { grid-template-columns: 1fr 1fr; }
+        .modal { padding: 20px; border-radius: 16px; }
+        .modal-gallery { height: 260px; }
+        .modal-title { font-size: 20px; }
+        .modal-actions { flex-direction: column; }
       }
 
-      @media (max-width: 768px) {
-        .filters-grid {
-          grid-template-columns: 1fr 1fr;
-        }
-        .filters-actions {
-          flex-direction: column;
-          gap: 12px;
-          align-items: stretch;
-        }
+      @media (prefers-reduced-motion: reduce) {
+        .car-card, .car-skeleton, .pagination-btn, .btn-primary, .btn-outline { animation: none !important; transition: none !important; }
       }
     `}</style>
   );
