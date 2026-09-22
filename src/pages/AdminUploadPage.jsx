@@ -16,7 +16,7 @@ const emptyCar = {
 
 const emptyPart = {
   name: '', brand: 'Genuine', category: 'Engine', subcategory: 'Filters',
-  description: '', rating: 4.8, inStock: true,
+  description: '', rating: 4.8, inStock: true, price:''
 };
 
 export default function AdminUploadPage() {
@@ -406,6 +406,13 @@ function PartForm() {
             onChange={(e) => update('subcategory', e.target.value)}
           />
         </Field>
+        <Field label="Price">
+  <input
+    value={form.price}
+    onChange={(e) => update('price', e.target.value)}
+    placeholder="e.g. 17M"
+  />
+</Field>
         <Field label="Description">
           <textarea
             rows={3}

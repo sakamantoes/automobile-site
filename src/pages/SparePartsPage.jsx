@@ -47,6 +47,7 @@ const normalizePart = (part) => ({
   subcategory: part.subcategory || 'Parts',
   brand: part.brand || 'Genuine',
   rating: part.rating ?? 4.8,
+  price: part.price || '',                          // ← NEW
   description:
     part.description || 'Quality replacement part for your vehicle.',
   inStock: part.inStock !== false,
@@ -56,12 +57,6 @@ function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((value || '').trim());
 }
 
-/**
- * Sends a clean, named-field email to the dealership via FormSubmit's
- * AJAX endpoint. When `replyTo` (the customer's own email) is supplied,
- * it's passed along as `_replyto` so the admin can hit "Reply" and go
- * straight back to the customer.
- */
 async function sendEmailNotification({ subject, fields, replyTo }) {
   try {
     const payload = {
@@ -100,6 +95,7 @@ async function orderPartByEmail(part, customerEmail = '') {
   if (part.brand) fields.Brand = part.brand;
   if (part.category) fields.Category = part.category;
   if (part.subcategory) fields.Subcategory = part.subcategory;
+  if (part.price) fields.Price = part.price;         // ← NEW
   if (customerEmail) fields['Customer Email'] = customerEmail;
 
   const ok = await sendEmailNotification({
@@ -120,7 +116,7 @@ async function orderPartByEmail(part, customerEmail = '') {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Email-capture modal — asks the customer for their email first      */
+/*  Email-capture modal                                                */
 /* ------------------------------------------------------------------ */
 
 function EmailCaptureModal({ open, title, description, sending, onSubmit, onClose }) {
@@ -321,6 +317,11 @@ function PartCard({ part }) {
             </span>
           )}
 
+          {/* ← NEW: price badge on the image */}
+          {part.price && (
+            <span className="part-price-badge">{part.price}</span>
+          )}
+
           <div
             className="part-card-overlay"
             style={{ opacity: hovered ? 1 : 0 }}
@@ -355,7 +356,10 @@ function PartCard({ part }) {
           <p className="part-card-description">{part.description}</p>
 
           <div className="part-card-footer">
-            <span className="part-card-availability">✓ Available</span>
+            {/* ← NEW: price replaces the plain "Available" text */}
+            <span className="part-card-price">
+              {part.price ? part.price : '✓ Available'}
+            </span>
 
             <button
               className="part-card-btn"
@@ -373,7 +377,9 @@ function PartCard({ part }) {
       <EmailCaptureModal
         open={emailPromptOpen}
         title="Place an Order"
-        description={`Enter your email and we'll process your order for ${part.name}.`}
+        description={`Enter your email and we'll process your order for ${part.name}${
+          part.price ? ` (${part.price})` : ''
+        }.`}
         sending={sending}
         onSubmit={handleEmailSubmit}
         onClose={() => setEmailPromptOpen(false)}
@@ -749,8 +755,7 @@ function GlobalStyle() {
         overflow-x: hidden;
       }
 
-      /* Nav — solid, not transparent */
-
+      /* Nav */
       .site-nav {
         position: fixed;
         top: 0; left: 0; right: 0;
@@ -806,8 +811,7 @@ function GlobalStyle() {
       }
       .mobile-link.active { color: var(--accent); }
 
-      /* Hero — offset for the fixed 76px nav so it isn't hidden */
-
+      /* Hero */
       .page-hero {
         padding: 116px 24px 40px;
         text-align: center;
@@ -865,7 +869,6 @@ function GlobalStyle() {
       .btn-primary:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 
       /* Filters */
-
       .filters-panel {
         background: var(--surface); border: 1px solid var(--line);
         border-radius: 16px; padding: 20px 24px;
@@ -891,7 +894,6 @@ function GlobalStyle() {
       }
 
       /* Parts */
-
       .parts-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -925,6 +927,16 @@ function GlobalStyle() {
         font-size: 11px; font-weight: 600;
         background: rgba(34, 197, 94, 0.9); color: #fff;
       }
+
+      /* ← NEW: price badge on the image */
+      .part-price-badge {
+        position: absolute; top: 10px; right: 10px;
+        padding: 4px 12px; border-radius: 999px;
+        font-size: 12px; font-weight: 700;
+        background: var(--accent); color: #fff;
+        box-shadow: 0 4px 12px rgba(0,102,204,0.35);
+      }
+
       .part-card-overlay {
         position: absolute; inset: 0; background: rgba(0,0,0,0.7);
         display: flex; align-items: center; justify-content: center;
@@ -949,6 +961,14 @@ function GlobalStyle() {
         margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line);
       }
       .part-card-availability { font-size: 13px; color: #22c55e; font-weight: 600; }
+
+      /* ← NEW: price label in the footer */
+      .part-card-price {
+        font-size: 15px; color: var(--accent); font-weight: 700;
+        font-family: 'Space Grotesk', sans-serif;
+        letter-spacing: -0.01em;
+      }
+
       .part-card-btn {
         display: flex; align-items: center; gap: 4px;
         padding: 8px 16px; border-radius: 999px; border: none;
@@ -972,7 +992,6 @@ function GlobalStyle() {
       }
 
       /* Stats */
-
       .stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -998,7 +1017,6 @@ function GlobalStyle() {
       .stat-label { font-size: 13px; color: var(--muted); margin: 0; }
 
       /* Empty */
-
       .empty-state {
         text-align: center; padding: 80px 20px;
         display: flex; flex-direction: column; align-items: center;
@@ -1007,7 +1025,6 @@ function GlobalStyle() {
       .empty-state h3 { font-size: 22px; color: var(--text); margin: 8px 0 0; }
 
       /* Footer */
-
       .site-footer { border-top: 1px solid var(--line); margin-top: 80px; }
       .footer-inner {
         max-width: 1280px; margin: 0 auto; padding: 40px 24px;
@@ -1023,7 +1040,6 @@ function GlobalStyle() {
       .footer-bottom p { font-size: 11.5px; color: var(--muted); margin: 0; }
 
       /* Responsive */
-
       @media (max-width: 900px) {
         .nav-links { display: none; }
         .nav-mobile-toggle { display: flex; }
@@ -1041,7 +1057,6 @@ function GlobalStyle() {
         }
       }
 
-      /* Email-capture modal animations (mirrors HomePage) */
       @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
       @keyframes slideUp {
         from { opacity: 0; transform: scale(0.95) translateY(20px); }

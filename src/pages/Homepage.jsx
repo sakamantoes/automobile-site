@@ -319,11 +319,12 @@ async function orderByEmail(item, kind = "car", customerEmail = "") {
     if (item.price) fields.Price = item.price;
     if (item.location) fields.Location = item.location;
   } else {
-    fields.Part = item.name || "";
-    if (item.brand) fields.Brand = item.brand;
-    if (item.category) fields.Category = item.category;
-    if (item.subcategory) fields.Subcategory = item.subcategory;
-  }
+  fields.Part = item.name || "";
+  if (item.brand) fields.Brand = item.brand;
+  if (item.category) fields.Category = item.category;
+  if (item.subcategory) fields.Subcategory = item.subcategory;
+  if (item.price) fields.Price = item.price;    // ← NEW
+}
 
   if (customerEmail) fields["Customer Email"] = customerEmail;
   fields.Request = "Place Order";
@@ -1529,8 +1530,21 @@ function SpareParts() {
                         className="flex items-center justify-between"
                         style={{ marginTop: 10 }}
                       >
-                        <span style={{ fontSize: 12, color: "var(--muted)" }}>
-                          {part.inStock === false ? "Out of Stock" : "In Stock"}
+                        <span
+                          style={{
+                            fontSize: 14,
+                            color: part.price ? "var(--accent)" : "var(--muted)",
+                            fontWeight: part.price ? 700 : 400,
+                            fontFamily: part.price
+                              ? "'Space Grotesk', sans-serif"
+                              : "inherit",
+                          }}
+                        >
+                          {part.price
+                            ? part.price
+                            : part.inStock === false
+                            ? "Out of Stock"
+                            : "In Stock"}
                         </span>
                         <button
                           className="spare-part-order"
@@ -1561,7 +1575,9 @@ function SpareParts() {
         title="Place Order"
         description={
           emailPromptPart
-            ? `Enter your email and we'll process your order for ${emailPromptPart.name}.`
+            ? `Enter your email and we'll process your order for ${
+                emailPromptPart.name
+              }${emailPromptPart.price ? ` (${emailPromptPart.price})` : ""}.`
             : ""
         }
         sending={orderingId !== null}

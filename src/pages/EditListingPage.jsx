@@ -396,6 +396,7 @@ function PartEdit({ listing, onSaved }) {
     brand: listing.brand || 'Genuine',
     category: listing.category || 'Engine',
     subcategory: listing.subcategory || '',
+    price: listing.price || '',              // ← NEW
     description: listing.description || '',
     inStock: listing.inStock !== false,
   });
@@ -455,12 +456,21 @@ function PartEdit({ listing, onSaved }) {
               <input value={form.category} onChange={(e) => update('category', e.target.value)} />
             </Field>
           </Row>
-          <Field label="Subcategory">
-            <input
-              value={form.subcategory}
-              onChange={(e) => update('subcategory', e.target.value)}
-            />
-          </Field>
+          <Row>
+            <Field label="Subcategory">
+              <input
+                value={form.subcategory}
+                onChange={(e) => update('subcategory', e.target.value)}
+              />
+            </Field>
+            <Field label="Price">
+              <input
+                value={form.price}
+                onChange={(e) => update('price', e.target.value)}
+                placeholder="e.g. 17M"
+              />
+            </Field>
+          </Row>
           <Field label="Description">
             <textarea
               rows={5}
