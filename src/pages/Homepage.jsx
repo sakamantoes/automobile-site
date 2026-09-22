@@ -40,7 +40,7 @@ import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
 import images from "../assets/image.js";
 import { Link } from "react-router-dom";
 import newCars from "../assets/newCar/newcars.js";
-import { getListings, imageUrl } from "../utils/api";
+import { getListings } from "../utils/api";
 
 /* ------------------------------------------------------------------ */
 /*  DATA                                                               */
@@ -58,7 +58,8 @@ const NAV_LINKS = [
 
 const BRANDS = ["Toyota", "Lexus", "Mercedes-Benz", "Maserati", "Range Rover", "Volvo"];
 
-// Fallback local images (only used if the API returns nothing)
+const ADMIN_EMAIL = "chinwekeleuchenna@gmail.com";
+
 const CAR_IMAGES = [
   images.Car1, images.Car2, images.Car3, images.Car4, images.Car5,
   images.Car6, images.Car7, images.Car8, images.Car9, images.Car10,
@@ -230,22 +231,13 @@ function useScrollY() {
 /*  HELPERS                                                            */
 /* ------------------------------------------------------------------ */
 
-/**
- * Collect ALL displayable images for a car listing.
- * Priority:
- *   1. API listing:  coverImage.url + subImages[].url + galleries[].images[].url
- *   2. Legacy local data: imageRange → NEW_CAR_IMAGES / CAR_IMAGE_RANGES
- *   3. Fallback:    single car.img / car.coverImage.url
- */
 function collectCarImages(car) {
   if (!car) return [];
-
   const list = [];
   const push = (u) => {
     if (typeof u === "string" && u.trim()) list.push(u);
   };
 
-  // 1. API shape
   push(car.coverImage?.url);
   if (Array.isArray(car.subImages)) car.subImages.forEach((i) => push(i?.url));
   if (Array.isArray(car.galleries)) {
@@ -254,7 +246,6 @@ function collectCarImages(car) {
     });
   }
 
-  // 2. Legacy local shape
   if (!list.length && car.imageRange) {
     const key = car.imageRange;
     if (NEW_CAR_IMAGES[key]) {
@@ -265,43 +256,149 @@ function collectCarImages(car) {
     }
   }
 
-  // 3. Fallback to the single `img` field (used by CarCard)
   if (!list.length) push(car.img);
-
-  // Dedupe, keep order
   return [...new Set(list)];
 }
 
-/** mailto: order helper — works for cars and spare parts */
-function orderByEmail(item, kind = "car") {
-  const admin = "lordgroup.limited@gmail.com";
-  const lines = [];
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((value || "").trim());
+}
+
+/**
+ * Sends a clean, named-field email to the dealership via FormSubmit's
+ * AJAX endpoint. Using discrete fields (name, email, phone, message,
+ * vehicle, etc.) instead of a single `message` blob makes FormSubmit
+ * render a neat table rather than the generic "Someone just submitted
+ * your form..." wrapper.
+ *
+ * When `replyTo` (the customer's own email) is supplied, it's passed
+ * along as `_replyto` so the admin's email client can hit "Reply" and
+ * go straight back to the customer.
+ */
+async function sendEmailNotification({ subject, fields, replyTo }) {
+  try {
+    const payload = {
+      _subject: subject,
+      _template: "table",
+      _captcha: "false",
+      ...fields,
+    };
+    if (replyTo) payload._replyto = replyTo;
+
+    const response = await fetch(
+      `https://formsubmit.co/ajax/${ADMIN_EMAIL}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+    return response.ok;
+  } catch (error) {
+    console.error("Email notification error:", error);
+    return false;
+  }
+}
+
+async function orderByEmail(item, kind = "car", customerEmail = "") {
+  const fields = {};
 
   if (kind === "car") {
-    lines.push(`Vehicle: ${item.name || ""} (${item.year || ""})`);
-    if (item.make || item.model) lines.push(`Make / Model: ${item.make || ""} ${item.model || ""}`.trim());
-    if (item.trim) lines.push(`Trim: ${item.trim}`);
-    if (item.color) lines.push(`Color: ${item.color}`);
-    if (item.transmission) lines.push(`Transmission: ${item.transmission}`);
-    if (item.fuel) lines.push(`Fuel: ${item.fuel}`);
-    if (item.mileage) lines.push(`Mileage: ${Number(item.mileage).toLocaleString()} mi`);
-    if (item.price) lines.push(`Price: ${item.price}`);
-    if (item.location) lines.push(`Location: ${item.location}`);
+    fields.Vehicle = `${item.name || ""} ${item.year ? `(${item.year})` : ""}`.trim();
+    if (item.make || item.model)
+      fields["Make / Model"] = `${item.make || ""} ${item.model || ""}`.trim();
+    if (item.trim) fields.Trim = item.trim;
+    if (item.color) fields.Color = item.color;
+    if (item.transmission) fields.Transmission = item.transmission;
+    if (item.fuel) fields.Fuel = item.fuel;
+    if (item.mileage)
+      fields.Mileage = `${Number(item.mileage).toLocaleString()} mi`;
+    if (item.price) fields.Price = item.price;
+    if (item.location) fields.Location = item.location;
   } else {
-    lines.push(`Part: ${item.name || ""}`);
-    if (item.brand) lines.push(`Brand: ${item.brand}`);
-    if (item.category) lines.push(`Category: ${item.category}`);
-    if (item.subcategory) lines.push(`Subcategory: ${item.subcategory}`);
+    fields.Part = item.name || "";
+    if (item.brand) fields.Brand = item.brand;
+    if (item.category) fields.Category = item.category;
+    if (item.subcategory) fields.Subcategory = item.subcategory;
   }
 
-  const subject = encodeURIComponent(`Order Request — ${item.name || "Item"}`);
-  const body = encodeURIComponent(
-    `Hello Lord Group Autos,\n\nI would like to place an order for:\n\n${lines.join(
-      "\n"
-    )}\n\nPlease contact me with payment and delivery details.\n\nThank you.`
-  );
+  if (customerEmail) fields["Customer Email"] = customerEmail;
+  fields.Request = "Place Order";
 
-  window.location.href = `mailto:${admin}?subject=${subject}&body=${body}`;
+  const ok = await sendEmailNotification({
+    subject: `Order Request — ${item.name || "Item"}`,
+    fields,
+    replyTo: customerEmail,
+  });
+
+  if (ok) {
+    window.alert("Your order request has been sent! We'll be in touch shortly.");
+  } else {
+    window.alert(
+      "We couldn't send your order request. Please try again or call us at +234 706 172 2513."
+    );
+  }
+}
+
+async function quoteByEmail(item, kind = "car", customerEmail = "") {
+  const fields = {};
+
+  if (kind === "car") {
+    fields.Vehicle = `${item.name || ""} ${item.year ? `(${item.year})` : ""}`.trim();
+    if (item.make || item.model)
+      fields["Make / Model"] = `${item.make || ""} ${item.model || ""}`.trim();
+    if (item.color) fields.Color = item.color;
+    if (item.price) fields.Price = item.price;
+  } else {
+    fields.Part = item.name || "";
+    if (item.brand) fields.Brand = item.brand;
+  }
+
+  if (customerEmail) fields["Customer Email"] = customerEmail;
+  fields.Request = "Quote";
+
+  const ok = await sendEmailNotification({
+    subject: `Quote Request — ${item.name || "Item"}`,
+    fields,
+    replyTo: customerEmail,
+  });
+
+  if (ok) {
+    window.alert("Your quote request has been sent! We'll be in touch shortly.");
+  } else {
+    window.alert(
+      "We couldn't send your quote request. Please try again or call us at +234 706 172 2513."
+    );
+  }
+}
+
+async function bookTestDriveByEmail(car, customerEmail = "") {
+  const fields = {
+    Vehicle: `${car.name || ""} ${car.year ? `(${car.year})` : ""}`.trim(),
+    Request: "Book a Test Drive",
+  };
+  if (car.make || car.model)
+    fields["Make / Model"] = `${car.make || ""} ${car.model || ""}`.trim();
+  if (car.color) fields.Color = car.color;
+  if (car.location) fields.Location = car.location;
+  if (customerEmail) fields["Customer Email"] = customerEmail;
+
+  const ok = await sendEmailNotification({
+    subject: `Test Drive Booking — ${car.name || "Vehicle"}`,
+    fields,
+    replyTo: customerEmail,
+  });
+
+  if (ok) {
+    window.alert("Your test drive request has been sent! We'll be in touch shortly.");
+  } else {
+    window.alert(
+      "We couldn't send your test drive request. Please try again or call us at +234 706 172 2513."
+    );
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -338,6 +435,145 @@ function Eyebrow({ children }) {
         {children}
       </span>
       <span style={{ width: 22, height: 1, background: "var(--line-strong)" }} />
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  EMAIL CAPTURE MODAL                                                */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Small popup that asks the customer for their own email address
+ * before a request (test drive / quote / order) is sent to the admin.
+ * `onSubmit(email)` is only called once the address passes basic
+ * validation. Purely presentational — the caller owns all send logic.
+ */
+function EmailCaptureModal({ open, title, description, sending, onSubmit, onClose }) {
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (open) {
+      setEmail("");
+      setError("");
+      // slight delay so the modal is mounted before we try to focus it
+      const t = setTimeout(() => inputRef.current?.focus(), 60);
+      return () => clearTimeout(t);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  if (!open) return null;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!isValidEmail(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    setError("");
+    onSubmit(email.trim());
+  };
+
+  return (
+    <div
+      className="fixed inset-0 flex items-center justify-center"
+      style={{
+        zIndex: 120,
+        background: "rgba(0,0,0,0.92)",
+        backdropFilter: "blur(12px)",
+        animation: "fadeIn 0.25s ease",
+      }}
+      onClick={sending ? undefined : onClose}
+    >
+      <div
+        className="relative w-full max-w-sm mx-4 rounded-2xl"
+        style={{
+          background: "#1a1a1a",
+          border: "1px solid var(--line)",
+          padding: 26,
+          animation: "slideUp 0.35s cubic-bezier(0.22, 0.61, 0.36, 1)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {!sending && (
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-white/10 transition-colors"
+            style={{ color: "#999" }}
+            aria-label="Close"
+            type="button"
+          >
+            <XCircle size={22} />
+          </button>
+        )}
+
+        <div
+          className="flex items-center justify-center"
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 12,
+            background: "rgba(0,102,204,0.15)",
+            marginBottom: 16,
+          }}
+        >
+          <Mail size={20} color="var(--accent)" />
+        </div>
+
+        <h3 className="font-display" style={{ fontSize: 19, fontWeight: 600, color: "#fff" }}>
+          {title}
+        </h3>
+        <p style={{ fontSize: 13.5, color: "#999", marginTop: 6, lineHeight: 1.5 }}>
+          {description || "Enter your email so our team can reach you about this request."}
+        </p>
+
+        <form onSubmit={handleSubmit} style={{ marginTop: 18 }}>
+          <label className="form-label" style={{ display: "block", marginBottom: 6 }}>
+            Your Email Address
+          </label>
+          <input
+            ref={inputRef}
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="form-input"
+            disabled={sending}
+            required
+          />
+          {error && (
+            <p style={{ fontSize: 12.5, color: "#ef4444", marginTop: 8 }}>{error}</p>
+          )}
+
+          <div className="flex gap-3" style={{ marginTop: 18 }}>
+            <button
+              type="button"
+              className="btn-outline justify-center flex-1"
+              onClick={onClose}
+              disabled={sending}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn-primary justify-center flex-1"
+              disabled={sending}
+            >
+              {sending ? "Sending..." : "Submit"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
@@ -600,10 +836,7 @@ function CarCard({ car, index, onOpen }) {
     setTilt((t) => ({ ...t, rx: 0, ry: 0, active: false }));
   }, []);
 
-  const cover =
-    car.coverImage?.url ||
-    car.img ||
-    "";
+  const cover = car.coverImage?.url || car.img || "";
 
   return (
     <div
@@ -691,11 +924,13 @@ function CarCard({ car, index, onOpen }) {
 }
 
 /* ------------------------------------------------------------------ */
-/*  LIGHTBOX — safe with API data                                      */
+/*  LIGHTBOX                                                           */
 /* ------------------------------------------------------------------ */
 
 function CarLightbox({ car, onClose }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [sending, setSending] = useState(null); // "test-drive" | "quote" | "order" | null
+  const [emailPromptType, setEmailPromptType] = useState(null); // "test-drive" | "quote" | "order" | null
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -704,7 +939,6 @@ function CarLightbox({ car, onClose }) {
     };
   }, []);
 
-  // Reset index whenever a new car is opened
   useEffect(() => {
     setCurrentIndex(0);
   }, [car?._id, car?.id]);
@@ -725,6 +959,40 @@ function CarLightbox({ car, onClose }) {
     e.stopPropagation();
     if (safeImages.length < 2) return;
     setCurrentIndex((prev) => (prev + 1) % safeImages.length);
+  };
+
+  // These now just open the email-capture popup; the actual send
+  // happens in handleEmailSubmit once the customer enters their email.
+  const openEmailPrompt = (type) => (e) => {
+    e.stopPropagation();
+    if (sending) return;
+    setEmailPromptType(type);
+  };
+
+  const handleEmailSubmit = async (customerEmail) => {
+    const type = emailPromptType;
+    if (!type) return;
+    setSending(type);
+    if (type === "test-drive") await bookTestDriveByEmail(car, customerEmail);
+    else if (type === "quote") await quoteByEmail(car, "car", customerEmail);
+    else if (type === "order") await orderByEmail(car, "car", customerEmail);
+    setSending(null);
+    setEmailPromptType(null);
+  };
+
+  const EMAIL_PROMPT_COPY = {
+    "test-drive": {
+      title: "Book a Test Drive",
+      description: `Enter your email and we'll confirm a test drive time for the ${car.name}.`,
+    },
+    quote: {
+      title: "Request a Quote",
+      description: `Enter your email and we'll send pricing details for the ${car.name}.`,
+    },
+    order: {
+      title: "Place an Order",
+      description: `Enter your email so we can process your order for the ${car.name}.`,
+    },
   };
 
   return (
@@ -787,7 +1055,6 @@ function CarLightbox({ car, onClose }) {
             )}
           </div>
 
-          {/* Gallery */}
           <div className="relative mt-4">
             <div
               className="relative overflow-hidden rounded-xl"
@@ -798,9 +1065,6 @@ function CarLightbox({ car, onClose }) {
                   src={currentSrc}
                   alt={`${car.name} view ${currentIndex + 1}`}
                   className="w-full h-full object-contain"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                  }}
                 />
               ) : (
                 <div
@@ -863,7 +1127,6 @@ function CarLightbox({ car, onClose }) {
             )}
           </div>
 
-          {/* Full description */}
           {(car.fullDescription || car.description) && (
             <div className="mt-4 p-4 rounded-lg" style={{ background: "#0a0a0a" }}>
               <p
@@ -875,7 +1138,6 @@ function CarLightbox({ car, onClose }) {
             </div>
           )}
 
-          {/* Specs */}
           <div className="grid grid-cols-3 gap-3 mt-4">
             <div className="p-3 rounded-lg" style={{ background: "#0a0a0a" }}>
               <p className="text-xs font-mono" style={{ color: "#666" }}>
@@ -903,7 +1165,6 @@ function CarLightbox({ car, onClose }) {
             </div>
           </div>
 
-          {/* Badges */}
           <div className="flex flex-wrap gap-2 mt-4">
             {car.status && (
               <span
@@ -931,15 +1192,46 @@ function CarLightbox({ car, onClose }) {
             )}
           </div>
 
-          <button
-            className="w-full mt-4 btn-primary justify-center"
-            onClick={() => orderByEmail(car, "car")}
-          >
-            <MessageCircle size={16} />
-            Place Order
-          </button>
+          <div className="flex flex-col sm:flex-row gap-3 mt-5">
+            <button
+              className="btn-primary justify-center flex-1"
+              onClick={openEmailPrompt("test-drive")}
+              type="button"
+              disabled={sending !== null}
+            >
+              <Calendar size={16} />
+              {sending === "test-drive" ? "Sending..." : "Book a Test Drive"}
+            </button>
+            <button
+              className="btn-outline justify-center flex-1"
+              onClick={openEmailPrompt("quote")}
+              type="button"
+              disabled={sending !== null}
+            >
+              <MessageCircle size={16} />
+              {sending === "quote" ? "Sending..." : "Request Quote"}
+            </button>
+            <button
+              className="btn-primary justify-center flex-1"
+              onClick={openEmailPrompt("order")}
+              type="button"
+              disabled={sending !== null}
+            >
+              <Send size={16} />
+              {sending === "order" ? "Sending..." : "Place Order"}
+            </button>
+          </div>
         </div>
       </div>
+
+      <EmailCaptureModal
+        open={emailPromptType !== null}
+        title={EMAIL_PROMPT_COPY[emailPromptType]?.title || "Enter your email"}
+        description={EMAIL_PROMPT_COPY[emailPromptType]?.description}
+        sending={sending !== null}
+        onSubmit={handleEmailSubmit}
+        onClose={() => setEmailPromptType(null)}
+      />
 
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -1020,12 +1312,11 @@ function NewArrivals() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  getListings('new-arrivals', { limit: 6 })
-    .then(setCars)
-    .catch(() => setCars([]))
-    .finally(() => setLoading(false));
-}, []);
-
+    getListings("new-arrivals", { limit: 6 })
+      .then(setCars)
+      .catch(() => setCars([]))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <section className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 110 }}>
@@ -1145,7 +1436,8 @@ function NewArrivals() {
 function SpareParts() {
   const [parts, setParts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [active, setActive] = useState(null);
+  const [orderingId, setOrderingId] = useState(null);
+  const [emailPromptPart, setEmailPromptPart] = useState(null); // the part pending an email
 
   useEffect(() => {
     getListings("spare-parts")
@@ -1153,6 +1445,22 @@ function SpareParts() {
       .catch(() => setParts([]))
       .finally(() => setLoading(false));
   }, []);
+
+  const openEmailPrompt = (e, part) => {
+    e.stopPropagation();
+    if (orderingId) return;
+    setEmailPromptPart(part);
+  };
+
+  const handleEmailSubmit = async (customerEmail) => {
+    const part = emailPromptPart;
+    if (!part) return;
+    const id = part._id || part.id || part.name;
+    setOrderingId(id);
+    await orderByEmail(part, "spare-part", customerEmail);
+    setOrderingId(null);
+    setEmailPromptPart(null);
+  };
 
   return (
     <section
@@ -1183,56 +1491,62 @@ function SpareParts() {
                 style={{ opacity: 0.4, height: 240 }}
               />
             ))
-          : parts.map((part, index) => (
-              <Reveal delay={(index % 4) * 80} key={part._id || part.id || index}>
-                <div className="spare-part-card">
-                  <div className="spare-part-image">
-                    {part.coverImage?.url ? (
-                      <img src={part.coverImage.url} alt={part.name} loading="lazy" />
-                    ) : (
+          : parts.map((part, index) => {
+              const id = part._id || part.id || part.name || index;
+              const isOrdering = orderingId === id;
+              return (
+                <Reveal delay={(index % 4) * 80} key={id}>
+                  <div className="spare-part-card">
+                    <div className="spare-part-image">
+                      {part.coverImage?.url ? (
+                        <img src={part.coverImage.url} alt={part.name} loading="lazy" />
+                      ) : (
+                        <div
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "var(--muted)",
+                          }}
+                        >
+                          <Wrench size={32} />
+                        </div>
+                      )}
+                      {part.category && (
+                        <span className="spare-part-category">{part.category}</span>
+                      )}
+                    </div>
+                    <div className="spare-part-body">
+                      <h3
+                        className="font-display"
+                        style={{ fontSize: 15, fontWeight: 600, color: "var(--text)" }}
+                      >
+                        {part.name}
+                      </h3>
                       <div
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: "var(--muted)",
-                        }}
+                        className="flex items-center justify-between"
+                        style={{ marginTop: 10 }}
                       >
-                        <Wrench size={32} />
+                        <span style={{ fontSize: 12, color: "var(--muted)" }}>
+                          {part.inStock === false ? "Out of Stock" : "In Stock"}
+                        </span>
+                        <button
+                          className="spare-part-order"
+                          onClick={(e) => openEmailPrompt(e, part)}
+                          type="button"
+                          disabled={orderingId !== null}
+                        >
+                          {isOrdering ? "Sending..." : "Place Order"}{" "}
+                          <ArrowUpRight size={12} />
+                        </button>
                       </div>
-                    )}
-                    {part.category && (
-                      <span className="spare-part-category">{part.category}</span>
-                    )}
-                  </div>
-                  <div className="spare-part-body">
-                    <h3
-                      className="font-display"
-                      style={{ fontSize: 15, fontWeight: 600, color: "var(--text)" }}
-                    >
-                      {part.name}
-                    </h3>
-                    <div
-                      className="flex items-center justify-between"
-                      style={{ marginTop: 10 }}
-                    >
-                      <span style={{ fontSize: 12, color: "var(--muted)" }}>
-                        {part.inStock === false ? "Out of Stock" : "In Stock"}
-                      </span>
-                      <button
-                        className="spare-part-order"
-                        onClick={() => orderByEmail(part, "spare-part")}
-                        type="button"
-                      >
-                        Place Order <ArrowUpRight size={12} />
-                      </button>
                     </div>
                   </div>
-                </div>
-              </Reveal>
-            ))}
+                </Reveal>
+              );
+            })}
       </div>
 
       <Reveal delay={100} className="text-center" style={{ marginTop: 40 }}>
@@ -1241,6 +1555,19 @@ function SpareParts() {
           Request Custom Parts
         </Link>
       </Reveal>
+
+      <EmailCaptureModal
+        open={emailPromptPart !== null}
+        title="Place Order"
+        description={
+          emailPromptPart
+            ? `Enter your email and we'll process your order for ${emailPromptPart.name}.`
+            : ""
+        }
+        sending={orderingId !== null}
+        onSubmit={handleEmailSubmit}
+        onClose={() => setEmailPromptPart(null)}
+      />
     </section>
   );
 }
@@ -1641,7 +1968,7 @@ function Visit() {
               <div className="flex items-center gap-2.5">
                 <Mail size={16} color="var(--accent)" />
                 <p style={{ fontSize: 13.5, color: "var(--text)" }}>
-                  lordgroup.limited@gmail.com
+                  {ADMIN_EMAIL}
                 </p>
               </div>
             </div>
@@ -1683,13 +2010,10 @@ function CTA() {
       formDataObj.append("_captcha", "false");
       formDataObj.append("_subject", "New Contact Form Submission - Lord Group Autos");
 
-      const response = await fetch(
-        "https://formsubmit.co/chinwekeleuchenn@gmail.com",
-        {
-          method: "POST",
-          body: formDataObj,
-        }
-      );
+      const response = await fetch(`https://formsubmit.co/${ADMIN_EMAIL}`, {
+        method: "POST",
+        body: formDataObj,
+      });
 
       if (response.ok) {
         setSubmitStatus("success");
@@ -1894,7 +2218,7 @@ function CTA() {
                     Email Us
                   </p>
                   <p style={{ fontSize: 14, color: "var(--text)", fontWeight: 500 }}>
-                    lordgroup.limited@gmail.com
+                    {ADMIN_EMAIL}
                   </p>
                   <p style={{ fontSize: 12, color: "var(--muted)" }}>We reply within 24hrs</p>
                 </div>
@@ -2031,6 +2355,10 @@ function CTA() {
           background: rgba(0,102,204,0.22);
           transform: translateX(2px);
         }
+        .spare-part-order:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
       `}</style>
     </section>
   );
@@ -2146,6 +2474,31 @@ function GlobalStyle() {
         transform: translateY(-2px);
         box-shadow: 0 16px 36px rgba(0,102,204,0.4);
         background: #0080ff;
+      }
+      .btn-primary:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn-outline {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 12px 22px; border-radius: 999px;
+        border: 1px solid var(--line-strong);
+        font-size: 14px; color: var(--text);
+        background: transparent; cursor: pointer;
+        transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+        text-decoration: none;
+      }
+      .btn-outline:hover {
+        border-color: var(--accent);
+        background: rgba(0,102,204,0.15);
+        transform: translateY(-1px);
+      }
+      .btn-outline:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+        transform: none;
       }
 
       .hero-frame {

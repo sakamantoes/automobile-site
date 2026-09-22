@@ -15,14 +15,19 @@ import {
   Wrench,
   Menu,
   MessageCircle,
+  Send,
+  Mail,
+  XCircle,
 } from 'lucide-react';
 import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from 'react-icons/fa';
 import images from '../assets/image.js';
 import { getListings } from '../utils/api';
 
 /* ------------------------------------------------------------------ */
-/*  Helpers                                                            */
+/*  Config + helpers                                                   */
 /* ------------------------------------------------------------------ */
+
+const ADMIN_EMAIL = 'chinwekeleuchenna@gmail.com';
 
 const normalizeCar = (car) => ({
   ...car,
@@ -38,23 +43,271 @@ const normalizeCar = (car) => ({
   rating: car.rating ?? 4.8,
 });
 
-const redirectToEmail = (car) => {
-  const subject = encodeURIComponent(`Inquiry about ${car.name} (${car.year || ''})`);
-  const body = encodeURIComponent(
-    `Hello Lord Group Autos,\n\nI am interested in the ${car.name} ${car.year ? `(${car.year})` : ''}.\n\n` +
-      `Vehicle Details:\n` +
-      `- Make: ${car.make || '—'}\n` +
-      `- Model: ${car.model || '—'}\n` +
-      `- Year: ${car.year || '—'}\n` +
-      `- Color: ${car.color || '—'}\n` +
-      `- Transmission: ${car.transmission || '—'}\n` +
-      `- Fuel: ${car.fuel || '—'}\n` +
-      `- Mileage: ${car.mileage ? `${car.mileage} mi` : '—'}\n` +
-      (car.price ? `- Price: ${car.price}\n` : '') +
-      `\nPlease provide more information including pricing and availability.\n\nThank you!`
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((value || '').trim());
+}
+
+async function sendEmailNotification({ subject, fields, replyTo }) {
+  try {
+    const payload = {
+      _subject: subject,
+      _template: 'table',
+      _captcha: 'false',
+      ...fields,
+    };
+    if (replyTo) payload._replyto = replyTo;
+
+    const response = await fetch(`https://formsubmit.co/ajax/${ADMIN_EMAIL}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+    return response.ok;
+  } catch (error) {
+    console.error('Email notification error:', error);
+    return false;
+  }
+}
+
+async function quoteByEmail(car, customerEmail = '') {
+  const fields = {
+    Vehicle: `${car.name || ''} ${car.year ? `(${car.year})` : ''}`.trim(),
+    Request: 'Quote',
+  };
+  if (car.make || car.model)
+    fields['Make / Model'] = `${car.make || ''} ${car.model || ''}`.trim();
+  if (car.trim) fields.Trim = car.trim;
+  if (car.color) fields.Color = car.color;
+  if (car.price) fields.Price = car.price;
+  if (customerEmail) fields['Customer Email'] = customerEmail;
+
+  const ok = await sendEmailNotification({
+    subject: `Quote Request — ${car.name || 'Vehicle'}`,
+    fields,
+    replyTo: customerEmail,
+  });
+
+  if (ok) window.alert("Your quote request has been sent! We'll be in touch shortly.");
+  else
+    window.alert(
+      "We couldn't send your quote request. Please try again or call us at +234 706 172 2513."
+    );
+}
+
+async function bookTestDriveByEmail(car, customerEmail = '') {
+  const fields = {
+    Vehicle: `${car.name || ''} ${car.year ? `(${car.year})` : ''}`.trim(),
+    Request: 'Book a Test Drive',
+  };
+  if (car.make || car.model)
+    fields['Make / Model'] = `${car.make || ''} ${car.model || ''}`.trim();
+  if (car.color) fields.Color = car.color;
+  if (car.location) fields.Location = car.location;
+  if (customerEmail) fields['Customer Email'] = customerEmail;
+
+  const ok = await sendEmailNotification({
+    subject: `Test Drive Booking — ${car.name || 'Vehicle'}`,
+    fields,
+    replyTo: customerEmail,
+  });
+
+  if (ok)
+    window.alert("Your test drive request has been sent! We'll be in touch shortly.");
+  else
+    window.alert(
+      "We couldn't send your test drive request. Please try again or call us at +234 706 172 2513."
+    );
+}
+
+async function orderByEmail(car, customerEmail = '') {
+  const fields = {
+    Vehicle: `${car.name || ''} ${car.year ? `(${car.year})` : ''}`.trim(),
+    Request: 'Place Order',
+  };
+  if (car.make || car.model)
+    fields['Make / Model'] = `${car.make || ''} ${car.model || ''}`.trim();
+  if (car.trim) fields.Trim = car.trim;
+  if (car.color) fields.Color = car.color;
+  if (car.transmission) fields.Transmission = car.transmission;
+  if (car.fuel) fields.Fuel = car.fuel;
+  if (car.mileage)
+    fields.Mileage = `${Number(car.mileage).toLocaleString()} mi`;
+  if (car.price) fields.Price = car.price;
+  if (car.location) fields.Location = car.location;
+  if (customerEmail) fields['Customer Email'] = customerEmail;
+
+  const ok = await sendEmailNotification({
+    subject: `Order Request — ${car.name || 'Vehicle'}`,
+    fields,
+    replyTo: customerEmail,
+  });
+
+  if (ok) window.alert("Your order request has been sent! We'll be in touch shortly.");
+  else
+    window.alert(
+      "We couldn't send your order request. Please try again or call us at +234 706 172 2513."
+    );
+}
+
+/* ------------------------------------------------------------------ */
+/*  EmailCaptureModal                                                  */
+/* ------------------------------------------------------------------ */
+
+function EmailCaptureModal({ open, title, description, sending, onSubmit, onClose }) {
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (open) {
+      setEmail('');
+      setError('');
+      const t = setTimeout(() => inputRef.current?.focus(), 60);
+      return () => clearTimeout(t);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [open]);
+
+  if (!open) return null;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!isValidEmail(email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+    setError('');
+    onSubmit(email.trim());
+  };
+
+  return (
+    <div
+      className="fixed inset-0 flex items-center justify-center"
+      style={{
+        zIndex: 120,
+        background: 'rgba(0,0,0,0.92)',
+        backdropFilter: 'blur(12px)',
+        animation: 'fadeIn 0.25s ease',
+      }}
+      onClick={sending ? undefined : onClose}
+    >
+      <div
+        className="relative w-full max-w-sm mx-4 rounded-2xl"
+        style={{
+          background: '#1a1a1a',
+          border: '1px solid var(--line)',
+          padding: 26,
+          animation: 'slideUp 0.35s cubic-bezier(0.22, 0.61, 0.36, 1)',
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {!sending && (
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-white/10 transition-colors"
+            style={{ color: '#999' }}
+            aria-label="Close"
+            type="button"
+          >
+            <XCircle size={22} />
+          </button>
+        )}
+
+        <div
+          className="flex items-center justify-center"
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 12,
+            background: 'rgba(0,102,204,0.15)',
+            marginBottom: 16,
+          }}
+        >
+          <Mail size={20} color="var(--accent)" />
+        </div>
+
+        <h3 className="font-display" style={{ fontSize: 19, fontWeight: 600, color: '#fff' }}>
+          {title}
+        </h3>
+        <p style={{ fontSize: 13.5, color: '#999', marginTop: 6, lineHeight: 1.5 }}>
+          {description || 'Enter your email so our team can reach you about this request.'}
+        </p>
+
+        <form onSubmit={handleSubmit} style={{ marginTop: 18 }}>
+          <label className="form-label" style={{ display: 'block', marginBottom: 6 }}>
+            Your Email Address
+          </label>
+          <input
+            ref={inputRef}
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="form-input"
+            disabled={sending}
+            required
+          />
+          {error && (
+            <p style={{ fontSize: 12.5, color: '#ef4444', marginTop: 8 }}>{error}</p>
+          )}
+
+          <div className="flex gap-3" style={{ marginTop: 18 }}>
+            <button
+              type="button"
+              className="btn-outline justify-center flex-1"
+              onClick={onClose}
+              disabled={sending}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn-primary justify-center flex-1"
+              disabled={sending}
+            >
+              {sending ? 'Sending...' : 'Submit'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
-  window.location.href = `mailto:lordgroup.limited@gmail.com?subject=${subject}&body=${body}`;
-};
+}
+
+/* ------------------------------------------------------------------ */
+/*  useScrollY — detects whether the page has been scrolled            */
+/* ------------------------------------------------------------------ */
+
+function useScrollY() {
+  const [y, setY] = useState(0);
+
+  useEffect(() => {
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setY(window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  return y;
+}
 
 /* ------------------------------------------------------------------ */
 /*  Lightbox                                                           */
@@ -62,29 +315,67 @@ const redirectToEmail = (car) => {
 
 function CarLightbox({ car, onClose }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [sending, setSending] = useState(null);
+  const [emailPromptType, setEmailPromptType] = useState(null);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
   }, []);
 
+  useEffect(() => { setCurrentIndex(0); }, [car?._id, car?.id]);
+
   if (!car) return null;
 
-  // Build image list: cover first, then subImages
   const gallery = [
     car.coverImage?.url,
     ...(car.subImages || []).map((s) => s.url),
   ].filter(Boolean);
 
-  const safeGallery = gallery.length ? gallery : [car.img];
+  const safeGallery = gallery.length ? gallery : [car.img].filter(Boolean);
+  const currentSrc = safeGallery[currentIndex] || safeGallery[0] || '';
 
   const handlePrev = (e) => {
     e.stopPropagation();
+    if (safeGallery.length < 2) return;
     setCurrentIndex((prev) => (prev - 1 + safeGallery.length) % safeGallery.length);
   };
   const handleNext = (e) => {
     e.stopPropagation();
+    if (safeGallery.length < 2) return;
     setCurrentIndex((prev) => (prev + 1) % safeGallery.length);
+  };
+
+  const openEmailPrompt = (type) => (e) => {
+    e.stopPropagation();
+    if (sending) return;
+    setEmailPromptType(type);
+  };
+
+  const handleEmailSubmit = async (customerEmail) => {
+    const type = emailPromptType;
+    if (!type) return;
+    setSending(type);
+    if (type === 'test-drive') await bookTestDriveByEmail(car, customerEmail);
+    else if (type === 'quote') await quoteByEmail(car, customerEmail);
+    else if (type === 'order') await orderByEmail(car, customerEmail);
+    setSending(null);
+    setEmailPromptType(null);
+  };
+
+  const EMAIL_PROMPT_COPY = {
+    'test-drive': {
+      title: 'Book a Test Drive',
+      description: `Enter your email and we'll confirm a test drive time for the ${car.name}.`,
+    },
+    quote: {
+      title: 'Request a Quote',
+      description: `Enter your email and we'll send pricing details for the ${car.name}.`,
+    },
+    order: {
+      title: 'Place an Order',
+      description: `Enter your email so we can process your order for the ${car.name}.`,
+    },
   };
 
   return (
@@ -102,23 +393,21 @@ function CarLightbox({ car, onClose }) {
               {car.price ? ` · ${car.price}` : ''}
             </p>
           </div>
-          {car.location && (
-            <span className="modal-badge">{car.location}</span>
-          )}
+          {car.location && <span className="modal-badge">{car.location}</span>}
         </div>
 
         <div className="modal-gallery">
-          <img
-            src={safeGallery[currentIndex]}
-            alt={car.name}
-            className="modal-img"
-          />
+          {currentSrc ? (
+            <img src={currentSrc} alt={car.name} className="modal-img" />
+          ) : (
+            <div className="modal-noimg"><Car size={64} /></div>
+          )}
           {safeGallery.length > 1 && (
             <>
-              <button className="modal-arrow left" onClick={handlePrev}>
+              <button className="modal-arrow left" onClick={handlePrev} aria-label="Previous">
                 <ChevronLeft size={22} />
               </button>
-              <button className="modal-arrow right" onClick={handleNext}>
+              <button className="modal-arrow right" onClick={handleNext} aria-label="Next">
                 <ChevronRight size={22} />
               </button>
             </>
@@ -129,9 +418,10 @@ function CarLightbox({ car, onClose }) {
           <div className="modal-thumbs">
             {safeGallery.map((src, i) => (
               <button
-                key={i}
+                key={`${src}-${i}`}
                 onClick={() => setCurrentIndex(i)}
                 className={`modal-thumb ${i === currentIndex ? 'active' : ''}`}
+                aria-label={`View image ${i + 1}`}
               >
                 <img src={src} alt="" />
               </button>
@@ -150,7 +440,7 @@ function CarLightbox({ car, onClose }) {
           </div>
           <div className="spec">
             <span>Mileage</span>
-            <strong>{car.mileage ? `${car.mileage} mi` : '—'}</strong>
+            <strong>{car.mileage ? `${Number(car.mileage).toLocaleString()} mi` : '—'}</strong>
           </div>
           <div className="spec">
             <span>Year</span>
@@ -158,27 +448,51 @@ function CarLightbox({ car, onClose }) {
           </div>
         </div>
 
-        {car.fullDescription && (
+        {(car.fullDescription || car.description) && (
           <div className="modal-desc">
-            <p>{car.fullDescription}</p>
+            <p>{car.fullDescription || car.description}</p>
           </div>
         )}
 
         <div className="modal-actions">
           <button
             className="btn-primary"
-            onClick={() => { onClose(); redirectToEmail(car); }}
+            onClick={openEmailPrompt('test-drive')}
+            type="button"
+            disabled={sending !== null}
           >
-            <Calendar size={16} /> Book a Test Drive
+            <Calendar size={16} />
+            {sending === 'test-drive' ? 'Sending...' : 'Book a Test Drive'}
           </button>
           <button
             className="btn-outline"
-            onClick={() => { onClose(); redirectToEmail(car); }}
+            onClick={openEmailPrompt('quote')}
+            type="button"
+            disabled={sending !== null}
           >
-            <MessageCircle size={16} /> Request Quote
+            <MessageCircle size={16} />
+            {sending === 'quote' ? 'Sending...' : 'Request Quote'}
+          </button>
+          <button
+            className="btn-primary"
+            onClick={openEmailPrompt('order')}
+            type="button"
+            disabled={sending !== null}
+          >
+            <Send size={16} />
+            {sending === 'order' ? 'Sending...' : 'Place Order'}
           </button>
         </div>
       </div>
+
+      <EmailCaptureModal
+        open={emailPromptType !== null}
+        title={EMAIL_PROMPT_COPY[emailPromptType]?.title || 'Enter your email'}
+        description={EMAIL_PROMPT_COPY[emailPromptType]?.description}
+        sending={sending !== null}
+        onSubmit={handleEmailSubmit}
+        onClose={() => setEmailPromptType(null)}
+      />
     </div>
   );
 }
@@ -190,6 +504,8 @@ function CarLightbox({ car, onClose }) {
 function CarCard({ car, onOpen }) {
   const ref = useRef(null);
   const [tilt, setTilt] = useState({ rx: 0, ry: 0, sx: 50, sy: 50, active: false });
+  const [sendingQuote, setSendingQuote] = useState(false);
+  const [emailPromptOpen, setEmailPromptOpen] = useState(false);
 
   const onMove = useCallback((e) => {
     const el = ref.current;
@@ -217,67 +533,92 @@ function CarCard({ car, onOpen }) {
 
   const handleRequestQuoteClick = (e) => {
     e.stopPropagation();
-    redirectToEmail(car);
+    if (sendingQuote) return;
+    setEmailPromptOpen(true);
+  };
+
+  const handleEmailSubmit = async (customerEmail) => {
+    setSendingQuote(true);
+    await quoteByEmail(car, customerEmail);
+    setSendingQuote(false);
+    setEmailPromptOpen(false);
   };
 
   return (
-    <article
-      ref={ref}
-      onMouseMove={onMove}
-      onMouseLeave={onLeave}
-      className="car-card cursor-pointer"
-      onClick={handleCardClick}
-      style={{
-        transform: `perspective(1000px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg) ${
-          tilt.active ? 'scale3d(1.015,1.015,1.015)' : 'scale3d(1,1,1)'
-        }`,
-      }}
-    >
-      <div className="car-card-media">
-        {car.img ? (
-          <img src={car.img} alt={car.name} loading="lazy" />
-        ) : (
-          <div className="car-card-noimg"><Car size={32} /></div>
-        )}
-        <div
-          className="car-card-spot"
-          style={{
-            opacity: tilt.active ? 1 : 0,
-            background: `radial-gradient(circle at ${tilt.sx}% ${tilt.sy}%, rgba(255,255,255,0.08), transparent 45%)`,
-          }}
-        />
-        {car.featured && <span className="car-badge featured">Featured</span>}
-        {car.newArrival && <span className="car-badge new">New</span>}
-        {!car.inStock && <span className="car-badge sold">Sold</span>}
-      </div>
-      <div className="car-card-body">
-        <div className="flex items-baseline justify-between">
-          <h3 className="font-display" style={{ fontSize: 17, fontWeight: 600, color: 'var(--text)' }}>
-            {car.name}
-          </h3>
-          <div className="flex items-center gap-1">
-            <Star size={14} color="var(--accent)" fill="var(--accent)" />
-            <span style={{ fontSize: 13, color: 'var(--text)' }}>{car.rating}</span>
+    <>
+      <article
+        ref={ref}
+        onMouseMove={onMove}
+        onMouseLeave={onLeave}
+        className="car-card cursor-pointer"
+        onClick={handleCardClick}
+        style={{
+          transform: `perspective(1000px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg) ${
+            tilt.active ? 'scale3d(1.015,1.015,1.015)' : 'scale3d(1,1,1)'
+          }`,
+        }}
+      >
+        <div className="car-card-media">
+          {car.img ? (
+            <img src={car.img} alt={car.name} loading="lazy" />
+          ) : (
+            <div className="car-card-noimg"><Car size={32} /></div>
+          )}
+          <div
+            className="car-card-spot"
+            style={{
+              opacity: tilt.active ? 1 : 0,
+              background: `radial-gradient(circle at ${tilt.sx}% ${tilt.sy}%, rgba(255,255,255,0.08), transparent 45%)`,
+            }}
+          />
+          {car.featured && <span className="car-badge featured">Featured</span>}
+          {car.newArrival && <span className="car-badge new">New</span>}
+          {!car.inStock && <span className="car-badge sold">Sold</span>}
+        </div>
+        <div className="car-card-body">
+          <div className="flex items-baseline justify-between">
+            <h3 className="font-display" style={{ fontSize: 17, fontWeight: 600, color: 'var(--text)' }}>
+              {car.name}
+            </h3>
+            <div className="flex items-center gap-1">
+              <Star size={14} color="var(--accent)" fill="var(--accent)" />
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{car.rating}</span>
+            </div>
+          </div>
+          <p className="font-mono" style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
+            {car.year ? `${car.year} · ` : ''}{car.color || ''}
+          </p>
+          <div className="car-specs">
+            <span><Settings2 size={13} /> {car.transmission || 'Automatic'}</span>
+            <span><Fuel size={13} /> {car.fuel || 'Petrol'}</span>
+            <span><Gauge size={13} /> {car.mileage ? `${car.mileage} mi` : '—'}</span>
+          </div>
+          <div className="car-card-foot">
+            <button
+              className="request-quote-btn"
+              onClick={handleRequestQuoteClick}
+              disabled={sendingQuote}
+              type="button"
+            >
+              <MessageCircle size={14} />
+              {sendingQuote ? 'Sending...' : 'Request Quote'}
+            </button>
+            <span className="car-card-view">
+              View Details <ArrowUpRight size={14} />
+            </span>
           </div>
         </div>
-        <p className="font-mono" style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
-          {car.year ? `${car.year} · ` : ''}{car.color || ''}
-        </p>
-        <div className="car-specs">
-          <span><Settings2 size={13} /> {car.transmission || 'Automatic'}</span>
-          <span><Fuel size={13} /> {car.fuel || 'Petrol'}</span>
-          <span><Gauge size={13} /> {car.mileage ? `${car.mileage} mi` : '—'}</span>
-        </div>
-        <div className="car-card-foot">
-          <button className="request-quote-btn" onClick={handleRequestQuoteClick}>
-            <MessageCircle size={14} /> Request Quote
-          </button>
-          <span className="car-card-view">
-            View Details <ArrowUpRight size={14} />
-          </span>
-        </div>
-      </div>
-    </article>
+      </article>
+
+      <EmailCaptureModal
+        open={emailPromptOpen}
+        title="Request a Quote"
+        description={`Enter your email and we'll send pricing details for the ${car.name}.`}
+        sending={sendingQuote}
+        onSubmit={handleEmailSubmit}
+        onClose={() => setEmailPromptOpen(false)}
+      />
+    </>
   );
 }
 
@@ -367,7 +708,7 @@ const GalleryPage = () => {
             value={filters.search}
             onChange={(e) => handleFilterChange('search', e.target.value)}
           />
-          <button className="search-submit" onClick={() => setShowFilters(!showFilters)}>
+          <button className="search-submit" onClick={() => setShowFilters(!showFilters)} aria-label="Toggle filters">
             <Filter size={16} color="#fff" />
           </button>
         </div>
@@ -429,9 +770,7 @@ const GalleryPage = () => {
       <section className="max-w-7xl mx-auto px-6 md:px-10" style={{ paddingTop: 50 }}>
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="car-skeleton" />
-            ))}
+            {Array.from({ length: 8 }).map((_, i) => <div key={i} className="car-skeleton" />)}
           </div>
         ) : currentCars.length === 0 ? (
           <div className="empty-state">
@@ -484,11 +823,14 @@ const GalleryPage = () => {
 };
 
 /* ------------------------------------------------------------------ */
-/*  NavBar / Footer (shared, inline)                                   */
+/*  NavBar — now scroll-aware (transparent → solid)                    */
 /* ------------------------------------------------------------------ */
 
 function NavBar({ active }) {
+  const y = useScrollY();
   const [open, setOpen] = useState(false);
+  const scrolled = y > 24;
+
   const links = [
     { href: '/', label: 'Home', key: 'home' },
     { href: '/gallery', label: 'Gallery', key: 'gallery' },
@@ -498,7 +840,14 @@ function NavBar({ active }) {
   ];
 
   return (
-    <header className="site-nav">
+    <header
+      className="site-nav"
+      style={{
+        background: scrolled ? 'rgba(0,0,0,0.92)' : 'transparent',
+        backdropFilter: scrolled ? 'blur(14px)' : 'none',
+        borderBottom: `1px solid ${scrolled ? 'var(--line)' : 'transparent'}`,
+      }}
+    >
       <div className="nav-inner">
         <a href="/" className="nav-logo">
           <span className="nav-logo-img">
@@ -600,12 +949,11 @@ function GlobalStyle() {
         overflow-x: hidden;
       }
 
-      /* Nav */
+      /* Nav — base styles. Background/border are driven inline by NavBar so
+         the bar can fade between transparent and solid as the user scrolls. */
       .site-nav {
         position: fixed; top: 0; left: 0; right: 0; z-index: 60;
-        background: rgba(0,0,0,0.92);
-        backdrop-filter: blur(14px);
-        border-bottom: 1px solid var(--line);
+        transition: background .35s ease, backdrop-filter .35s ease, border-color .35s ease;
       }
       .nav-inner {
         max-width: 1280px; margin: 0 auto; padding: 0 24px;
@@ -622,10 +970,7 @@ function GlobalStyle() {
       .nav-logo-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
       .nav-logo-text { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
       .nav-links { display: flex; gap: 28px; }
-      .nav-link {
-        font-size: 14px; color: var(--muted); text-decoration: none;
-        transition: color .25s ease;
-      }
+      .nav-link { font-size: 14px; color: var(--muted); text-decoration: none; transition: color .25s ease; }
       .nav-link:hover { color: var(--text); }
       .nav-link.active { color: var(--accent); }
       .nav-mobile-toggle { display: none; }
@@ -696,7 +1041,8 @@ function GlobalStyle() {
         background: transparent; cursor: pointer;
         transition: border-color .25s ease, background .25s ease, transform .25s ease;
       }
-      .btn-outline:hover { border-color: var(--accent); background: rgba(0,102,204,0.15); transform: translateY(-1px); }
+      .btn-outline:hover:not(:disabled) { border-color: var(--accent); background: rgba(0,102,204,0.15); transform: translateY(-1px); }
+      .btn-outline:disabled { opacity: .6; cursor: not-allowed; }
 
       .btn-primary {
         display: inline-flex; align-items: center; gap: 10px;
@@ -705,7 +1051,8 @@ function GlobalStyle() {
         cursor: pointer; box-shadow: 0 10px 30px rgba(0,102,204,0.28);
         transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
       }
-      .btn-primary:hover { transform: translateY(-2px); background: #0080ff; }
+      .btn-primary:hover:not(:disabled) { transform: translateY(-2px); background: #0080ff; }
+      .btn-primary:disabled { opacity: .65; cursor: not-allowed; transform: none; }
 
       /* Filters */
       .filters-panel {
@@ -769,7 +1116,8 @@ function GlobalStyle() {
         font-size: 13px; font-weight: 600; cursor: pointer;
         transition: background .3s ease, transform .3s ease;
       }
-      .request-quote-btn:hover { background: rgba(0,102,204,0.2); transform: translateX(2px); }
+      .request-quote-btn:hover:not(:disabled) { background: rgba(0,102,204,0.2); transform: translateX(2px); }
+      .request-quote-btn:disabled { opacity: .6; cursor: not-allowed; }
 
       .car-badge {
         position: absolute; top: 10px; right: 10px;
@@ -840,6 +1188,10 @@ function GlobalStyle() {
       }
       .modal-gallery { position: relative; margin-top: 18px; border-radius: 14px; overflow: hidden; background: #0a0a0a; height: 420px; }
       .modal-img { width: 100%; height: 100%; object-fit: contain; display: block; }
+      .modal-noimg {
+        width: 100%; height: 100%;
+        display: flex; align-items: center; justify-content: center; color: #555;
+      }
       .modal-arrow {
         position: absolute; top: 50%; transform: translateY(-50%);
         background: rgba(0,0,0,0.65); border: none; color: #fff;
@@ -868,8 +1220,8 @@ function GlobalStyle() {
       .modal-desc { margin-top: 16px; padding: 16px; background: #0a0a0a; border-radius: 12px; }
       .modal-desc p { font-size: 13.5px; color: #ccc; line-height: 1.6; white-space: pre-wrap; margin: 0; }
 
-      .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-      .modal-actions > * { flex: 1; justify-content: center; }
+      .modal-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+      .modal-actions > * { flex: 1 1 180px; justify-content: center; }
 
       /* Footer */
       .site-footer { border-top: 1px solid var(--line); margin-top: 80px; }
@@ -902,6 +1254,12 @@ function GlobalStyle() {
 
       @media (prefers-reduced-motion: reduce) {
         .car-card, .car-skeleton, .pagination-btn, .btn-primary, .btn-outline { animation: none !important; transition: none !important; }
+      }
+
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes slideUp {
+        from { opacity: 0; transform: scale(0.95) translateY(20px); }
+        to   { opacity: 1; transform: scale(1) translateY(0); }
       }
     `}</style>
   );
