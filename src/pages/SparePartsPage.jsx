@@ -47,7 +47,7 @@ const normalizePart = (part) => ({
   subcategory: part.subcategory || 'Parts',
   brand: part.brand || 'Genuine',
   rating: part.rating ?? 4.8,
-  price: part.price || '',                          // ← NEW
+  price: part.price || '',
   description:
     part.description || 'Quality replacement part for your vehicle.',
   inStock: part.inStock !== false,
@@ -95,7 +95,7 @@ async function orderPartByEmail(part, customerEmail = '') {
   if (part.brand) fields.Brand = part.brand;
   if (part.category) fields.Category = part.category;
   if (part.subcategory) fields.Subcategory = part.subcategory;
-  if (part.price) fields.Price = part.price;         // ← NEW
+  if (part.price) fields.Price = part.price;
   if (customerEmail) fields['Customer Email'] = customerEmail;
 
   const ok = await sendEmailNotification({
@@ -317,7 +317,6 @@ function PartCard({ part }) {
             </span>
           )}
 
-          {/* ← NEW: price badge on the image */}
           {part.price && (
             <span className="part-price-badge">{part.price}</span>
           )}
@@ -356,7 +355,6 @@ function PartCard({ part }) {
           <p className="part-card-description">{part.description}</p>
 
           <div className="part-card-footer">
-            {/* ← NEW: price replaces the plain "Available" text */}
             <span className="part-card-price">
               {part.price ? part.price : '✓ Available'}
             </span>
@@ -625,7 +623,11 @@ function NavBar({ active }) {
   ];
 
   return (
-    <header className="site-nav">
+    // Solid background is forced here as an inline style, in addition
+    // to the .site-nav class, so nothing (a stray utility class, a
+    // stacking/compositing quirk, etc.) can make the bar render
+    // see-through. z-index bumped well above modals/lightboxes too.
+    <header className="site-nav" style={{ backgroundColor: '#0a0a0a' }}>
       <div className="nav-inner">
         <a href="/" className="nav-logo">
           <span className="nav-logo-img">
@@ -658,7 +660,10 @@ function NavBar({ active }) {
         </button>
       </div>
 
-      <div className={`mobile-menu ${open ? 'open' : ''}`}>
+      <div
+        className={`mobile-menu ${open ? 'open' : ''}`}
+        style={{ backgroundColor: '#0a0a0a' }}
+      >
         <div className="mobile-menu-head">
           <span className="font-display nav-logo-text">
             Lord Group
@@ -755,15 +760,16 @@ function GlobalStyle() {
         overflow-x: hidden;
       }
 
-      /* Nav */
+      /* ---------- Nav: fully opaque, no transparency ---------- */
       .site-nav {
         position: fixed;
         top: 0; left: 0; right: 0;
-        z-index: 60;
-        background: #0a0a0a;
-        backdrop-filter: blur(14px);
+        z-index: 999;
+        background-color: #0a0a0a;
         border-bottom: 1px solid var(--line);
+        box-shadow: 0 1px 0 rgba(0,0,0,0.4);
       }
+
       .nav-inner {
         max-width: 1280px; margin: 0 auto;
         padding: 0 24px; height: 76px;
@@ -793,9 +799,11 @@ function GlobalStyle() {
       }
       .icon-btn:hover { border-color: var(--accent); background: var(--surface-alt); }
 
+      /* ---------- Mobile menu: fully opaque ---------- */
       .mobile-menu {
-        position: fixed; inset: 0; z-index: 90;
-        background: #000; opacity: 0; pointer-events: none;
+        position: fixed; inset: 0; z-index: 998;
+        background-color: #0a0a0a;
+        opacity: 0; pointer-events: none;
         transition: opacity .3s ease;
       }
       .mobile-menu.open { opacity: 1; pointer-events: auto; }
@@ -927,8 +935,6 @@ function GlobalStyle() {
         font-size: 11px; font-weight: 600;
         background: rgba(34, 197, 94, 0.9); color: #fff;
       }
-
-      /* ← NEW: price badge on the image */
       .part-price-badge {
         position: absolute; top: 10px; right: 10px;
         padding: 4px 12px; border-radius: 999px;
@@ -936,7 +942,6 @@ function GlobalStyle() {
         background: var(--accent); color: #fff;
         box-shadow: 0 4px 12px rgba(0,102,204,0.35);
       }
-
       .part-card-overlay {
         position: absolute; inset: 0; background: rgba(0,0,0,0.7);
         display: flex; align-items: center; justify-content: center;
@@ -961,14 +966,11 @@ function GlobalStyle() {
         margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line);
       }
       .part-card-availability { font-size: 13px; color: #22c55e; font-weight: 600; }
-
-      /* ← NEW: price label in the footer */
       .part-card-price {
         font-size: 15px; color: var(--accent); font-weight: 700;
         font-family: 'Space Grotesk', sans-serif;
         letter-spacing: -0.01em;
       }
-
       .part-card-btn {
         display: flex; align-items: center; gap: 4px;
         padding: 8px 16px; border-radius: 999px; border: none;
