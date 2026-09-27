@@ -58,7 +58,7 @@ const NAV_LINKS = [
 
 const BRANDS = ["Toyota", "Lexus", "Mercedes-Benz", "Maserati", "Range Rover", "Volvo"];
 
-const ADMIN_EMAIL = "chinwekeleuchenna@gmail.com";
+const ADMIN_EMAIL = "lordgroup.limited@gmail.com";
 
 const CAR_IMAGES = [
   images.Car1, images.Car2, images.Car3, images.Car4, images.Car5,

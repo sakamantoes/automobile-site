@@ -23,7 +23,7 @@ import { getListings } from '../utils/api';
 /*  Config + helpers                                                   */
 /* ------------------------------------------------------------------ */
 
-const ADMIN_EMAIL = 'chinwekeleuchenna@gmail.com';
+const ADMIN_EMAIL = 'lordgroup.limited@gmail.com';
 
 const categories = [
   'All',
