@@ -49,6 +49,7 @@ import { getListings } from "../utils/api";
 const NAV_LINKS = [
   { label: "Inventory", href: "#inventory" },
   { label: "Spare Parts", href: "#spare-parts" },
+  { label: "Gallery", href: "/gallery" },
   { label: "Financing", href: "#trust" },
   { label: "Reviews", href: "#reviews" },
   { label: "Journal", href: "#journal" },
