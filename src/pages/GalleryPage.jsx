@@ -302,6 +302,7 @@ function useScrollY() {
         ticking = true;
       }
     };
+    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -823,13 +824,19 @@ const GalleryPage = () => {
 };
 
 /* ------------------------------------------------------------------ */
-/*  NavBar — now scroll-aware (transparent → solid)                    */
+/*  NavBar — scroll-aware (transparent → solid)                        */
+/*                                                                     */
+/*  IMPORTANT: the mobile menu is rendered as a SIBLING of <header>,   */
+/*  not a child. A parent with backdrop-filter becomes the containing  */
+/*  block for position:fixed descendants, which collapsed the menu to  */
+/*  the header's height (and made it look transparent) once scrolled.  */
 /* ------------------------------------------------------------------ */
 
 function NavBar({ active }) {
   const y = useScrollY();
   const [open, setOpen] = useState(false);
   const scrolled = y > 24;
+  const solid = scrolled || open;
 
   const links = [
     { href: '/', label: 'Home', key: 'home' },
@@ -839,54 +846,87 @@ function NavBar({ active }) {
     { href: '/#contact', label: 'Contact', key: 'contact' },
   ];
 
-  return (
-    <header
-      className="site-nav"
-      style={{
-        background: scrolled ? 'rgba(0,0,0,0.92)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(14px)' : 'none',
-        borderBottom: `1px solid ${scrolled ? 'var(--line)' : 'transparent'}`,
-      }}
-    >
-      <div className="nav-inner">
-        <a href="/" className="nav-logo">
-          <span className="nav-logo-img">
-            <img src={images.Logo2} alt="Lord Group Autos" />
-          </span>
-          <span className="font-display nav-logo-text">
-            Lord Group<span style={{ color: 'var(--accent)' }}> AUTOS</span>
-          </span>
-        </a>
-        <nav className="nav-links">
-          {links.map((l) => (
-            <a key={l.key} href={l.href} className={`nav-link ${active === l.key ? 'active' : ''}`}>
-              {l.label}
-            </a>
-          ))}
-        </nav>
-        <button className="icon-btn nav-mobile-toggle" onClick={() => setOpen(true)} aria-label="Open menu">
-          <Menu size={19} />
-        </button>
-      </div>
+  // Lock page scroll while the mobile menu is open
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
-      <div className={`mobile-menu ${open ? 'open' : ''}`}>
+  // Close the menu if the viewport grows past the mobile breakpoint
+  useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth > 900) setOpen(false);
+    };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  return (
+    <>
+      <header
+        className="site-nav"
+        style={{
+          background: solid ? 'rgba(0,0,0,0.92)' : 'transparent',
+          backdropFilter: solid ? 'blur(14px)' : 'none',
+          WebkitBackdropFilter: solid ? 'blur(14px)' : 'none',
+          borderBottom: `1px solid ${solid ? 'var(--line)' : 'transparent'}`,
+        }}
+      >
+        <div className="nav-inner">
+          <a href="/" className="nav-logo">
+            <span className="nav-logo-img">
+              <img src={images.Logo2} alt="Lord Group Autos" />
+            </span>
+            <span className="font-display nav-logo-text">
+              Lord Group<span style={{ color: 'var(--accent)' }}> AUTOS</span>
+            </span>
+          </a>
+          <nav className="nav-links">
+            {links.map((l) => (
+              <a key={l.key} href={l.href} className={`nav-link ${active === l.key ? 'active' : ''}`}>
+                {l.label}
+              </a>
+            ))}
+          </nav>
+          <button
+            className="icon-btn nav-mobile-toggle"
+            onClick={() => setOpen(true)}
+            aria-label="Open menu"
+            aria-expanded={open}
+            type="button"
+          >
+            <Menu size={19} />
+          </button>
+        </div>
+      </header>
+
+      <div className={`mobile-menu ${open ? 'open' : ''}`} aria-hidden={!open}>
         <div className="mobile-menu-head">
           <span className="font-display nav-logo-text">
             Lord Group<span style={{ color: 'var(--accent)' }}> AUTOS</span>
           </span>
-          <button className="icon-btn" onClick={() => setOpen(false)} aria-label="Close menu">
+          <button className="icon-btn" onClick={() => setOpen(false)} aria-label="Close menu" type="button">
             <X size={19} />
           </button>
         </div>
         <nav className="mobile-menu-links">
           {links.map((l) => (
-            <a key={l.key} href={l.href} onClick={() => setOpen(false)} className={`mobile-link ${active === l.key ? 'active' : ''}`}>
+            <a
+              key={l.key}
+              href={l.href}
+              onClick={() => setOpen(false)}
+              className={`mobile-link ${active === l.key ? 'active' : ''}`}
+            >
               {l.label}
             </a>
           ))}
         </nav>
       </div>
-    </header>
+    </>
   );
 }
 
@@ -983,13 +1023,21 @@ function GlobalStyle() {
       }
       .icon-btn:hover { border-color: var(--accent); background: var(--surface-alt); }
 
+      /* Mobile menu — sibling of the header (see NavBar note) so it always
+         covers the full viewport regardless of the header's backdrop-filter. */
       .mobile-menu {
         position: fixed; inset: 0; z-index: 90;
         background: #000;
         opacity: 0; pointer-events: none;
-        transition: opacity .3s ease;
+        visibility: hidden;
+        transition: opacity .3s ease, visibility 0s linear .3s;
+        overflow-y: auto;
       }
-      .mobile-menu.open { opacity: 1; pointer-events: auto; }
+      .mobile-menu.open {
+        opacity: 1; pointer-events: auto;
+        visibility: visible;
+        transition: opacity .3s ease, visibility 0s;
+      }
       .mobile-menu-head {
         height: 76px; padding: 0 24px;
         display: flex; align-items: center; justify-content: space-between;
