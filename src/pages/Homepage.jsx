@@ -158,7 +158,7 @@ const REVIEWS = [
     title: "Bought a Lexus ES 350",
     rating: "5.0",
     text: "A genuinely curated inventory — every car felt inspected and honest.",
-    name: "Esther benjamin",
+    name: "Nwaburue Faustina",
     time: "3 days ago",
   },
 ];
